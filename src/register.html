@@ -1,0 +1,49 @@
+<template>
+  <form role = "form" submit.delegate = "register()">
+    <div class="row align-center">
+      <div class="col s12 m4 l2"><p></p></div>
+      <div class="col s12 m4 l8"><h2>Registration</h2></div>
+      <div class="col s12 m4 l2"><p></p></div>
+    </div>
+    <div class="row align-center">
+      <div class="col s12 m4 l2"><p></p></div>
+      <div class="col s12 m4 l8"><input class="align-center" type="text" value.bind = "firstName"><h5>First name</h5></input></div>
+      <div class="col s12 m4 l2"><p></p></div>
+    </div>
+    <div class="row align-center">
+      <div class="col s12 m4 l2"><p></p></div>
+      <div class="col s12 m4 l8"><input class="align-center" type="text" value.bind = "lastName"><h5>Last name</h5></input></div>
+      <div class="col s12 m4 l2"><p></p></div>
+    </div>
+    <div class="row align-center">
+      <div class="col s12 m4 l2"><p></p></div>
+      <div class="col s12 m4 l8"><input class="align-center" type="text" value.bind = "userName"><h5>Username</h5></input></div>
+      <div class="col s12 m4 l2"><p></p></div>
+    </div>
+    <div class="row align-center">
+      <div class="col s12 m4 l2"><p></p></div>
+      <div class="col s12 m4 l8"><input class="align-center" type="text" value.bind = "email"><h5>Email</h5></input></div>
+      <div class="col s12 m4 l2"><p></p></div>
+    </div>
+    <div class="row align-center">
+      <div class="col s12 m4 l2"><p></p></div>
+      <div class="col s12 m4 l8"><input class="align-center" type="text" value.bind = "password"><h5>Password</h5></input></div>
+      <div class="col s12 m4 l2"><p></p></div>
+    </div>
+    <div class="row align-center">
+      <div class="col s12 m4 l2"><p></p></div>
+      <div class="col s12 m4 l8"><input class="align-center" type="text" value.bind = "confirmPassword"><h5>Confirm password</h5></input></div>
+      <div class="col s12 m4 l2"><p></p></div>
+    </div>
+    <div class="row align-center">
+      <div class="col s12 m4 l2"><p></p></div>
+      <div class="col s12 m4 l8"> <button class="grow btn teal darken-4 waves-effect waves-light transparent-title" type="submit" name="register-submit">Submit</button></div>
+      <div class="col s12 m4 l2"><p></p></div>
+    </div>
+  </form>
+  <div class="row align-center">
+    <div class="col s12 m4 l2"><p></p></div>
+    <div class="col s12 m4 l8"> <a class="grow btn teal darken-4 waves-effect waves-light transparent-title" name="register-cancel" route-href="route: login;">Cancel</a></div>
+    <div class="col s12 m4 l2"><p></p></div>
+  </div>
+</template>

@@ -1,0 +1,36 @@
+body, html {
+  height: 100%;
+}
+body { 
+  background-image: url(./resources/login/bg.jpg) ;
+  background-position: center center;
+  background-repeat:  no-repeat;
+  background-attachment: fixed;
+  background-size:  cover;
+  background-color: #999;
+}
+.transparent-title {
+  opacity: .6;
+}
+.align-center {
+  text-align: center;
+  color: white;
+}
+.grow {
+  transition: all .2s ease-in-out;
+}
+.grow:hover {
+  transform: scale(1.1);
+}
+
+/* Map */
+#basemap {
+  position: relative;
+  height: 100%;
+  overflow: hidden
+}
+
+.row-top {
+  margin: 0%;
+}
+
