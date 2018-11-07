@@ -17,6 +17,7 @@ export function configure(aurelia) {
       // Register hosts
       config.registerEndpoint('api', '/mypath');
       config.registerEndpoint('auth');
+      config.registerEndpoint('protected-api');
       config.registerEndpoint('other-api', '/otherpath', {headers: {'Content-Type': 'x-www-form-urlencoded'}});
     })
     /* configure aurelia-authentication */

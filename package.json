@@ -17,8 +17,12 @@
     "aurelia-typed-observable-plugin": "^0.4.2",
     "aurelia-validation": "^1.2.3",
     "bluebird": "^3.5.2",
+    "d3": "^5.7.0",
+    "fetch": "^1.1.0",
     "materialize-css": "^1.0.0",
-    "ol": "^5.2.0"
+    "ol": "^5.2.0",
+    "dns": "file:./src/mock/dns",
+    "net": "file:./src/mock/net"
   },
   "peerDependencies": {},
   "devDependencies": {
