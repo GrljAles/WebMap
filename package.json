@@ -15,14 +15,14 @@
     "aurelia-materialize-bridge": "^1.1.10",
     "aurelia-polyfills": "^1.3.0",
     "aurelia-typed-observable-plugin": "^0.4.2",
-    "aurelia-validation": "^1.2.3",
+    "aurelia-validation": "^1.3.2",
     "bluebird": "^3.5.2",
     "d3": "^5.7.0",
+    "dns": "file:./src/mock/dns",
     "fetch": "^1.1.0",
     "materialize-css": "^1.0.0",
-    "ol": "^5.2.0",
-    "dns": "file:./src/mock/dns",
-    "net": "file:./src/mock/net"
+    "net": "file:./src/mock/net",
+    "ol": "^5.2.0"
   },
   "peerDependencies": {},
   "devDependencies": {
