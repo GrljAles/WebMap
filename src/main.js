@@ -13,10 +13,12 @@ export function configure(aurelia) {
     .globalResources(PLATFORM.moduleName('aurelia-authentication/authFilterValueConverter'))
     .feature(PLATFORM.moduleName('resources/index'))
     .plugin(PLATFORM.moduleName('aurelia-materialize-bridge'), b => b.useAll())
+    .plugin(PLATFORM.moduleName('aurelia-validation'))
     .plugin(PLATFORM.moduleName('aurelia-api'), config => {
       // Register hosts
       config.registerEndpoint('api', '/mypath');
       config.registerEndpoint('auth');
+      config.registerEndpoint('protected-api');
       config.registerEndpoint('other-api', '/otherpath', {headers: {'Content-Type': 'x-www-form-urlencoded'}});
     })
     /* configure aurelia-authentication */

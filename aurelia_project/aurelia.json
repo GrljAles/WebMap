@@ -69,5 +69,10 @@
     "id": "jasmine",
     "displayName": "Jasmine"
   },
-  "packageManager": "npm"
+  "packageManager": "npm",
+  "aurelia-templating-resources":{
+    "name": "aurelia-validation",
+    "path": "../node_modules/aurelia-validation/dist/amd",
+    "main": "aurelia-validation"
+  }
 }
