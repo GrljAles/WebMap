@@ -1,5 +1,5 @@
 <template>
-  <form role = "form" submit.delegate = "login()">
+  <form autocomplete="off" role = "form" submit.delegate = "login()">
     <div class="row align-center">
       <div class="col s12 m4 l2"><p></p></div>
       <div class="col s12 m4 l8"><h2>Login</h2></div>
@@ -7,12 +7,23 @@
     </div>
     <div class="row align-center">
       <div class="col s12 m4 l2"><p></p></div>
-      <div class="col s12 m4 l8"><input class="align-center" type="text" value.bind = "username"><h5>User</h5></input></div>
+      <div class="col s12 m4 l8">
+        <div validation-errors.bind="userNameErrors">
+          <input id="userName" class="align-center" type="text" value.bind = "userName & validateOnChangeOrBlur"/>
+          <h5>Username <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of userNameErrors">${errorInfo.error.message}</span></h5>
+          </div>
+      </div>
       <div class="col s12 m4 l2"><p></p></div>
     </div>
     <div class="row align-center">
       <div class="col s12 m4 l2"><p></p></div>
-      <div class="col s12 m4 l8"><input class="align-center" type="password" value.bind = "password"><h5>Password</h5></input></div>
+      <div class="col s12 m4 l8">
+        <div validation-errors.bind="passwordErrors">
+          <input id="password" class="align-center"type.bind="passwordType" value.bind = "password & validateOnChangeOrBlur"/>
+          <h5>Password <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of passwordErrors">${errorInfo.error.message}</span></h5>
+        </div>
+      </div>
+      <span><i class="grow material-icons" click.trigger="revealPassword()">remove_red_eye</i></span>    
       <div class="col s12 m4 l2"><p></p></div>
     </div>
     <div class="row align-center">

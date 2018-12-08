@@ -1,18 +1,29 @@
 import {AuthService} from 'aurelia-authentication';
 import {inject, computedFrom} from 'aurelia-framework';
+import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
 import 'fetch';
 import {HttpClient, json} from 'aurelia-fetch-client';
-
 let httpClient = new HttpClient();
-@inject(AuthService)
+@inject(AuthService, ValidationControllerFactory)
 export class Login {
+  controller = null;
   username = null;
   password = null;
-  constructor(authService) {
-    this.authService   = authService;
-    this.providers     = [];
+  passwordType = 'password';
+  constructor(authService, controllerFactory) {
+    this.controller = controllerFactory.createForCurrentScope();
+    this.authService = authService;
+    this.providers = [];
 
+    ValidationRules
+    .ensure('userName')
+      .required().withMessage('is required.')
+    .ensure('password')
+      .required().withMessage('is also required.')
+    .on(this)
   };
+
+  
   // make a getter to get the authentication status.
   // use computedFrom to avoid dirty checking
   @computedFrom('authService.authenticated')
@@ -20,31 +31,15 @@ export class Login {
     return this.authService.authenticated;
   }
   login() {
-    var json = {
-      'tool': 'timeSeriesChart',
-      'firstDate':chartParameters[2],
-      'secondDate':chartParameters[3],
-      'x':graphCoor[0],
-      'y':graphCoor[1],
-      'chartProducts':chartParameters[6]
-    }
-    this.httpClient.fetch('http://84.255.193.232/backend', {
-      method: 'POST',
-      body: JSON.stringify(json),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'Fetch'
-      },
-      mode: 'cors'
-    })
-      .then(response => response.json())
-      .then(data => console.log(data))
-
-
-/*     if (this.username && this.password) {
-      var thisUser = { 'username': this.username, 'password': this.password }
-      httpClient.fetch('http://192.168.64.103/backend', {
+    this.controller.validate()
+    .then(result => {
+      if (result.valid) {
+        var thisUser = {
+          'pleaseDo': 'login',
+          'username': this.username,
+          'password': this.password 
+        }
+        httpClient.fetch('http://84.255.193.232/backend', {
         method: 'POST',
         body: JSON.stringify(thisUser),
         headers: {
@@ -54,17 +49,25 @@ export class Login {
         },
         mode: 'cors'
       })
+      .catch(error => console.log(error) )
       .then(response => response.json())
-      .then(data => {
-         console.log(data);
-      });
-    } */
-  };
+      .then(data => console.log(data))
+    }
+  })
+};
 
   // use authService.logout to delete stored tokens
   // if you are using JWTs, authService.logout() will be called automatically,
   // when the token expires. The expiredRedirect setting in your authConfig
   // will determine the redirection option
+  revealPassword() {
+    if (this.passwordType === 'password') {
+      this.passwordType = 'text'
+    }
+    else {
+      this.passwordType = 'password'
+    };
+  };
   logout() {
     return this.authService.logout();
   }

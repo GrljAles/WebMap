@@ -1,22 +1,27 @@
 import {inject, NewInstance} from 'aurelia-dependency-injection';
-import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
+import {ValidationRules, ValidationController} from 'aurelia-validation';
 import 'fetch';
 import {HttpClient, json} from 'aurelia-fetch-client';
+import {EventAggregator} from 'aurelia-event-aggregator';
 
 let httpClient = new HttpClient();
-@inject(ValidationControllerFactory)
+@inject(NewInstance.of(ValidationController), EventAggregator)
 export class Register {
-  controller = null;
-  firstName = null;
-  lastName = null
-  userName = null;
-  email = null;
-  password = null;
-  confirmPassword = null;
+  controller;
+  message = '';
+  firstName = 'Ales';
+  lastName = 'Grlj'
+  userName = 'Hans';
+  email = 'alesinar.grlj@gmail.com';
+  password = 'testisis';
+  confirmPassword = 'testisis';
   passwordType = 'password';
 
-  constructor(controllerFactory) {
-    this.controller = controllerFactory.createForCurrentScope();
+  constructor(controller, eventAggregator) {
+    this.controller = controller;
+    this.ea = eventAggregator;
+    this.subscribe();
+
     ValidationRules.customRule(
       'matchesProperty',
       (value, obj, otherPropertyName) =>
@@ -47,36 +52,43 @@ export class Register {
         .required().withMessage(' else you cannot register.')
         .satisfiesRule('matchesProperty', 'password')
       .on(this)
-  }
-  register() {
-    this.controller.validate()
-     .then(result => {
-       if (result.valid) {
-        var json= {
-          pleaseDo: 'register',
-          firstName: this.firstName,
-          lastName: this.lastName,
-          userName: this.userName,
-          email: this.email,
-          password: this.password,
-          confirmPassword: this.confirmPassword
-        };
-         console.log(JSON.stringify(json))
-       };
+    }
+    subscribe() {};
+    register() {
+      this.controller.validate()
+      .then(result  => {
+        if (result.valid) {
+          var json= {
+            pleaseDo: 'register',
+            firstName: this.firstName,
+            lastName: this.lastName,
+            userName: this.userName,
+            email: this.email,
+            password: this.password,
+            confirmPassword: this.confirmPassword
+          };
+          httpClient.fetch('http://84.255.193.232/backend', {
+          method: 'POST',
+          body: JSON.stringify(json),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'Fetch'
+          },
+          mode: 'cors'
+        })
+        .then(response => response.json())
+        .then(data => {
+          for (var key in data) {
+            if (key === 'error') {
+              this.ea.publish('notification-data', data.error)
+            }
+          }
+        })
+      };
     });
-/*    httpClient.fetch('http://84.255.193.232/backend', {
-      method: 'POST',
-      body: JSON.stringify(json),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'Fetch'
-      },
-      mode: 'cors'
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))*/
   };
+
   revealPassword() {
     if (this.passwordType === 'password') {
       this.passwordType = 'text'
@@ -86,7 +98,3 @@ export class Register {
     };
   };
 };
-
-
-
-
