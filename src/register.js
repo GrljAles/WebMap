@@ -58,7 +58,7 @@ export class Register {
       this.controller.validate()
       .then(result  => {
         if (result.valid) {
-          var json= {
+          var registerUser= {
             pleaseDo: 'register',
             firstName: this.firstName,
             lastName: this.lastName,
@@ -67,21 +67,26 @@ export class Register {
             password: this.password,
             confirmPassword: this.confirmPassword
           };
-          httpClient.fetch('http://84.255.193.232/backend', {
+          httpClient.fetch('http://84.255.193.232/backend/registration', {
           method: 'POST',
-          body: JSON.stringify(json),
+          body: JSON.stringify(registerUser),
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'X-Requested-With': 'Fetch'
+            //'Access-Control-Allow-Origin': 'http://localhost:8080'
           },
           mode: 'cors'
         })
         .then(response => response.json())
         .then(data => {
+          console.log(data)
           for (var key in data) {
             if (key === 'error') {
               this.ea.publish('notification-data', data.error)
+            }
+            if (key === 'success') {
+              this.ea.publish('notification-data', data.success)
             }
           }
         })

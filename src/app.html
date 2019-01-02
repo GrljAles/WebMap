@@ -2,8 +2,9 @@
   <require from="materialize-css/dist/css/materialize.css"></require>
   <require from="./styles.css"></require>
   <div class="row row-top">
-    <div class="col s12 teal darken-4 transparent-title">
-      <h1>WebMap Project</h1>
+    <div class="col l12 teal darken-4 transparent-title valign-wrapper">
+      <h1 style.bind="topRowStyle">WebMap Project</h1>
+      <img class="col l1 m1 s1 grow" src="./resources/icons/icon.svg" show.bind="userImage">
     </div>
   </div>
   <router-view></router-view>

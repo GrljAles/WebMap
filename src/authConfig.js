@@ -1,21 +1,24 @@
 export default {
   endpoint: 'auth',
   configureEndpoints: ['auth', 'protected-api'],
-  loginUrl: 'login',  
-  signupUrl: 'basemap',
+  loginUrl: 'http://84.255.193.232/backend/token',  
+  signupUrl: 'http://84.255.193.232/backend/register',
   profileUrl: 'me',
   unlinkUrl: 'me/unlink',
-  loginOnSignup: false,
+  accessToken: 'access',
+  refreshToken: 'refresh',
+  loginOnSignup: true,
   storageChangedReload: true,    // ensure secondary tab reloading after auth status changes
   expiredRedirect: 1,            // redirect to logoutRedirect after token expiration
-  providers: {
-      google: {
-        url: 'google',
-        clientId: '239531536023-ibk10mb9p7ullsw4j55a61og5lvnjrff6.apps.googleusercontent.com'
-      },
-      facebook:{
-        url: 'facebook',
-        clientId: '1465278217541708498'
-      }
-  }
+  authHeader : 'Authorization',
+  authTokenType : 'Bearer',
+  accessTokenProp : 'token',
+  httpInterceptor : true,
+  storage : 'localStorage',
+  storageKey : 'aurelia_authentication',
+  defaultHeadersForTokenRequests : {
+    'Content-Type': 'application/json'
+  },
+  
+
 };
