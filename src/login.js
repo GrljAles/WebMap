@@ -40,29 +40,7 @@ export class Login {
   get authenticated() {
     return this.authService.authenticated;
   }
-
-/*   httpClient.fetch('http://84.255.193.232/backend/poster',{
-      method: 'POST',
-      body: JSON.stringify({userName:this.userName,password:this.password, localToken:localStorage[authConfig.tokenName]}),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'Fetch'
-      },
-      mode: 'cors'
-    }) */
-
-/*   login() {
-    var headers = new Headers();
-    return this.authService.login(JSON.stringify({userName:this.userName,password:this.password}))
-    .then(response => {
-        console.log("success logged " + response);
-    })
-    .catch(err => {
-        console.log("login failure");
-    });
-    } */
-    login() {
+  login() {
     this.controller.validate()
     .then(result => {
       if (result.valid) {
@@ -85,11 +63,19 @@ export class Login {
         .then((response) => response.json())
         .then((data) => {
           console.log(data)
-        localStorage[authConfig.accessToken] = data.access_token;
-        localStorage[authConfig.refreshToken] = data.refresh_token;
-        //this.authService.authenticated = true
-        this.ea.publish('user-image', this.authService.authenticated)
-        this.router.navigateToRoute('basemap');
+          for (var key in data) {
+            if (key === 'error') {
+              this.ea.publish('notification-data', data.error)
+            }
+            if (key === 'message') {
+              this.ea.publish('notification-data', data.success)
+              localStorage[authConfig.accessToken] = data.access_token;
+              localStorage[authConfig.refreshToken] = data.refresh_token;
+              //this.authService.authenticated = true
+              this.ea.publish('user-image', this.authService.authenticated)
+              this.router.navigateToRoute('basemap');
+            }
+          }
       }) 
     }
   })

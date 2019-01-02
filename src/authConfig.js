@@ -1,8 +1,8 @@
 export default {
   endpoint: 'auth',
   configureEndpoints: ['auth', 'protected-api'],
-  loginUrl: 'http://84.255.193.232/backend/token',  
-  signupUrl: 'http://84.255.193.232/backend/register',
+  loginUrl: 'http://84.255.193.232/backend/login',  
+  signupUrl: 'http://84.255.193.232/backend/registration',
   profileUrl: 'me',
   unlinkUrl: 'me/unlink',
   accessToken: 'access',
