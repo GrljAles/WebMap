@@ -16,8 +16,8 @@ export function configure(aurelia) {
     .plugin(PLATFORM.moduleName('aurelia-validation'))
     .plugin(PLATFORM.moduleName('aurelia-api'), config => {
       // Register hosts
-      config.registerEndpoint('auth');
-      config.registerEndpoint('protected-api');
+      config.registerEndpoint('backend', 'http://84.255.193.232/backend');
+      config.registerEndpoint('basemap','http://84.255.193.232/basemap')
     })
     /* configure aurelia-authentication */
     .plugin(PLATFORM.moduleName('aurelia-authentication'), config => {

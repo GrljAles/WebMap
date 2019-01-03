@@ -86,7 +86,7 @@ export class Register {
               this.ea.publish('notification-data', data.error)
             }
             if (key === 'message') {
-              this.ea.publish('notification-data', data.success)
+              this.ea.publish('notification-data', data.message)
             }
           }
         })

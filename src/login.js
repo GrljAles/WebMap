@@ -40,7 +40,7 @@ export class Login {
   get authenticated() {
     return this.authService.authenticated;
   }
-  login() {
+/*   login() {
     this.controller.validate()
     .then(result => {
       if (result.valid) {
@@ -79,12 +79,24 @@ export class Login {
       }) 
     }
   })
-};  
+};   */
 
-  // use authService.logout to delete stored tokens
-  // if you are using JWTs, authService.logout() will be called automatically,
-  // when the token expires. The expiredRedirect setting in your authConfig
-  // will determine the redirection option
+login() {
+  return this.authService.login({
+    userName: this.userName,
+    password: this.password,
+  })
+  .then(response => {
+    //console.log(response)
+    this.ea.publish('user-image', this.authService.authenticated)
+  })
+  .catch(err => {
+    //console.log(err)
+    this.ea.publish('user-image', this.authService.authenticated)
+    this.ea.publish('notification-data', 'Invalid credentials')
+  });
+};
+
   revealPassword() {
     if (this.passwordType === 'password') {
       this.passwordType = 'text'
@@ -93,15 +105,13 @@ export class Login {
       this.passwordType = 'password'
     };
   };
+
+  // use authService.logout to delete stored tokens
+  // if you are using JWTs, authService.logout() will be called automatically,
+  // when the token expires. The expiredRedirect setting in your authConfig
+  // will determine the redirection option
   logout() {
     return this.authService.logout();
   }
 
-  // use authenticate(providerName) to get third-party authentication
-  authenticate(name) {
-    return this.authService.authenticate(name)
-      .then(response => {
-        this.provider[name] = true;
-      });
-  }
 }

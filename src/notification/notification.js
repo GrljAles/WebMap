@@ -9,7 +9,6 @@ export class Notification {
   }
   subscribe() {
     this.ea.subscribe('notification-data', (data) => {
-      console.log(data)
       this.setData(data);
     });
     //here you recieve data and turn on alerts
