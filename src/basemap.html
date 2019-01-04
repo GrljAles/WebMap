@@ -1,3 +1,35 @@
 <template>
-  <div id="basemap" class="map col l12"></div>
+  <div class="row">
+    <ul class="collection with-header col l3 m3 s3 layer-list">
+      <li class="collection-header"><h4>Layers</h4></li>
+      <li class="collection-item">
+        <div class="collapsible-accordion">
+          <ul md-collapsible="accordion: false;">
+            <li>
+              <div class="collapsible-header">
+                <p>
+                  <label>
+                    <input type="checkbox" />
+                    <span>Red</span>
+                  </label>
+                </p>
+              </div>
+              <div class="collapsible-body">
+                <p class="range-field">
+                  <input type="range" id="test5" min="0" max="100" />
+                </p>
+                <p class="range-field">
+                  <input type="range" id="test5" min="0" max="100" />
+                </p>
+                <p class="range-field">
+                  <input type="range" id="test5" min="0" max="100" />
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+    <div id="basemap" class="map col l9 m9 s9"></div>
+  </div>
 </template>

@@ -11,7 +11,7 @@ export default {
   logoutRedirect : '#/',
 
   // The SPA route used when an unauthenticated user tries to access an SPA page that requires authentication
-  loginRoute : '/login',
+  loginRoute : '#/',
   // Whether or not an authentication token is provided in the response to a successful signup
   loginOnSignup : true,
   // If loginOnSignup == false: The SPA url to which the user is redirected after a successful signup (else loginRedirect is used)

@@ -1,32 +1,38 @@
 import {PLATFORM} from 'aurelia-pal';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {inject} from 'aurelia-dependency-injection';
+import {AuthenticateStep} from 'aurelia-authentication';
+import {sideNav} from "./sideNav/sideNav"
 
-@inject(EventAggregator)
+@inject(EventAggregator, sideNav)
 export class App {
-  userImage = false;
-  constructor(eventAggregator) {
+  constructor(eventAggregator, sideNav) {
     this.ea = eventAggregator;
-    //this.userImage = false;
+    this.sideNav = sideNav;
+    this.authenticated = false;
+    this.userNameDisplay = null
     this.subscribe();
   }
+
   subscribe() {
-    this.ea.subscribe('user-image', (data) => {
-      this.topRowOnLogin(data)
+    this.ea.subscribe('user-data-update', (data) => {
+      this.updateUserData(data)
     });
-    //here you recieve data and turn on alerts
+    this.ea.subscribe('authentication-change', authenticated => {
+      this.authenticated = authenticated
+    });
   }
-  topRowOnLogin(data){
-    this.userImage = data;
-    if (this.userImage === true) {
-      this.topRowStyle = 'col l11 m11 s11'
-    }
-    else {
-      this.topRowStyle = 'col l12 m12 s12'
-    }
+  logout() {
+    //this.sideNav.openSideNav()
+    this.ea.publish('logout', true)
+  }
+  updateUserData(data){
+    this.userNameDisplay = data.userName;
   }
   configureRouter(config, router){
     config.title = 'WebMapProject';
+
+    config.addPipelineStep('authorize', AuthenticateStep); // Add a route filter so only authenticated uses are authorized to access some routes
     config.map([
       {
         route: ["", "home"],
@@ -47,7 +53,15 @@ export class App {
         moduleId: PLATFORM.moduleName('basemap'),
         title: 'BaseMap',
         name:'basemap',
+        auth: true
       },
+      /* {
+        route: 'sidenav',
+        moduleId: PLATFORM.moduleName('./sideNav/sideNav'),
+        title: 'Side Navigation',
+        name:'sidenav',
+        auth: true
+      }, */
     ]);
     this.router = router;
 

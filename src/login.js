@@ -24,6 +24,7 @@ export class Login {
 
     this.authService = authService;    
     this.providers = [];
+    this.subscribe();
 
     ValidationRules
     .ensure('userName')
@@ -33,6 +34,11 @@ export class Login {
     .on(this)
   };
 
+  subscribe() {
+    this.ea.subscribe('logout', (data) => {
+      this.logout()
+    });
+  }
   
   // make a getter to get the authentication status.
   // use computedFrom to avoid dirty checking
@@ -40,62 +46,27 @@ export class Login {
   get authenticated() {
     return this.authService.authenticated;
   }
-/*   login() {
-    this.controller.validate()
-    .then(result => {
-      if (result.valid) {
-        var loginUser= {
-          pleaseDo: 'login',
-          userName: this.userName,
-          password: this.password,
-        };
-        httpClient.fetch('http://84.255.193.232/backend/login', {
-        method: 'POST',
-        body: JSON.stringify(loginUser),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'Fetch'
-          //'Access-Control-Allow-Origin': 'http://localhost:8080'
-        },
-        mode: 'cors'
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data)
-          for (var key in data) {
-            if (key === 'error') {
-              this.ea.publish('notification-data', data.error)
-            }
-            if (key === 'message') {
-              this.ea.publish('notification-data', data.success)
-              localStorage[authConfig.accessToken] = data.access_token;
-              localStorage[authConfig.refreshToken] = data.refresh_token;
-              //this.authService.authenticated = true
-              this.ea.publish('user-image', this.authService.authenticated)
-              this.router.navigateToRoute('basemap');
-            }
-          }
-      }) 
-    }
-  })
-};   */
 
-login() {
-  return this.authService.login({
-    userName: this.userName,
-    password: this.password,
-  })
-  .then(response => {
-    //console.log(response)
-    this.ea.publish('user-image', this.authService.authenticated)
-  })
-  .catch(err => {
-    //console.log(err)
-    this.ea.publish('user-image', this.authService.authenticated)
-    this.ea.publish('notification-data', 'Invalid credentials')
-  });
-};
+  login() {
+    return this.authService.login({
+      userName: this.userName,
+      password: this.password,
+    })
+    .then(response => {
+      //console.log(response)
+      this.ea.publish('user-data-update', {
+        userName: response.message
+      })
+
+    })
+    .catch(err => {
+      //console.log(err)
+      this.ea.publish('user-data-update', {
+        userName: null
+      });
+      this.ea.publish('notification-data', 'Invalid credentials')
+    });
+  };
 
   revealPassword() {
     if (this.passwordType === 'password') {
