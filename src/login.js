@@ -53,18 +53,18 @@ export class Login {
       password: this.password,
     })
     .then(response => {
-      //console.log(response)
+      console.log(response)
       this.ea.publish('user-data-update', {
         userName: response.message
       })
 
     })
     .catch(err => {
-      //console.log(err)
+      console.log(err)
       this.ea.publish('user-data-update', {
         userName: null
       });
-      this.ea.publish('notification-data', 'Invalid credentials')
+      this.ea.publish('notification-data', err)
     });
   };
 
@@ -82,7 +82,55 @@ export class Login {
   // when the token expires. The expiredRedirect setting in your authConfig
   // will determine the redirection option
   logout() {
-    return this.authService.logout();
+    var refreshToken = {
+      jti: this.authService.getRefreshToken()
+    };
+    var accessToken = {
+      jti: this. authService.getAccessToken()
+    };
+
+    httpClient.fetch('http://84.255.193.232/backend/logout/refresh', {
+    method: 'POST',
+    body: JSON.stringify(refreshToken),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'Fetch',
+      'Authorization': 'Bearer ' + refreshToken.jti
+      //'Access-Control-Allow-Origin': 'http://localhost:8080'
+    },
+    mode: 'cors'
+  })
+  .then(response => response.json())
+  .then(data => {
+    for (var key in data) {
+      if (key === 'error') {
+        this.ea.publish('notification-data', data.error)
+      }
+    }
+  });
+
+  httpClient.fetch('http://84.255.193.232/backend/logout/access', {
+    method: 'POST',
+    body: JSON.stringify(accessToken),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'Fetch',
+      'Authorization': 'Bearer ' + accessToken.jti
+      //'Access-Control-Allow-Origin': 'http://localhost:8080'
+    },
+    mode: 'cors'
+  })
+  .then(response => response.json())
+  .then(data => {
+    for (var key in data) {
+      if (key === 'error') {
+        this.ea.publish('notification-data', data.error)
+      }
+    }
+  });
+  return this.authService.logout();
   }
 
 }

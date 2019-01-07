@@ -1,3 +1,4 @@
+import {AuthService} from 'aurelia-authentication';
 import {inject, NewInstance} from 'aurelia-dependency-injection';
 import {ValidationRules, ValidationController} from 'aurelia-validation';
 import 'fetch';
@@ -5,8 +6,8 @@ import {HttpClient, json} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 
 let httpClient = new HttpClient();
-@inject(NewInstance.of(ValidationController), EventAggregator)
-export class Register {
+@inject(NewInstance.of(ValidationController), EventAggregator, AuthService)
+export class Registration {
   controller;
   message = '';
   firstName = 'Ales';
@@ -17,9 +18,10 @@ export class Register {
   confirmPassword = 'testisis';
   passwordType = 'password';
 
-  constructor(controller, eventAggregator) {
+  constructor(controller, eventAggregator, authService) {
     this.controller = controller;
     this.ea = eventAggregator;
+    this.authService = authService;
     this.subscribe();
 
     ValidationRules.customRule(
@@ -53,8 +55,10 @@ export class Register {
         .satisfiesRule('matchesProperty', 'password')
       .on(this)
     }
+
     subscribe() {};
-    register() {
+
+/*     register() {
       this.controller.validate()
       .then(result  => {
         if (result.valid) {
@@ -92,7 +96,44 @@ export class Register {
         })
       };
     });
-  };
+  }; */
+
+
+  register() {
+    this.controller.validate()
+      .then(result  => {
+        if (result.valid) {
+          return this.authService.signup({
+            firstName: this.firstName,
+            lastName: this.lastName,
+            userName: this.userName,
+            email: this.email,
+            password: this.password,
+            confirmPassword: this.confirmPassword
+          })
+        }
+      })
+       .then(response => {
+        for (var key in response) {
+          if (key === 'error') {
+            console.log(response.error)
+            this.ea.publish('notification-data', response.error)
+          }
+/*           if (key === 'message') {
+            this.ea.publish('user-data-update', {
+              userName: response.message
+            })
+          } */
+        }
+      })
+      .catch(err => {
+        console.log(err.responseObject)
+        this.ea.publish('user-data-update', {
+          userName: null
+        });
+        this.ea.publish('notification-data', err.responseObject.error)
+      });
+    }
 
   revealPassword() {
     if (this.passwordType === 'password') {

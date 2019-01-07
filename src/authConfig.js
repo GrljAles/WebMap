@@ -8,14 +8,14 @@ export default {
   // The SPA url to which the user is redirected after a successful login
   loginRedirect : '#/basemap',
   // The SPA url to which the user is redirected after a successful logout
-  logoutRedirect : '#/',
+  logoutRedirect : '#/login',
 
   // The SPA route used when an unauthenticated user tries to access an SPA page that requires authentication
   loginRoute : '#/',
   // Whether or not an authentication token is provided in the response to a successful signup
-  loginOnSignup : true,
+  loginOnSignup : false,
   // If loginOnSignup == false: The SPA url to which the user is redirected after a successful signup (else loginRedirect is used)
-  //signupRedirect : '#/login',
+  signupRedirect : '#/confirmemail',
   // reload page when token expires. 0 = don't reload (default), 1 = do reload page
   expiredReload : 1,
   // reload page when storage changed aka login/logout in other tabs/windows. 0 = don't reload (default), 1 = do reload page
@@ -30,9 +30,9 @@ export default {
   // The API endpoint to which login requests are sent
   loginUrl : '/login',
   // The API endpoint to which logout requests are sent (not needed for jwt)
-  //logoutUrl : null,
+  logoutUrl : '#/',
   // The HTTP method used for 'logout' requests (Options: 'get' or 'post')
-  //logoutMethod : 'get',
+  logoutMethod : 'post',
   // The API endpoint to which signup requests are sent
   signupUrl : '/registration',
   // The API endpoint used in profile requests (inc. `find/get` and `update`)
@@ -59,6 +59,8 @@ export default {
 // Refresh Token Options
 // =====================
 
+  // The API endpoint to which refreshToken requests are sent. null = loginUrl
+  refreshTokenUrl : '/token/refresh',
   // Option to turn refresh tokens On/Off
   useRefreshToken : true,
   // The option to enable/disable the automatic refresh of Auth tokens using Refresh Tokens
@@ -85,7 +87,7 @@ export default {
 
   // Whether to enable the fetch interceptor which automatically adds the authentication headers
   // (or not... e.g. if using a session based API or you want to override the default behaviour)
-  httpInterceptor : true,
+  httpInterceptor : false,
   // For OAuth only: Tell the API whether or not to include token cookies in the response (for session based APIs)
   //withCredentials : true;
   // Controls how the popup is shown for different devices (Options: 'browser' or 'mobile')
@@ -111,7 +113,7 @@ export default {
 
   // Default headers for login and token-update endpoint
   defaultHeadersForTokenRequests : {
-    //'Accept': 'application/json',
+    'Accept': 'application/json',
     'Content-Type': 'application/json'
   }
 };

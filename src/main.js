@@ -17,7 +17,10 @@ export function configure(aurelia) {
     .plugin(PLATFORM.moduleName('aurelia-api'), config => {
       // Register hosts
       config.registerEndpoint('backend', 'http://84.255.193.232/backend');
-      config.registerEndpoint('basemap','http://84.255.193.232/basemap')
+      config.registerEndpoint('basemap','http://84.255.193.232/basemap');
+      config.registerEndpoint('login','http://84.255.193.232/backend/login');
+      config.registerEndpoint('registration','http://84.255.193.232/backend/registration');
+      config.registerEndpoint('confirmemail','http://84.255.193.232/confirmemail');
     })
     /* configure aurelia-authentication */
     .plugin(PLATFORM.moduleName('aurelia-authentication'), config => {

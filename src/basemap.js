@@ -4,8 +4,24 @@ import View from 'ol/View.js';
 import TileLayer from 'ol/layer/Tile.js';
 import XYZ from 'ol/source/XYZ.js';
 import Control from 'ol/control/Control.js'
+import {EventAggregator} from 'aurelia-event-aggregator';
+
+@inject(EventAggregator)
 export class BaseMap {
-  constructor() {}
+  constructor(eventAggregator) {
+    this.ea = eventAggregator;
+    this.userNameDisplay = null
+    this.subscribe();
+  }
+
+  subscribe() {
+    this.ea.subscribe('user-data-update', (data) => {
+      this.userNameDisplay = data.userName;
+    });
+    this.ea.subscribe('authentication-change', authenticated => {
+      this.authenticated = authenticated
+    });
+  }
 
   attached() {
     this.basemap = new Map({

@@ -26,9 +26,9 @@
       </div>
     </div>
   </div> -->
-  <md-sidenav view-model.ref="sideNavRight" edge="right">
+  <md-sidenav view-model.ref="sideNavRight" edge="right" close-on-click="true">
       <ul>
-        <li md-waves click.trigger="logout()">Logout</li>
+        <li md-waves class="sidenav-close" click.trigger="logout()">Logout</li>
         <li md-waves>My profile</li>
         <li md-waves>My Settings</li>
         <li md-waves>Help</li>
