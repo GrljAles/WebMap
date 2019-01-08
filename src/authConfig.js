@@ -8,7 +8,7 @@ export default {
   // The SPA url to which the user is redirected after a successful login
   loginRedirect : '#/basemap',
   // The SPA url to which the user is redirected after a successful logout
-  logoutRedirect : '#/login',
+  logoutRedirect : '#/',
 
   // The SPA route used when an unauthenticated user tries to access an SPA page that requires authentication
   loginRoute : '#/',
@@ -30,9 +30,9 @@ export default {
   // The API endpoint to which login requests are sent
   loginUrl : '/login',
   // The API endpoint to which logout requests are sent (not needed for jwt)
-  logoutUrl : '#/',
+  //logoutUrl : '/logout/access',
   // The HTTP method used for 'logout' requests (Options: 'get' or 'post')
-  logoutMethod : 'post',
+  //logoutMethod : 'post',
   // The API endpoint to which signup requests are sent
   signupUrl : '/registration',
   // The API endpoint used in profile requests (inc. `find/get` and `update`)

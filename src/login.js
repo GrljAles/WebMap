@@ -60,11 +60,11 @@ export class Login {
 
     })
     .catch(err => {
-      console.log(err)
+      console.log(err.responseObject.error)
       this.ea.publish('user-data-update', {
         userName: null
       });
-      this.ea.publish('notification-data', err)
+      this.ea.publish('notification-data', err.responseObject.error)
     });
   };
 
