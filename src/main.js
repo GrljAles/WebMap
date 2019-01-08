@@ -16,10 +16,11 @@ export function configure(aurelia) {
     .plugin(PLATFORM.moduleName('aurelia-validation'))
     .plugin(PLATFORM.moduleName('aurelia-api'), config => {
       // Register hosts
-      config.registerEndpoint('api', '/mypath');
-      config.registerEndpoint('auth');
-      config.registerEndpoint('protected-api');
-      config.registerEndpoint('other-api', '/otherpath', {headers: {'Content-Type': 'x-www-form-urlencoded'}});
+      config.registerEndpoint('backend', 'http://84.255.193.232/backend');
+      config.registerEndpoint('basemap','http://84.255.193.232/basemap');
+      config.registerEndpoint('login','http://84.255.193.232/backend/login');
+      config.registerEndpoint('registration','http://84.255.193.232/backend/registration');
+      config.registerEndpoint('confirmemail','http://84.255.193.232/confirmemail');
     })
     /* configure aurelia-authentication */
     .plugin(PLATFORM.moduleName('aurelia-authentication'), config => {
