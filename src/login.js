@@ -1,10 +1,8 @@
 import {AuthService} from 'aurelia-authentication';
 import {inject, computedFrom} from 'aurelia-framework';
 import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
-import 'fetch';
-import {HttpClient, json} from 'aurelia-fetch-client';
-import authConfig from 'authConfig';
-import { Router } from 'aurelia-router';
+import {HttpClient} from 'aurelia-fetch-client';
+import {Router} from 'aurelia-router';
 import {EventAggregator} from 'aurelia-event-aggregator';
 
 let httpClient = new HttpClient();
@@ -12,9 +10,6 @@ let httpClient = new HttpClient();
 
 export class Login {
   controller = null;
-  userName = 'Hans';
-  password = 'testisis';
-  passwordType = 'password';
 
   constructor(authService, controllerFactory, router, eventAggregator) {
     this.ea = eventAggregator;
@@ -25,6 +20,10 @@ export class Login {
     this.authService = authService;    
     this.providers = [];
     this.subscribe();
+
+    this.userName = 'Hans';
+    this.password = 'testisis';
+    this.passwordType = 'password';
 
     ValidationRules
     .ensure('userName')
@@ -55,11 +54,11 @@ export class Login {
     .then(response => {
       console.log(response)
       this.ea.publish('user-data-update', {
-        userName: response.message
+        userName: response.userName
       })
-
     })
     .catch(err => {
+      console.log(err)
       console.log(err.responseObject.error)
       this.ea.publish('user-data-update', {
         userName: null
@@ -77,6 +76,23 @@ export class Login {
     };
   };
 
+  requestResetPassword(){
+    var resetPasswordFor = {userName: this.userName}
+    httpClient.fetch('http://84.255.193.232/backend/requestresetpassword', {
+    method: 'POST',
+    body: JSON.stringify(resetPasswordFor),
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'Fetch'
+    },
+    mode: 'cors'
+  })
+  .then(response => response.json())
+  .then(data => this.router.navigateToRoute(data.redirect))
+  //.then(data => console.log(data))
+}
+
   // use authService.logout to delete stored tokens
   // if you are using JWTs, authService.logout() will be called automatically,
   // when the token expires. The expiredRedirect setting in your authConfig
@@ -86,7 +102,7 @@ export class Login {
       jti: this.authService.getRefreshToken()
     };
     var accessToken = {
-      jti: this. authService.getAccessToken()
+      jti: this.authService.getAccessToken()
     };
 
     httpClient.fetch('http://84.255.193.232/backend/logout/refresh', {

@@ -113,18 +113,8 @@ export class Registration {
           })
         }
       })
-       .then(response => {
-        for (var key in response) {
-          if (key === 'error') {
-            console.log(response.error)
-            this.ea.publish('notification-data', response.error)
-          }
-/*           if (key === 'message') {
-            this.ea.publish('user-data-update', {
-              userName: response.message
-            })
-          } */
-        }
+      .then(response => {
+         this.ea.publish('user-management-notification', response.message)
       })
       .catch(err => {
         console.log(err.responseObject)

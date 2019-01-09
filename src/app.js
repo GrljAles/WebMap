@@ -53,10 +53,22 @@ export class App {
         auth: true
       },
       {
-        route: 'confirmemail',
-        moduleId: PLATFORM.moduleName('./comfirmemail/confirmemail'),
-        title: 'Email Address Confirmation',
-        name:'confirmemail'
+        route: 'confirmemailnotification',
+        moduleId: PLATFORM.moduleName('./usermamagementredirect/confirmemailnotification'),
+        title: 'Confirm Email',
+        name:'confirmemailnotification'
+      },
+      {
+        route: 'resetpasswordnotification',
+        moduleId: PLATFORM.moduleName('./usermamagementredirect/resetpasswordnotification'),
+        title: 'Password Reset',
+        name:'resetpasswordnotification'
+      },
+      {
+        route: 'resetpassword',
+        moduleId: PLATFORM.moduleName('./resetpassword/resetpassword'),
+        title: 'Password Reset',
+        name:'resetpassword'
       }
     ]);
     this.router = router;

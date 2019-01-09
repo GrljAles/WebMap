@@ -20,7 +20,8 @@ export function configure(aurelia) {
       config.registerEndpoint('basemap','http://84.255.193.232/basemap');
       config.registerEndpoint('login','http://84.255.193.232/backend/login');
       config.registerEndpoint('registration','http://84.255.193.232/backend/registration');
-      config.registerEndpoint('confirmemail','http://84.255.193.232/confirmemail');
+      config.registerEndpoint('confirmemailnotification','http://84.255.193.232/confirmemailnotification');
+      config.registerEndpoint('resetpasswordnotification','http://84.255.193.232/resetpasswordnotification');
     })
     /* configure aurelia-authentication */
     .plugin(PLATFORM.moduleName('aurelia-authentication'), config => {

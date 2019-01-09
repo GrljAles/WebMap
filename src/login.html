@@ -1,5 +1,5 @@
 <template>
-  <form autocomplete="off" role = "form" submit.delegate = "login()">
+  <form autocomplete="off" role = "form" submit.delegate = "login()" enctype="multipart/form-data">
     <div class="row align-center">
       <div class="col s12 m4 l2"><p></p></div>
       <div class="col s12 m4 l8"><h2>Login</h2></div>
@@ -9,7 +9,7 @@
       <div class="col s12 m4 l2"><p></p></div>
       <div class="col s12 m4 l8">
         <div validation-errors.bind="userNameErrors">
-          <input id="userName" class="align-center" type="text" value.bind = "userName & validateOnChangeOrBlur"/>
+          <input id="userName" name="userName" class="align-center" type="text" value.bind = "userName & validateOnChangeOrBlur"/>
           <h5>Username <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of userNameErrors">${errorInfo.error.message}</span></h5>
           </div>
       </div>
@@ -19,7 +19,7 @@
       <div class="col s12 m4 l2"><p></p></div>
       <div class="col s12 m4 l8">
         <div validation-errors.bind="passwordErrors">
-          <input id="password" class="align-center"type.bind="passwordType" value.bind = "password & validateOnChangeOrBlur"/>
+          <input id="password" name="passeord" class="align-center"type.bind="passwordType" value.bind = "password & validateOnChangeOrBlur"/>
           <h5>Password <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of passwordErrors">${errorInfo.error.message}</span></h5>
         </div>
       </div>
@@ -49,12 +49,12 @@
   </div>
   <div class="row align-center">
     <div class="col s12 m4 l2"><p></p></div>
-    <div class="col s12 m4 l8"> <a class="grow btn teal darken-4 waves-effect waves-light transparent-title" name="passreset" route-href="route: basemap;">I forgot my password</a></div>
+    <div class="col s12 m4 l8"> <a class="grow btn teal darken-4 waves-effect waves-light transparent-title" name="passreset" click.trigger="requestResetPassword()">I forgot my password</a></div>
     <div class="col s12 m4 l2"><p></p></div>
   </div>
   <div class="row align-center">
     <div class="col s12 m4 l2"><p></p></div>
-    <div class="col s12 m4 l8"> <a class="grow btn teal darken-4 waves-effect waves-light transparent-title" name="facebook" route-href="route: confirmemail;">Use Facebook</a></div>
+    <div class="col s12 m4 l8"> <a class="grow btn teal darken-4 waves-effect waves-light transparent-title" name="facebook" route-href="route: resetpasswordnotification">Use Facebook</a></div>
     <div class="col s12 m4 l2"><p></p></div>
   </div>
 </template>
