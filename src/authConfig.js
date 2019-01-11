@@ -15,7 +15,7 @@ export default {
   // Whether or not an authentication token is provided in the response to a successful signup
   loginOnSignup : false,
   // If loginOnSignup == false: The SPA url to which the user is redirected after a successful signup (else loginRedirect is used)
-  signupRedirect : '#/confirmemailnotification',
+  signupRedirect : '#/notificationredirect',
   // reload page when token expires. 0 = don't reload (default), 1 = do reload page
   expiredReload : 1,
   // reload page when storage changed aka login/logout in other tabs/windows. 0 = don't reload (default), 1 = do reload page

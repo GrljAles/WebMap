@@ -69,6 +69,12 @@ export class App {
         moduleId: PLATFORM.moduleName('./resetpassword/resetpassword'),
         title: 'Password Reset',
         name:'resetpassword'
+      },
+      {
+        route: 'notificationredirect',
+        moduleId: PLATFORM.moduleName('./usermamagementredirect/notificationredirect'),
+        title: 'Notice',
+        name:'notificationredirect'
       }
     ]);
     this.router = router;
