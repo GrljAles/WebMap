@@ -47,25 +47,29 @@ export class Login {
   }
 
   login() {
-    return this.authService.login({
-      userName: this.userName,
-      password: this.password,
-    })
-    .then(response => {
-      console.log(response)
-      this.ea.publish('user-data-update', {
-        userName: response.userName
+    this.controller.validate()
+      .then(result  => {
+        if (result.valid) {
+          return this.authService.login({
+            userName: this.userName,
+            password: this.password,
+          })
+          .then(response => {
+            console.log(response)
+            this.ea.publish('user-data-update', {
+              userName: response.userName
+            })
+          })
+          .catch(err => {
+            console.log(err)
+            console.log(err.responseObject.message)
+            this.ea.publish('user-data-update', {userName: null});
+            window.setTimeout(() => this.ea.publish('user-management-notification', err.responseObject.message), 500);
+            this.router.navigateToRoute(err.responseObject.redirect)
+          });
+        };
       })
-    })
-    .catch(err => {
-      console.log(err)
-      console.log(err.responseObject.error)
-      this.ea.publish('user-data-update', {
-        userName: null
-      });
-      this.ea.publish('notification-data', err.responseObject.error)
-    });
-  };
+    }
 
   revealPassword() {
     if (this.passwordType === 'password') {
@@ -89,8 +93,10 @@ export class Login {
     mode: 'cors'
   })
   .then(response => response.json())
-  .then(data => this.router.navigateToRoute(data.redirect))
-  //.then(data => console.log(data))
+  .then(data => {
+    window.setTimeout(() => this.ea.publish('user-management-notification', data.message), 500);
+    this.router.navigateToRoute(data.redirect)
+  })
 }
 
   // use authService.logout to delete stored tokens
@@ -117,14 +123,6 @@ export class Login {
     },
     mode: 'cors'
   })
-  .then(response => response.json())
-  .then(data => {
-    for (var key in data) {
-      if (key === 'error') {
-        this.ea.publish('notification-data', data.error)
-      }
-    }
-  });
 
   httpClient.fetch('http://84.255.193.232/backend/logout/access', {
     method: 'POST',
@@ -138,15 +136,7 @@ export class Login {
     },
     mode: 'cors'
   })
-  .then(response => response.json())
-  .then(data => {
-    for (var key in data) {
-      if (key === 'error') {
-        this.ea.publish('notification-data', data.error)
-      }
-    }
-  });
   return this.authService.logout();
-  }
+}
 
 }

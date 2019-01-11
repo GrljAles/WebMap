@@ -20,9 +20,9 @@ export class Resetpassword {
     this.subscribe();
 
     ValidationRules
-    .ensure('password')
-      .required().withMessage('is also required.')
-      .minLength(8).withMessage('should be at least 8 characters long.')
+    .ensure(a => a.newPassword)
+    .required().withMessage('was not provided.')
+    .minLength(8).withMessage('should be at least 8 characters long.')
     .on(this)
   };
 
@@ -36,22 +36,28 @@ export class Resetpassword {
       password: this.newPassword,
       token: this.resetToken
     };
-    httpClient.fetch('http://84.255.193.232/backend/resetpassword/' + this.resetToken, {
-    method: 'POST',
-    body: JSON.stringify(this.resetPassword),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'Fetch'
-    },
-    mode: 'cors'
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log(data)
-    this.router.navigateToRoute(data.redirect)
-  })
-}
+    this.controller.validate()
+    .then(result  => {
+        if (result.valid) {
+          httpClient.fetch('http://84.255.193.232/backend/resetpassword/' + this.resetToken, {
+          method: 'POST',
+          body: JSON.stringify(this.resetPassword),
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'Fetch'
+          },
+          mode: 'cors'
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data)
+          this.ea.publish('user-management-notification', data.messsage)
+          this.router.navigateToRoute(data.redirect)
+        })
+      }
+    })
+  }
 
   revealPassword() {
     if (this.passwordType === 'password') {

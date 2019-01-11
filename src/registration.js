@@ -111,18 +111,17 @@ export class Registration {
             password: this.password,
             confirmPassword: this.confirmPassword
           })
+          .then(response => {
+            if (response.message) {
+              window.setTimeout(() => this.ea.publish('user-management-notification', response.message), 500);
+            }
+          })
+          .catch(err => {
+            this.ea.publish('user-data-update', {userName: null});
+            window.setTimeout(() => this.ea.publish('user-management-notification', '<h5>There was a problem with your request.</h5>'), 500);
+          });
         }
       })
-      .then(response => {
-         this.ea.publish('user-management-notification', response.message)
-      })
-      .catch(err => {
-        console.log(err.responseObject)
-        this.ea.publish('user-data-update', {
-          userName: null
-        });
-        this.ea.publish('notification-data', err.responseObject.error)
-      });
     }
 
   revealPassword() {
