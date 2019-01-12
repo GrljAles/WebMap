@@ -37,32 +37,36 @@ export class ChangeEmail {
   }
 
   updateEmail() {
-    this.emailUpdate = {
-      newEmail: this.newEmail,
-      access_token: this.authService.getAccessToken()
-    };
-    this.controller.validate()
-    .then(result  => {
-        if (result.valid) {
-          httpClient.fetch('http://84.255.193.232/backend/updateemail', {
-          method: 'POST',
-          body: JSON.stringify(this.emailUpdate),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'Fetch',
-            'Authorization': 'Bearer ' + this.authService.getAccessToken()
-          },
-          mode: 'cors'
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log(data)
-          window.setTimeout(() => this.ea.publish('user-management-notification', data.message), 500);
-          this.router.navigateToRoute(data.redirect)
-        })
-      }
-    })
+    if (this.authService.authenticated) {
+      this.emailUpdate = {
+        newEmail: this.newEmail,
+      };
+      this.controller.validate()
+      .then(result  => {
+          if (result.valid) {
+            httpClient.fetch('http://84.255.193.232/backend/updateemail', {
+            method: 'POST',
+            body: JSON.stringify(this.emailUpdate),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'Fetch',
+              'Authorization': 'Bearer ' + this.authService.getAccessToken()
+            },
+            mode: 'cors'
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data)
+            window.setTimeout(() => this.ea.publish('user-management-notification', data.message), 500);
+            this.router.navigateToRoute(data.redirect)
+          })
+        }
+      })
+    }
+    else {
+      this.router.navigateToRoute('login')
+    }
   }
 
 }

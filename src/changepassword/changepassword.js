@@ -1,12 +1,13 @@
 import {AuthService} from 'aurelia-authentication';
 import {inject, NewInstance} from 'aurelia-dependency-injection';
+import {computedFrom} from 'aurelia-framework';
 import {ValidationRules, ValidationController} from 'aurelia-validation';
-import 'fetch';
 import {HttpClient, json} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
+import {Router} from 'aurelia-router';
 
 let httpClient = new HttpClient();
-@inject(NewInstance.of(ValidationController), EventAggregator, AuthService)
+@inject(NewInstance.of(ValidationController), EventAggregator, AuthService, Router)
 
 export class Resetpassword {
   controller = null;
@@ -15,10 +16,11 @@ export class Resetpassword {
   newPasswordConfirm = null;
   passwordType = 'password';
 
-  constructor(controller, eventAggregator, authService) {
+  constructor(controller, eventAggregator, authService, router) {
     this.controller = controller;
     this.ea = eventAggregator;
     this.authService = authService;
+    this.router = router;
     this.subscribe();
 
     ValidationRules.customRule(
@@ -49,32 +51,43 @@ export class Resetpassword {
 
   subscribe() {}
 
+  @computedFrom('authService.authenticated')
+  get authenticated() {
+    return this.authService.authenticated;
+  }
+
   updatePassword() {
-    this.passwordUpdate = {
-      newPassword: this.newPassword,
-      access_token: this.authService.getAccessToken()
-    };
-    this.controller.validate()
-    .then(result  => {
-        if (result.valid) {
-          httpClient.fetch('http://84.255.193.232/backend/updateemail', {
-          method: 'POST',
-          body: JSON.stringify(this.passwordUpdate),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'Fetch'
-          },
-          mode: 'cors'
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log(data)
-          this.ea.publish('user-management-notification', data.messsage)
-          this.router.navigateToRoute(data.redirect)
-        })
-      }
-    })
+    if (this.authService.authenticated) {
+      this.passwordUpdate = {
+        oldPassword: this.oldPassword,
+        newPassword: this.newPassword,
+      };
+      this.controller.validate()
+      .then(result  => {
+          if (result.valid) {
+            httpClient.fetch('http://84.255.193.232/backend/updatepassword', {
+            method: 'POST',
+            body: JSON.stringify(this.passwordUpdate),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'Fetch',
+              'Authorization': 'Bearer ' + this.authService.getAccessToken()
+            },
+            mode: 'cors'
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data)
+            window.setTimeout(() => this.ea.publish('user-management-notification', data.message), 500);
+            this.router.navigateToRoute(data.redirect)
+          })
+        }
+      })
+    }
+    else {
+      this.router.navigateToRoute('login')
+    }
   }
 
   revealPassword() {
