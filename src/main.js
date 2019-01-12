@@ -21,8 +21,9 @@ export function configure(aurelia) {
       config.registerEndpoint('login','http://84.255.193.232/backend/login');
       config.registerEndpoint('registration','http://84.255.193.232/backend/registration');
       config.registerEndpoint('confirmemailnotification','http://84.255.193.232/confirmemailnotification');
-      config.registerEndpoint('resetpasswordnotification','http://84.255.193.232/resetpasswordnotification');
       config.registerEndpoint('notificationredirect','http://84.255.193.232/redirectnotification');
+      config.registerEndpoint('changeemail','http://84.255.193.232/changeemail');
+      config.registerEndpoint('changeemail','http://84.255.193.232/changepassword');
     })
     /* configure aurelia-authentication */
     .plugin(PLATFORM.moduleName('aurelia-authentication'), config => {

@@ -118,7 +118,7 @@ export class Login {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       'X-Requested-With': 'Fetch',
-      'Authorization': 'Bearer ' + refreshToken.jti
+      'Authorization': 'Bearer ' + this.authService.getRefreshToken()
       //'Access-Control-Allow-Origin': 'http://localhost:8080'
     },
     mode: 'cors'
@@ -131,7 +131,7 @@ export class Login {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       'X-Requested-With': 'Fetch',
-      'Authorization': 'Bearer ' + accessToken.jti
+      'Authorization': 'Bearer ' + this.authService.getAccessToken()
       //'Access-Control-Allow-Origin': 'http://localhost:8080'
     },
     mode: 'cors'

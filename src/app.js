@@ -25,6 +25,12 @@ export class App {
   logout() {
     this.ea.publish('logout', true)
   }
+  changeEmailNavigate() {
+    this.router.navigate('changeemail')
+  }
+  changePasswordNavigate() {
+    this.router.navigate('changepassword')
+  }
 
   configureRouter(config, router){
     config.title = 'WebMapProject';
@@ -59,12 +65,6 @@ export class App {
         name:'confirmemailnotification'
       },
       {
-        route: 'resetpasswordnotification',
-        moduleId: PLATFORM.moduleName('./usermamagementredirect/resetpasswordnotification'),
-        title: 'Password Reset',
-        name:'resetpasswordnotification'
-      },
-      {
         route: 'resetpassword',
         moduleId: PLATFORM.moduleName('./resetpassword/resetpassword'),
         title: 'Password Reset',
@@ -75,6 +75,20 @@ export class App {
         moduleId: PLATFORM.moduleName('./usermamagementredirect/notificationredirect'),
         title: 'Notice',
         name:'notificationredirect'
+      },
+      {
+        route: 'changeemail',
+        moduleId: PLATFORM.moduleName('./changeemail/changeemail'),
+        title: 'Update Email',
+        name:'changeemail',
+        auth: true
+      },
+      {
+        route: 'changepassword',
+        moduleId: PLATFORM.moduleName('./changepassword/changepassword'),
+        title: 'Update Password',
+        name:'changepassword',
+        auth: true
       }
     ]);
     this.router = router;
