@@ -42,14 +42,12 @@ export class App {
         moduleId: PLATFORM.moduleName('login'),
         title: 'Login',
         name:'login',
-
       },
       {
         route: 'registration',
         moduleId: PLATFORM.moduleName('registration'),
         title: 'Registration',
         name:'registration',
-
       },
       {
         route: 'basemap',

@@ -79,7 +79,7 @@ export class Resetpassword {
           .then(response => response.json())
           .then(data => {
             console.log(data)
-            window.setTimeout(() => this.ea.publish('user-management-notification', data.message), 500);
+            window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
             this.router.navigateToRoute(data.redirect)
           })
         }

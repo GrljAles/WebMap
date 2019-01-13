@@ -7,16 +7,12 @@ import {EventAggregator} from 'aurelia-event-aggregator';
 
 let httpClient = new HttpClient();
 @inject(AuthService, ValidationControllerFactory, Router, EventAggregator)
-
 export class Login {
   controller = null;
-
   constructor(authService, controllerFactory, router, eventAggregator) {
     this.ea = eventAggregator;
     this.router = router;
-
     this.controller = controllerFactory.createForCurrentScope();
-
     this.authService = authService;    
     this.providers = [];
     this.subscribe();
@@ -61,10 +57,11 @@ export class Login {
             })
           })
           .catch(err => {
-            console.log(err)
-            console.log(err.responseObject.message)
+
             this.ea.publish('user-data-update', {userName: null});
-            window.setTimeout(() => this.ea.publish('user-management-notification', err.responseObject.message), 500);
+            this.ea.publish('user-management-ok-button', err.responseObject.redirectbutton)
+            window.setTimeout(() => this.ea.publish('user-management-notification', err.responseObject), 500);
+
             this.router.navigateToRoute(err.responseObject.redirect)
           });
         };
@@ -94,7 +91,7 @@ export class Login {
   })
   .then(response => response.json())
   .then(data => {
-    window.setTimeout(() => this.ea.publish('user-management-notification', data.message), 500);
+    window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
     this.router.navigateToRoute(data.redirect)
   })
 }
