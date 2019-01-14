@@ -1,16 +1,16 @@
 <template>
   <div class="row">
     <ul class="collection with-header col l3 m3 s3 layer-list">
-      <li class="collection-header"><h4>Layers</h4></li>
-      <li class="collection-item">
+      <li class="collection-header teal darken-3"><h4>Layers</h4></li>
+      <li class="collection-item teal darken-4" repeat.for="layer of layers">
         <div class="collapsible-accordion">
           <ul md-collapsible="accordion: false;">
             <li>
-              <div class="collapsible-header">
+              <div class="collapsible-header teal darken-4">
                 <p>
                   <label>
                     <input type="checkbox" />
-                    <span>Red</span>
+                    <span class="white-text">Red</span>
                   </label>
                 </p>
               </div>
@@ -31,5 +31,5 @@
       </li>
     </ul>
     <div id="basemap" class="map col l9 m9 s9"></div>
-  </div>
+    </div>
 </template>

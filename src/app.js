@@ -10,7 +10,7 @@ export class App {
     this.ea = eventAggregator;
     this.sideNav = sideNav;
     this.authenticated = false;
-    this.userNameDisplay = null
+    this.userNameDisplay = null;
     this.subscribe();
   }
 
@@ -90,6 +90,5 @@ export class App {
       }
     ]);
     this.router = router;
-
   }
 }

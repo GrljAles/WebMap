@@ -32,6 +32,7 @@ body {
 
 .row-top {
   margin: 0%;
+  height: 10vh;
 }
 nav {
   height: 10vh;
@@ -53,6 +54,7 @@ nav {
   border: none;
   height:90vh;
   overflow:auto;
+  background: #004d40
 }
 
 .confirm-email-text {
@@ -70,4 +72,22 @@ i.icon-black {
 }
 .sidenav {
   background: #004d40
+}
+.collapsible-header {
+  padding: 0rem 1rem;
+  border-bottom: none;
+}
+.collection.with-header .collection-item {
+  padding-left: 0rem;
+  padding-right: 0rem;
+  border-bottom: none;
+}
+.collapsible {
+  border-top: 0px;
+  border-right: 0px;
+  border-left: 0px;
+  margin: 0rem 0 0rem 0;
+}
+.collapsible-body {
+border-bottom: none;
 }

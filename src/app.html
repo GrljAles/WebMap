@@ -2,34 +2,18 @@
   <require from="materialize-css/dist/css/materialize.css"></require>
   <require from="./styles.css"></require>
   <nav>
-      <div class="nav-wrapper teal darken-4">
-        <a href="#" class="brand-logo">WebMap Project</a>
-        <ul class="right">
-          <li><a md-sidenav-collapse="ref.bind: sideNavRight;" if.bind="authenticated">Tools</a></li>
-          <li><a md-sidenav-collapse="ref.bind: sideNavRight;" if.bind="authenticated">Layers</a></li>
-          <li><a md-sidenav-collapse="ref.bind: sideNavRight;" if.bind="authenticated">${userNameDisplay}</a></li>
-        </ul>
-      </div>
-    </nav>
-<!--   <div class="row row-top">
-     <div class="col l12 teal darken-4 transparent-title valign-wrapper">
-      <h1 style.bind="topRowStyle">WebMap Project</h1>
-      <div class="col l1 m1 s1 grow" if.bind="authenticated">
-        <a md-sidenav-collapse="ref.bind: sideNavRight;">
-          <div class="card teal darken-4">
-            <div class="card-image">
-              <img src="./resources/icons/icon.svg">
-              <span class="card-title pointer">${userNameDisplay}</span>
-            </div>
-          </div>
-        </a>
-      </div>
+    <div class="nav-wrapper teal darken-4">
+      <a href="#" class="brand-logo">WebMap Project</a>
+      <ul class="right">
+<!--         <li><a md-sidenav-collapse="ref.bind: sideNavRight;" if.bind="authenticated">Tools</a></li>
+        <li><a click.trigger="layerMenuToggle()" if.bind="authenticated">Layers</a></li> -->
+        <li><a md-sidenav-collapse="ref.bind: sideNavRight;" if.bind="authenticated">${userNameDisplay}</a></li>
+      </ul>
     </div>
-  </div> -->
+  </nav>
   <md-sidenav class="teal darken-1" view-model.ref="sideNavRight" edge="right" close-on-click="true">
       <ul class="teal darken-4 white-text">
         <li md-waves class="sidenav-close" click.trigger="logout()">Logout</li>
-        
         <div class="collapsible-accordion">
           <ul md-collapsible="accordion: false;">
             <li>
@@ -43,11 +27,8 @@
             </li>
           </ul>
         </div>
-        
         <li md-waves>Help</li>
       </ul>
     </md-sidenav>
-<!--   <require from="./sideNav/sideNav.html"></require>
-  <sideNav></sideNav> -->
   <router-view></router-view>
 </template>
