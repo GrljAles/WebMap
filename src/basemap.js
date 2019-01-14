@@ -10,7 +10,8 @@ import {EventAggregator} from 'aurelia-event-aggregator';
 export class BaseMap {
   constructor(eventAggregator) {
     this.ea = eventAggregator;
-    this.userNameDisplay = null
+    this.userNameDisplay = null;
+    this.layers = [1,2, 3];
     this.subscribe();
   }
 
