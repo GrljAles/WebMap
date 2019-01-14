@@ -5,14 +5,17 @@ import {EventAggregator} from 'aurelia-event-aggregator';
 export class Confirmemail {
   constructor(eventAggregator) {
     this.ea = eventAggregator;
+
+    this.userManagementNotification = null;
+    this.okButtonRoute = 'login'
     this.subscribe();
   }
 
   subscribe(){
     this.ea.subscribe('user-management-notification', (notification) => {
-      console.log(this.userManagementNotification)
-      this.userManagementNotification = notification;
-      console.log(this.userManagementNotification)
+      this.userManagementNotification = notification.message;
+      this.okButtonRoute = notification.backbutton
+      console.log(this.okButtonRoute)
     });
   }
 }

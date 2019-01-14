@@ -62,3 +62,12 @@ nav {
 i.icon-black {
   color: black;
 }
+.no-padding {
+  padding: 0;
+}
+.collapsible-inner {
+  padding-left: 5%;
+}
+.sidenav {
+  background: #004d40
+}

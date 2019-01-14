@@ -26,11 +26,24 @@
       </div>
     </div>
   </div> -->
-  <md-sidenav view-model.ref="sideNavRight" edge="right" close-on-click="true">
-      <ul>
+  <md-sidenav class="teal darken-1" view-model.ref="sideNavRight" edge="right" close-on-click="true">
+      <ul class="teal darken-4 white-text">
         <li md-waves class="sidenav-close" click.trigger="logout()">Logout</li>
-        <li md-waves>My profile</li>
-        <li md-waves>My Settings</li>
+        
+        <div class="collapsible-accordion">
+          <ul md-collapsible="accordion: false;">
+            <li>
+              <ul class="collapsible-header no-padding">
+                <li md-waves>Settings</li>
+              </ul>
+              <ul class="collapsible-body teal darken-2">
+                <li md-waves class="sidenav-close" route-href="route: changeemail;" click.trigger="changeEmailNavigate()">Change email address</li>
+                <li md-waves class="sidenav-close" route-href="route: changepassword;"click.trigger="changePasswordNavigate()">Change password</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        
         <li md-waves>Help</li>
       </ul>
     </md-sidenav>

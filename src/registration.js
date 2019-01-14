@@ -90,7 +90,7 @@ export class Registration {
               this.ea.publish('notification-data', data.error)
             }
             if (key === 'message') {
-              this.ea.publish('notification-data', data.message)
+              this.ea.publish('notification-data', data)
             }
           }
         })
@@ -112,8 +112,8 @@ export class Registration {
             confirmPassword: this.confirmPassword
           })
           .then(response => {
-            if (response.message) {
-              window.setTimeout(() => this.ea.publish('user-management-notification', response.message), 500);
+            if (response) {
+              window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
             }
           })
           .catch(err => {

@@ -52,7 +52,7 @@ export class Resetpassword {
         .then(response => response.json())
         .then(data => {
           console.log(data)
-          this.ea.publish('user-management-notification', data.messsage)
+          this.ea.publish('user-management-notification', data)
           this.router.navigateToRoute(data.redirect)
         })
       }
