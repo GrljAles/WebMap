@@ -1,0 +1,158 @@
+{
+  "0": {
+    "id": 0,
+    "name": "NDVI",
+    "active": 0,
+    "selectedDateIndex":0,
+    "availableDates": ["20190505", "20190506","20190615","20190620"],
+    "displayDate":"",
+    "opacity": 1,
+    "statistics": {
+      "min": -1,
+      "max": 1,
+      "average": 0,
+      "std": 1,
+      "median": 1
+    },
+    "displaySettings":{
+      "min":-1,
+      "max":1
+    },
+    "legend":{
+      "0": {
+        "values": {
+          "from": -1,
+          "to": -0.95
+        },
+        "colours": {
+          "from": [125,255,241],
+          "to": [63,155,198]
+        }
+      },
+      "1": {
+        "values": {
+          "from": -0.95,
+          "to": -0.90
+        },
+        "colours": {
+          "from": [105,235,221],
+          "to": [43,135,178]
+        }
+      },
+      "2": {
+        "values": {
+          "from": -0.90,
+          "to": -0.85
+        },
+        "colours": {
+          "from": [185,215,201],
+          "to": [23,115,158]
+        }
+      }
+    }
+  },
+  "1": {
+    "id": 1,
+    "name": "Precipitation",
+    "active": 0,
+    "selectedDateIndex":0,
+    "availableDates": ["20190505", "20190506","20190507","20190518"],
+    "displayDate":"",
+    "opacity": 1,
+    "statistics": {
+      "min": 0,
+      "max": 200,
+      "average": 0,
+      "std": 1,
+      "median": 1
+    },
+    "displaySettings":{
+      "min":0,
+      "max":200
+    },
+    "legend":{
+      "0": {
+        "values": {
+          "from": -1,
+          "to": -0.95
+        },
+        "colours": {
+          "from": [125,255,241],
+          "to": [63,155,198]
+        }
+      },
+      "1": {
+        "values": {
+          "from": -0.95,
+          "to": -0.90
+        },
+        "colours": {
+          "from": [105,235,221],
+          "to": [43,135,178]
+        }
+      },
+      "2": {
+        "values": {
+          "from": -0.90,
+          "to": -0.85
+        },
+        "colours": {
+          "from": [185,215,201],
+          "to": [23,115,158]
+        }
+      }
+    }
+  },
+  "2": {
+    "id": 2,
+    "name": "EVI",
+    "active": 0,
+    "selectedDateIndex":0,
+    "availableDates": ["20190505", "20190506","20190507","20190518"],
+    "displayDate":"",
+    "opacity": 1,
+    "statistics": {
+      "min": 0,
+      "max": 100,
+      "average": 0,
+      "std": 1,
+      "median": 1
+    },
+    "displaySettings":{
+      "min":-0,
+      "max":100
+    },
+    "legend":{
+      "0": {
+        "values": {
+          "from": -1,
+          "to": -0.95
+        },
+        "colours": {
+          "from": [125,255,241],
+          "to": [63,155,198]
+        }
+      },
+      "1": {
+        "values": {
+          "from": -0.95,
+          "to": -0.90
+        },
+        "colours": {
+          "from": [105,235,221],
+          "to": [43,135,178]
+        }
+      },
+      "2": {
+        "values": {
+          "from": -0.90,
+          "to": -0.85
+        },
+        "colours": {
+          "from": [185,215,201],
+          "to": [23,115,158]
+        }
+      }
+    }
+  }
+}

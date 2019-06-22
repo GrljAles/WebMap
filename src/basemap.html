@@ -1,28 +1,32 @@
 <template>
+  <require from="resources/value-converters/objectKeysValueConverter"></require>
   <div class="row">
     <ul class="collection with-header col l3 m3 s3 layer-list">
       <li class="collection-header teal darken-3"><h4>Layers</h4></li>
-      <li class="collection-item teal darken-4" repeat.for="layer of layers">
+      <li class="collection-item teal darken-4" repeat.for="layer of layers | objectKeys">
         <div class="collapsible-accordion">
           <ul md-collapsible="accordion: false;">
             <li>
               <div class="collapsible-header teal darken-4">
                 <p>
                   <label>
-                    <input type="checkbox" />
-                    <span class="white-text">Red</span>
+                    <input id=${layer.id} type="checkbox" checked.bind="layers[layer.id].active" change.delegate="changDisplayedDate($event, layer.id, layers[layer.id].selectedDateIndex)"/>
+                    <span class="white-text">${layer.name}</span>
                   </label>
                 </p>
               </div>
               <div class="collapsible-body">
-                <p class="range-field">
-                  <input type="range" id="test5" min="0" max="100" />
+                <p class="range-field">Slide to change opacity
+                  <md-range type="md-range" id="opacity-slider" min="0" max="1" step.two-way="0.01" value.bind="layers[layer.id].opacity" change.delegate="changeOpacity($event, layer.id, layers[layer.id].opacity)"</md-range>
                 </p>
-                <p class="range-field">
-                  <input type="range" id="test5" min="0" max="100" />
+                <p class="range-field">Displaying data for ${layer.displayedDate}
+                  <input type="range" id="date-slider" min="0" max="3" step="1" value.bind="layers[layer.id].selectedDateIndex" change.delegate="changDisplayedDate($event, layer.id, layers[layer.id].selectedDateIndex)"/>
                 </p>
-                <p class="range-field">
-                  <input type="range" id="test5" min="0" max="100" />
+                <p class="range-field">Min value is set to ${layer.displaySettings.min}
+                  <input type="range" id="opacity-slider" min.two-way="layers[layer.id].statistics.min" max.two-way="layers[layer.id].displaySettings.max" step.two-way="0.01" value.bind="layers[layer.id].displaySettings.min">
+                </p>
+                <p class="range-field">Max value is set to ${layer.displaySettings.max}
+                  <input type="range" id="opacity-slider" min.two-way="layers[layer.id].displaySettings.min" max.two-way="layers[layer.id].statistics.max" step.two-way="0.01" value.bind="layers[layer.id].displaySettings.max">
                 </p>
               </div>
             </li>

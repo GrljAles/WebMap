@@ -1,11 +1,8 @@
 import {AuthService} from 'aurelia-authentication';
 import {inject, NewInstance} from 'aurelia-dependency-injection';
 import {ValidationRules, ValidationController} from 'aurelia-validation';
-import 'fetch';
-import {HttpClient, json} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 
-let httpClient = new HttpClient();
 @inject(NewInstance.of(ValidationController), EventAggregator, AuthService)
 export class Registration {
   controller;
@@ -22,7 +19,6 @@ export class Registration {
     this.controller = controller;
     this.ea = eventAggregator;
     this.authService = authService;
-    this.subscribe();
 
     ValidationRules.customRule(
       'matchesProperty',
@@ -56,49 +52,6 @@ export class Registration {
       .on(this)
     }
 
-    subscribe() {};
-
-/*     register() {
-      this.controller.validate()
-      .then(result  => {
-        if (result.valid) {
-          var registerUser= {
-            pleaseDo: 'register',
-            firstName: this.firstName,
-            lastName: this.lastName,
-            userName: this.userName,
-            email: this.email,
-            password: this.password,
-            confirmPassword: this.confirmPassword
-          };
-          httpClient.fetch('http://84.255.193.232/backend/registration', {
-          method: 'POST',
-          body: JSON.stringify(registerUser),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'Fetch'
-            //'Access-Control-Allow-Origin': 'http://localhost:8080'
-          },
-          mode: 'cors'
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log(data)
-          for (var key in data) {
-            if (key === 'error') {
-              this.ea.publish('notification-data', data.error)
-            }
-            if (key === 'message') {
-              this.ea.publish('notification-data', data)
-            }
-          }
-        })
-      };
-    });
-  }; */
-
-
   register() {
     this.controller.validate()
       .then(result  => {
@@ -113,12 +66,13 @@ export class Registration {
           })
           .then(response => {
             if (response) {
+              console.log(response)
               window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
             }
           })
           .catch(err => {
             this.ea.publish('user-data-update', {userName: null});
-            window.setTimeout(() => this.ea.publish('user-management-notification', '<h5>There was a problem with your request.</h5>'), 500);
+            window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
           });
         }
       })

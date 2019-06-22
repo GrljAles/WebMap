@@ -21,8 +21,11 @@
     "dns": "file:./src/mock/dns",
     "fetch": "^1.1.0",
     "materialize-css": "^1.0.0",
+    "moment": "^2.24.0",
     "net": "file:./src/mock/net",
-    "ol": "^5.2.0"
+    "nouislider": "^14.0.1",
+    "ol": "^5.2.0",
+    "wnumb": "^1.1.0"
   },
   "peerDependencies": {},
   "devDependencies": {

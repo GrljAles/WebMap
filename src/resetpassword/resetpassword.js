@@ -1,28 +1,45 @@
-import {inject} from 'aurelia-framework';
-import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
+import {inject, NewInstance} from 'aurelia-framework';
+import {ValidationRules, ValidationController} from 'aurelia-validation';
 import {HttpClient} from 'aurelia-fetch-client';
 import {Router} from 'aurelia-router';
 import {EventAggregator} from 'aurelia-event-aggregator';
 
-let httpClient = new HttpClient();
-@inject(ValidationControllerFactory, Router, EventAggregator)
+@inject(NewInstance.of(ValidationController), Router, EventAggregator, HttpClient)
 
 export class Resetpassword {
-  controller = null;
-  newPassword = null
+  controller;
+  newPassword = null;
+  confirmPassword = null;
   passwordType = 'password';
 
-  constructor(controllerFactory, router, eventAggregator) {
+  constructor(controller, router, eventAggregator, httpClient) {
+    this.httpClient = httpClient
     this.ea = eventAggregator;
     this.router = router;
-    this.controller = controllerFactory.createForCurrentScope();
+    this.controller = controller;
     this.providers = [];
     this.subscribe();
+
+    ValidationRules.customRule(
+      'matchesProperty',
+      (value, obj, otherPropertyName) =>
+        value === null
+        || value === undefined
+        || value === ''
+        || obj[otherPropertyName] === null
+        || obj[otherPropertyName] === undefined
+        || obj[otherPropertyName] === ''
+        || value === obj[otherPropertyName],
+      "? This dosen't look like the same password"
+    );
 
     ValidationRules
     .ensure(a => a.newPassword)
     .required().withMessage('was not provided.')
     .minLength(8).withMessage('should be at least 8 characters long.')
+    .ensure(a => a.confirmPassword)
+    .required().withMessage(' else you cannot register.')
+    .satisfiesRule('matchesProperty', 'newPassword')
     .on(this)
   };
 
@@ -39,7 +56,7 @@ export class Resetpassword {
     this.controller.validate()
     .then(result  => {
         if (result.valid) {
-          httpClient.fetch('http://84.255.193.232/backend/resetpassword/' + this.resetToken, {
+          this.httpClient.fetch('http://84.255.193.232/backend/resetpassword/' + this.resetToken, {
           method: 'POST',
           body: JSON.stringify(this.resetPassword),
           headers: {
@@ -52,7 +69,7 @@ export class Resetpassword {
         .then(response => response.json())
         .then(data => {
           console.log(data)
-          this.ea.publish('user-management-notification', data)
+          window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
           this.router.navigateToRoute(data.redirect)
         })
       }

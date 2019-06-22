@@ -52,7 +52,7 @@ export default {
   // The token name used in the header of API requests that require authentication
   authTokenType : 'Bearer',
   // Logout when the token is invalidated by the server
-  logoutOnInvalidtoken : true,
+  logoutOnInvalidToken : true,
   // The property from which to get the access token after a successful login or signup
   accessTokenProp : 'access_token',
   
@@ -74,7 +74,7 @@ export default {
   // The property name used to send the existing token when refreshing `{ "refreshTokenSubmitProp": '...' }`
   refreshTokenSubmitProp : 'refresh_token',
   // Option to maintain unchanged response properties. This allows to work with a single refresh_token that was received once and the expiration only is extended
-  keepOldResponseProperties : false,
+  keepOldResponseProperties : true,
 
 // Id Token Options
 // =====================
@@ -87,7 +87,7 @@ export default {
 
   // Whether to enable the fetch interceptor which automatically adds the authentication headers
   // (or not... e.g. if using a session based API or you want to override the default behaviour)
-  httpInterceptor : false,
+  httpInterceptor : true,
   // For OAuth only: Tell the API whether or not to include token cookies in the response (for session based APIs)
   //withCredentials : true;
   // Controls how the popup is shown for different devices (Options: 'browser' or 'mobile')
@@ -103,17 +103,18 @@ export default {
   //getExpirationDateFromResponse : null,
   // optional function to extract the access token from the response. Takes the server response as parameter and returns a token
   // eg: getAccessTokenFromResponse = serverResponse => serverResponse.data[0].access_token;
-  //getAccessTokenFromResponse : null,
+  getAccessTokenFromResponse : 'access_token',
   // optional function to extract the refresh token from the response. Takes the server response as parameter and returns a token
   // eg: getRefreshTokenFromResponse = serverResponse => serverResponse.data[0].refresh_token;
-  //getRefreshTokenFromResponse : null,
+  getRefreshTokenFromResponse : 'refresh_token',
 
   // List of value-converters to make global
   globalValueConverters : ['authFilterValueConverter'],
 
   // Default headers for login and token-update endpoint
-  defaultHeadersForTokenRequests : {
+   defaultHeadersForTokenRequests : {
     'Accept': 'application/json',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    //'Authorization': 'Bearer '
   }
 };
