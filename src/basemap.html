@@ -3,20 +3,20 @@
   <div class="row">
     <ul class="collection with-header col l3 m3 s3 layer-list">
       <li class="collection-header teal darken-3"><h4>Layers</h4></li>
-      <li class="collection-item teal darken-4" repeat.for="layer of layers | objectKeys">
+      <li class="collection-item teal darken-4" repeat.for="layer of layers | objectKeys" click.trigger="ch">
         <div class="collapsible-accordion">
-          <ul md-collapsible="accordion: false;">
+          <ul md-collapsible="accordion: true;">
             <li>
-              <div class="collapsible-header teal darken-4">
+              <div class="collapsible-header teal darken-4" click.delegate="changDisplayedDate($event, layer.id, layers[layer.id].selectedDateIndex)">
                 <p>
                   <label>
-                    <input id=${layer.id} type="checkbox" checked.bind="layers[layer.id].active" change.delegate="changDisplayedDate($event, layer.id, layers[layer.id].selectedDateIndex)"/>
+                    <input id=${layer.id} type="checkbox" checked.bind="layers[layer.id].active"/>
                     <span class="white-text">${layer.name}</span>
                   </label>
                 </p>
               </div>
               <div class="collapsible-body">
-                <p class="range-field">Slide to change opacity
+<!--                 <p class="range-field">Slide to change opacity
                   <md-range type="md-range" id="opacity-slider" min="0" max="1" step.two-way="0.01" value.bind="layers[layer.id].opacity" change.delegate="changeOpacity($event, layer.id, layers[layer.id].opacity)"</md-range>
                 </p>
                 <p class="range-field">Displaying data for ${layer.displayedDate}
@@ -27,7 +27,13 @@
                 </p>
                 <p class="range-field">Max value is set to ${layer.displaySettings.max}
                   <input type="range" id="opacity-slider" min.two-way="layers[layer.id].displaySettings.min" max.two-way="layers[layer.id].statistics.max" step.two-way="0.01" value.bind="layers[layer.id].displaySettings.max">
-                </p>
+                </p> -->
+                <p id="opacityValue${layer.id}"></p>Slide to change opacity ${layer.opacity} ${layer.id}
+                <div id="opacity-slider${layer.id}"></div>
+                <p>Displaying data for ${layer.displayedDate}</p>
+                <div id="date-slider${layer.id}"></div>
+                <p>Current min/max values are set to ${layer.displaySettings.min}/${layer.displaySettings.max}</p>
+                <div id="min-max-slider${layer.id}"></div>
               </div>
             </li>
           </ul>

@@ -11,6 +11,8 @@ import State from 'ol/source/State';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import * as dataData from 'resources/dataData/dataData.json';
 import moment from 'moment';
+import noUiSlider from 'materialize-css/extras/noUiSlider/noUiSlider'
+import 'materialize-css/extras/noUiSlider/nouislider.css'
 
 @inject(EventAggregator)
 export class BaseMap {
@@ -20,6 +22,9 @@ export class BaseMap {
     this.opacityValue = 1;
     this.layers = dataData.default;
     this.subscribe();
+  }
+  setOpacity1(value) {
+    this.layers[ii].opacity = value
   }
 
   subscribe() {
@@ -32,6 +37,50 @@ export class BaseMap {
   }
 
   attached() {
+    for (var ii in this.layers) {
+      var opacitySlider = document.getElementById('opacity-slider'+this.layers[ii].id);
+        noUiSlider.create(opacitySlider, {
+        start: [this.layers[ii].opacity],
+        orientation: 'horizontal', // 'horizontal' or 'vertical'
+        range: {
+          'min': [0],
+          'max': [1]
+        }
+      });
+      var adsa = document.getElementById('opacityValue'+this.layers[ii].id);
+
+      var _this = this
+      opacitySlider.noUiSlider.on('update', function (values, handle) {
+        var opacity = values[handle]
+        adsa.innerHTML = values[handle]
+        function chop() {
+          _this.layers[ii].opacity = opacity
+        }
+        chop()
+      });
+
+      //this.layers[ii].opacity = opacitySlider.opacity
+
+      var dateSlider = document.getElementById('date-slider'+this.layers[ii].id);
+        noUiSlider.create(dateSlider, {
+        start: [1],
+        orientation: 'horizontal', // 'horizontal' or 'vertical'
+        range: {
+          'min': [0],
+          'max': [1]
+        }
+      });
+      var minmaxSlider = document.getElementById('min-max-slider'+this.layers[ii].id);
+        noUiSlider.create(minmaxSlider, {
+        start: [1],
+        orientation: 'horizontal', // 'horizontal' or 'vertical'
+        range: {
+          'min': [0],
+          'max': [1]
+        }
+      });
+    }
+
     this.osmTopo = new TileLayer({
       title: 'osm',
       id: 10000,
