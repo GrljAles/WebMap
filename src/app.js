@@ -2,15 +2,21 @@ import {PLATFORM} from 'aurelia-pal';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {inject} from 'aurelia-dependency-injection';
 import {AuthenticateStep} from 'aurelia-authentication';
-import {sideNav} from "./sideNav/sideNav"
+import {sideNav} from "./sideNav/sideNav";
+import * as locations from "./resources/locations/locations.json";
+import {AuthService} from 'aurelia-authentication';
+import {HttpClient} from 'aurelia-fetch-client';
 
-@inject(EventAggregator)
+@inject(AuthService, EventAggregator, HttpClient)
 export class App {
-  constructor(eventAggregator) {
+  constructor(authService, eventAggregator, httpClient) {
+    this.httpClient = httpClient;
+    this.authService = authService;
     this.ea = eventAggregator;
     this.sideNav = sideNav;
-    this.authenticated = false;
-    this.userNameDisplay = null;
+    if (window.localStorage.getItem("aurelia_authentication")) {
+      this.userNameDisplay = JSON.parse(window.localStorage.getItem("aurelia_authentication")).userName;
+    }
     this.subscribe();
   }
 
@@ -22,8 +28,52 @@ export class App {
       this.authenticated = authenticated
     });
   }
+  attached()  {
+    this.authenticated = this.authService.authenticated
+  }
+  // use authService.logout to delete stored tokens
+  // if you are using JWTs, authService.logout() will be called automatically,
+  // when the token expires. The expiredRedirect setting in your authConfig
+  // will determine the redirection option
   logout() {
-    this.ea.publish('logout', true)
+    var refreshToken = {
+      jti: this.authService.getRefreshToken()
+    };
+    var accessToken = {
+      jti: this.authService.getAccessToken()
+    };
+
+    this.httpClient.fetch('http://' + locations.backend + '/backend/logout/refresh', {
+      method: 'POST',
+      body: JSON.stringify(refreshToken),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'Fetch',
+        'Authorization': 'Bearer ' + this.authService.getRefreshToken()
+        //'Access-Control-Allow-Origin': 'http://localhost:8080'
+      },
+      mode: 'cors'
+    });
+
+    this.httpClient.fetch('http://' + locations.backend + '//backend/logout/access', {
+      method: 'POST',
+      body: JSON.stringify(accessToken),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'Fetch',
+        'Authorization': 'Bearer ' + this.authService.getAccessToken()
+        //'Access-Control-Allow-Origin': 'http://localhost:8080'
+      },
+      mode: 'cors'
+    })
+    return this.authService.logout();
+  }
+
+
+  refresh() {
+    this.authService.updateToken()
   }
   changeEmailNavigate() {
     this.router.navigate('changeemail')
@@ -31,7 +81,9 @@ export class App {
   changePasswordNavigate() {
     this.router.navigate('changepassword')
   }
-
+  refreshToken() {
+    this.authService.updateToken()
+  }
   configureRouter(config, router){
     config.title = 'WebMapProject';
 
@@ -57,15 +109,33 @@ export class App {
         auth: true
       },
       {
-        route: 'confirmemailnotification',
-        moduleId: PLATFORM.moduleName('./usermamagementredirect/confirmemailnotification'),
+        route: 'emailok',
+        moduleId: PLATFORM.moduleName('./usermamagementredirect/emailOk'),
         title: 'Confirm Email',
-        name:'confirmemailnotification'
+        name:'emailok'
+      },
+      {
+        route: 'emailnotok',
+        moduleId: PLATFORM.moduleName('./usermamagementredirect/emailNotOk'),
+        title: 'Confirm Email',
+        name:'emailnotok'
+      },
+      {
+        route: 'emailconfirmed',
+        moduleId: PLATFORM.moduleName('./usermamagementredirect/emailConfirmed'),
+        title: 'Confirm Email',
+        name:'emailconfirmed'
+      },
+      {
+        route: 'requestresetpassword',
+        moduleId: PLATFORM.moduleName('./resetpassword/requestresetpassword'),
+        title: 'Your email',
+        name:'requestresetpassword'
       },
       {
         route: 'resetpassword',
         moduleId: PLATFORM.moduleName('./resetpassword/resetpassword'),
-        title: 'Password Reset',
+        title: 'Your email',
         name:'resetpassword'
       },
       {

@@ -1,29 +1,28 @@
 <template>
+  <require from="resources/value-converters/objectKeysValueConverter"></require>
   <div class="row">
     <ul class="collection with-header col l3 m3 s3 layer-list">
       <li class="collection-header teal darken-3"><h4>Layers</h4></li>
-      <li class="collection-item teal darken-4" repeat.for="layer of layers">
-        <div class="collapsible-accordion">
-          <ul md-collapsible="accordion: false;">
-            <li>
-              <div class="collapsible-header teal darken-4">
-                <p>
-                  <label>
-                    <input type="checkbox" />
-                    <span class="white-text">Red</span>
-                  </label>
-                </p>
+        <div class="collapsible-open-close-events">
+          <ul md-collapsible md-on-open-start.delegate="collapsibleOpen($event.detail.el.childNodes[1].id)" md-on-close-start.delegate="collapsibleClose($event.detail.el.childNodes[1].id)">
+            <li repeat.for="layer of layers | objectKeys">
+              <div class="collapsible-header teal darken-${layer.id+2}" id=${layer.id}>
+                <h5 class="white-text">${layer.name}</h5>
               </div>
-              <div class="collapsible-body">
-                <p class="range-field">
-                  <input type="range" id="test5" min="0" max="100" />
-                </p>
-                <p class="range-field">
-                  <input type="range" id="test5" min="0" max="100" />
-                </p>
-                <p class="range-field">
-                  <input type="range" id="test5" min="0" max="100" />
-                </p>
+              <div id="collapsible-body${layer.id}" class="collapsible-body">
+                <div class="row">Slide to change opacity
+                  <div class="col s12 opacity-slider" id="opacity-slider${layer.id}"></div>
+                </div>
+                <div class="row">Slide to display different dates <br>${layer.displayedDate}
+                  <div class="col s12 date-slider" id="date-slider${layer.id}"></div>
+                </div>
+                <div class="row">Slide to adjust min (${layer.displaySettings.min}) and max (${layer.displaySettings.max}) values
+                  <div class="col s12 min-max-slider" id="min-max-slider${layer.id}"></div>
+                </div>
+                <div id="legend-holder${layer.id}"></div>
+                <div>
+                  <a md-button="floating: true;" md-tooltip="position: bottom; text: Reset range settings;" md-waves="color: light;" class="red" click.trigger="resetRangeSettings(layer.id)"><i class="material-icons">cached</i></a>
+                </div>
               </div>
             </li>
           </ul>

@@ -1,11 +1,9 @@
 import {AuthService} from 'aurelia-authentication';
 import {inject, computedFrom} from 'aurelia-framework';
 import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
-import {HttpClient} from 'aurelia-fetch-client';
 import {Router} from 'aurelia-router';
 import {EventAggregator} from 'aurelia-event-aggregator';
 
-let httpClient = new HttpClient();
 @inject(AuthService, ValidationControllerFactory, Router, EventAggregator)
 export class Login {
   controller = null;
@@ -15,10 +13,9 @@ export class Login {
     this.controller = controllerFactory.createForCurrentScope();
     this.authService = authService;    
     this.providers = [];
-    this.subscribe();
 
-    this.userName = 'Hans';
-    this.password = 'testisis';
+    this.userName = '';
+    this.password = '';
     this.passwordType = 'password';
 
     ValidationRules
@@ -29,11 +26,6 @@ export class Login {
     .on(this)
   };
 
-  subscribe() {
-    this.ea.subscribe('logout', (data) => {
-      this.logout()
-    });
-  }
   
   // make a getter to get the authentication status.
   // use computedFrom to avoid dirty checking
@@ -51,15 +43,12 @@ export class Login {
             password: this.password,
           })
           .then(response => {
-            console.log(response)
             this.ea.publish('user-data-update', {
               userName: response.userName
             })
           })
           .catch(err => {
-
             this.ea.publish('user-data-update', {userName: null});
-            this.ea.publish('user-management-ok-button', err.responseObject.redirectbutton)
             window.setTimeout(() => this.ea.publish('user-management-notification', err.responseObject), 500);
 
             this.router.navigateToRoute(err.responseObject.redirect)
@@ -79,7 +68,7 @@ export class Login {
 
   requestResetPassword(){
     var resetPasswordFor = {userName: this.userName}
-    httpClient.fetch('http://84.255.193.232/backend/requestresetpassword', {
+    httpClient.fetch('http://' + locations.backend + '/backend/resetpassword', {
     method: 'POST',
     body: JSON.stringify(resetPasswordFor),
     headers: {
@@ -96,44 +85,6 @@ export class Login {
   })
 }
 
-  // use authService.logout to delete stored tokens
-  // if you are using JWTs, authService.logout() will be called automatically,
-  // when the token expires. The expiredRedirect setting in your authConfig
-  // will determine the redirection option
-  logout() {
-    var refreshToken = {
-      jti: this.authService.getRefreshToken()
-    };
-    var accessToken = {
-      jti: this.authService.getAccessToken()
-    };
-
-    httpClient.fetch('http://84.255.193.232/backend/logout/refresh', {
-    method: 'POST',
-    body: JSON.stringify(refreshToken),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'Fetch',
-      'Authorization': 'Bearer ' + this.authService.getRefreshToken()
-      //'Access-Control-Allow-Origin': 'http://localhost:8080'
-    },
-    mode: 'cors'
-  })
-
-  httpClient.fetch('http://84.255.193.232/backend/logout/access', {
-    method: 'POST',
-    body: JSON.stringify(accessToken),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'Fetch',
-      'Authorization': 'Bearer ' + this.authService.getAccessToken()
-      //'Access-Control-Allow-Origin': 'http://localhost:8080'
-    },
-    mode: 'cors'
-  })
-  return this.authService.logout();
-}
+  
 
 }

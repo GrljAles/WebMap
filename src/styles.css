@@ -91,3 +91,17 @@ i.icon-black {
 .collapsible-body {
 border-bottom: none;
 }
+.legend-image {
+  width: 100%;
+  overflow: auto;
+}
+.colour-box {
+  height: 100%;
+  float: right;
+  text-align: left;
+  font-size: .8rem;
+  color: rgba(0, 0, 0, 0.7);
+}
+.value-box {
+  font-size: .8rem;
+}

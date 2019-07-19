@@ -7,15 +7,15 @@ export class Confirmemail {
     this.ea = eventAggregator;
 
     this.userManagementNotification = null;
-    this.okButtonRoute = 'login'
+    this.okButton = null;
     this.subscribe();
   }
 
   subscribe(){
-    this.ea.subscribe('user-management-notification', (notification) => {
-      this.userManagementNotification = notification.message;
-      this.okButtonRoute = notification.backbutton
-      console.log(this.okButtonRoute)
+    this.ea.subscribe('user-management-notification', (data) => {
+      console.log(data)
+      this.userManagementNotification = data.message;
+      this.okButton = data.backButton;
     });
   }
 }
