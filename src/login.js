@@ -13,10 +13,9 @@ export class Login {
     this.controller = controllerFactory.createForCurrentScope();
     this.authService = authService;    
     this.providers = [];
-    this.subscribe();
 
-    this.userName = 'Hans';
-    this.password = 'testisis';
+    this.userName = '';
+    this.password = '';
     this.passwordType = 'password';
 
     ValidationRules
@@ -27,12 +26,6 @@ export class Login {
     .on(this)
   };
 
-  subscribe() {
-    this.ea.subscribe('logout', (data) => {
-      console.log(data)
-      this.logOut()
-    });
-  }
   
   // make a getter to get the authentication status.
   // use computedFrom to avoid dirty checking
@@ -55,7 +48,6 @@ export class Login {
             })
           })
           .catch(err => {
-            console.log(err)
             this.ea.publish('user-data-update', {userName: null});
             window.setTimeout(() => this.ea.publish('user-management-notification', err.responseObject), 500);
 
@@ -76,7 +68,7 @@ export class Login {
 
   requestResetPassword(){
     var resetPasswordFor = {userName: this.userName}
-    httpClient.fetch('http://84.255.193.232/backend/resetpassword', {
+    httpClient.fetch('http://' + locations.backend + '/backend/resetpassword', {
     method: 'POST',
     body: JSON.stringify(resetPasswordFor),
     headers: {

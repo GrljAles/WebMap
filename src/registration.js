@@ -7,12 +7,12 @@ import {EventAggregator} from 'aurelia-event-aggregator';
 export class Registration {
   controller;
   message = '';
-  firstName = 'Ales';
-  lastName = 'Grlj'
-  userName = 'Hans';
-  email = 'alesinar.grlj@gmail.com';
-  password = 'testisis';
-  confirmPassword = 'testisis';
+  firstName = '';
+  lastName = ''
+  userName = '';
+  email = '';
+  password = '';
+  confirmPassword = '';
   passwordType = 'password';
 
   constructor(controller, eventAggregator, authService) {

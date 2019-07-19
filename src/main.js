@@ -3,6 +3,7 @@ import {PLATFORM} from 'aurelia-pal';
 import * as Bluebird from 'bluebird';
 import 'materialize-css';
 import authConfig from './authConfig';
+import * as locations from "./resources/locations/locations.json";
 
 // remove out if you don't want a Promise polyfill (remove also from webpack.config.js)
 Bluebird.config({ warnings: { wForgottenReturn: false } });
@@ -16,15 +17,15 @@ export function configure(aurelia) {
     .plugin(PLATFORM.moduleName('aurelia-validation'))
     .plugin(PLATFORM.moduleName('aurelia-api'), config => {
       // Register hosts
-      config.registerEndpoint('backend', 'http://84.255.193.232/backend');
-      config.registerEndpoint('basemap','http://84.255.193.232/basemap');
-      config.registerEndpoint('login','http://84.255.193.232/backend/login');
-      config.registerEndpoint('registration','http://84.255.193.232/backend/registration');
-      config.registerEndpoint('confirmemailnotification','http://84.255.193.232/emailOk');
-      config.registerEndpoint('notificationredirect','http://84.255.193.232/notificationredirect');
-      config.registerEndpoint('refreshtoken','http://84.255.193.232/backend/token/refresh');
-      config.registerEndpoint('changeemail','http://84.255.193.232/changeemail');
-      config.registerEndpoint('changepassword','http://84.255.193.232/changepassword');
+      config.registerEndpoint('backend', 'http://' + locations.backend + '/backend');
+      config.registerEndpoint('basemap','http://' + locations.backend + '/basemap');
+      config.registerEndpoint('login','http://' + locations.backend + '/backend/login');
+      config.registerEndpoint('registration','http://' + locations.backend + '/backend/registration');
+      config.registerEndpoint('confirmemailnotification','http://' + locations.backend + '/emailOk');
+      config.registerEndpoint('notificationredirect','http://' + locations.backend + '/notificationredirect');
+      config.registerEndpoint('refreshtoken','http://' + locations.backend + '/backend/token/refresh');
+      config.registerEndpoint('changeemail','http://' + locations.backend + '/changeemail');
+      config.registerEndpoint('changepassword','http://' + locations.backend + '/changepassword');
     })
     /* configure aurelia-authentication */
     .plugin(PLATFORM.moduleName('aurelia-authentication'), config => {

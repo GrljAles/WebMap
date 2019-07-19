@@ -2,7 +2,8 @@ import {PLATFORM} from 'aurelia-pal';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {inject} from 'aurelia-dependency-injection';
 import {AuthenticateStep} from 'aurelia-authentication';
-import {sideNav} from "./sideNav/sideNav"
+import {sideNav} from "./sideNav/sideNav";
+import * as locations from "./resources/locations/locations.json";
 import {AuthService} from 'aurelia-authentication';
 import {HttpClient} from 'aurelia-fetch-client';
 
@@ -13,8 +14,9 @@ export class App {
     this.authService = authService;
     this.ea = eventAggregator;
     this.sideNav = sideNav;
-    this.authenticated = false;
-    this.userNameDisplay = null;
+    if (window.localStorage.getItem("aurelia_authentication")) {
+      this.userNameDisplay = JSON.parse(window.localStorage.getItem("aurelia_authentication")).userName;
+    }
     this.subscribe();
   }
 
@@ -25,6 +27,9 @@ export class App {
     this.ea.subscribe('authentication-change', authenticated => {
       this.authenticated = authenticated
     });
+  }
+  attached()  {
+    this.authenticated = this.authService.authenticated
   }
   // use authService.logout to delete stored tokens
   // if you are using JWTs, authService.logout() will be called automatically,
@@ -38,7 +43,7 @@ export class App {
       jti: this.authService.getAccessToken()
     };
 
-    this.httpClient.fetch('http://84.255.193.232/backend/logout/refresh', {
+    this.httpClient.fetch('http://' + locations.backend + '/backend/logout/refresh', {
       method: 'POST',
       body: JSON.stringify(refreshToken),
       headers: {
@@ -51,7 +56,7 @@ export class App {
       mode: 'cors'
     });
 
-    this.httpClient.fetch('http://84.255.193.232/backend/logout/access', {
+    this.httpClient.fetch('http://' + locations.backend + '//backend/logout/access', {
       method: 'POST',
       body: JSON.stringify(accessToken),
       headers: {
@@ -65,6 +70,11 @@ export class App {
     })
     return this.authService.logout();
   }
+
+
+  refresh() {
+    this.authService.updateToken()
+  }
   changeEmailNavigate() {
     this.router.navigate('changeemail')
   }
@@ -72,8 +82,6 @@ export class App {
     this.router.navigate('changepassword')
   }
   refreshToken() {
-    
-    console.log(this.authService.authentication)
     this.authService.updateToken()
   }
   configureRouter(config, router){

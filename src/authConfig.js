@@ -65,6 +65,7 @@ export default {
   useRefreshToken : true,
   // The option to enable/disable the automatic refresh of Auth tokens using Refresh Tokens
   autoUpdateToken : true,
+  refreshMethod: 'post',
   // Oauth Client Id
   //clientId : false,
   // Oauth Client secret
@@ -115,6 +116,6 @@ export default {
    defaultHeadersForTokenRequests : {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
-    //'Authorization': 'Bearer '
+   // 'Authorization': 'Bearer'
   }
 };
