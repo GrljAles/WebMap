@@ -135,7 +135,7 @@ export class BaseMap {
         this.NDVI
       ],
       view: new View({
-        center: transform([16, 45.448224], 'EPSG:4326', 'EPSG:3857'),
+        center: transform([14.815333,46.119944], 'EPSG:4326', 'EPSG:3857'),
         projection: 'EPSG:3857',
         zoom: 8,
         maxZoom: 20

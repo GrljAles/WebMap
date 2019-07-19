@@ -4,6 +4,7 @@ import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
 import {HttpClient} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from 'aurelia-router';
+import * as locations from "../resources/locations/locations.json";
 
 let httpClient = new HttpClient();
 @inject(AuthService, ValidationControllerFactory, Router, EventAggregator)
@@ -44,7 +45,7 @@ export class ChangeEmail {
       this.controller.validate()
       .then(result  => {
           if (result.valid) {
-            httpClient.fetch('http://84.255.193.232/backend/updateemail', {
+            httpClient.fetch('http://' + locations.backend + '/backend/updateemail', {
             method: 'POST',
             body: JSON.stringify(this.emailUpdate),
             headers: {
@@ -57,7 +58,6 @@ export class ChangeEmail {
           })
           .then(response => response.json())
           .then(data => {
-            console.log(data)
             window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
             this.router.navigateToRoute(data.redirect)
           })

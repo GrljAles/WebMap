@@ -3,6 +3,7 @@ import {ValidationRules, ValidationController} from 'aurelia-validation';
 import {HttpClient} from 'aurelia-fetch-client';
 import {Router} from 'aurelia-router';
 import {EventAggregator} from 'aurelia-event-aggregator';
+import * as locations from "../resources/locations/locations.json";
 
 @inject(NewInstance.of(ValidationController), Router, EventAggregator, HttpClient)
 
@@ -48,7 +49,6 @@ export class Resetpassword {
   resetPassword() {
     this.urlArray = window.location.href.split('/')
     this.resetToken = this.urlArray[this.urlArray.length - 1]
-    console.log(this.resetToken)
     this.resetPassword = {
       password: this.newPassword,
       token: this.resetToken
@@ -56,7 +56,7 @@ export class Resetpassword {
     this.controller.validate()
     .then(result  => {
         if (result.valid) {
-          this.httpClient.fetch('http://84.255.193.232/backend/resetpassword/' + this.resetToken, {
+          this.httpClient.fetch('http://' + locations.backend + '/backend/resetpassword/' + this.resetToken, {
           method: 'POST',
           body: JSON.stringify(this.resetPassword),
           headers: {

@@ -3,6 +3,7 @@ import {inject, computedFrom} from 'aurelia-framework';
 import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
 import {Router} from 'aurelia-router';
 import {EventAggregator} from 'aurelia-event-aggregator';
+import * as locations from "./resources/locations/locations.json";
 
 @inject(AuthService, ValidationControllerFactory, Router, EventAggregator)
 export class Login {
