@@ -33,4 +33,4 @@ node_modules
 /src/environment.ts
 
 # Private files
-/src/resources/locations.locations.json
+src/resources/locations
