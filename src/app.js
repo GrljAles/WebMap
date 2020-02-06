@@ -14,8 +14,10 @@ export class App {
     this.authService = authService;
     this.ea = eventAggregator;
     this.sideNav = sideNav;
+
     if (window.localStorage.getItem("aurelia_authentication")) {
       this.userNameDisplay = JSON.parse(window.localStorage.getItem("aurelia_authentication")).userName;
+      this.userEmailDisplay = JSON.parse(window.localStorage.getItem("aurelia_authentication")).email;
     }
     this.subscribe();
   }
@@ -23,13 +25,14 @@ export class App {
   subscribe() {
     this.ea.subscribe('user-data-update', (data) => {
       this.userNameDisplay = data.userName;
+      this.userEmailDisplay = data.email
     });
     this.ea.subscribe('authentication-change', authenticated => {
-      this.authenticated = authenticated
+      this.authenticated = authenticated;
     });
   }
   attached()  {
-    this.authenticated = this.authService.authenticated
+    this.authenticated = this.authService.authenticated;
   }
   // use authService.logout to delete stored tokens
   // if you are using JWTs, authService.logout() will be called automatically,
@@ -43,7 +46,7 @@ export class App {
       jti: this.authService.getAccessToken()
     };
 
-    this.httpClient.fetch('http://' + locations.backend + '/backend/logout/refresh', {
+    this.httpClient.fetch('http://' + locations.backend + '/backendapi/logout/refresh', {
       method: 'POST',
       body: JSON.stringify(refreshToken),
       headers: {
@@ -56,7 +59,7 @@ export class App {
       mode: 'cors'
     });
 
-    this.httpClient.fetch('http://' + locations.backend + '//backend/logout/access', {
+    this.httpClient.fetch('http://' + locations.backend + '/backendapi/logout/access', {
       method: 'POST',
       body: JSON.stringify(accessToken),
       headers: {
@@ -85,12 +88,12 @@ export class App {
     this.authService.updateToken()
   }
   configureRouter(config, router){
-    config.title = 'WebMapProject';
+    config.title = 'Sattilia';
 
     config.addPipelineStep('authorize', AuthenticateStep); // Add a route filter so only authenticated uses are authorized to access some routes
     config.map([
       {
-        route: ["/", "login"],
+        route: ['', 'login'],
         moduleId: PLATFORM.moduleName('login'),
         title: 'Login',
         name:'login',

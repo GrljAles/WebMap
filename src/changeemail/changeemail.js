@@ -45,7 +45,7 @@ export class ChangeEmail {
       this.controller.validate()
       .then(result  => {
           if (result.valid) {
-            httpClient.fetch('http://' + locations.backend + '/backend/updateemail', {
+            httpClient.fetch('http://' + locations.backend + '/backendapi/updateemail', {
             method: 'POST',
             body: JSON.stringify(this.emailUpdate),
             headers: {

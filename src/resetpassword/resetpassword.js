@@ -56,7 +56,7 @@ export class Resetpassword {
     this.controller.validate()
     .then(result  => {
         if (result.valid) {
-          this.httpClient.fetch('http://' + locations.backend + '/backend/resetpassword/' + this.resetToken, {
+          this.httpClient.fetch('http://' + locations.backend + '/backendapi/resetpassword/' + this.resetToken, {
           method: 'POST',
           body: JSON.stringify(this.resetPassword),
           headers: {
@@ -68,7 +68,6 @@ export class Resetpassword {
         })
         .then(response => response.json())
         .then(data => {
-          console.log(data)
           window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
           this.router.navigateToRoute(data.redirect)
         })
@@ -79,7 +78,6 @@ export class Resetpassword {
   revealPassword() {
     if (this.passwordType === 'password') {
       this.passwordType = 'text'
-      console.log(window.location.href)
     }
     else {
       this.passwordType = 'password'

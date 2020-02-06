@@ -31,7 +31,7 @@ export class RequestResetPassword {
     this.controller.validate()
     .then(result  => {
         if (result.valid) {
-          this.httpClient.fetch('http://' + locations.backend + '/backend/requestresetpassword', {
+          this.httpClient.fetch('http://' + locations.backend + '/backendapi/requestresetpassword', {
           method: 'POST',
           body: JSON.stringify(this.userEmail),
           headers: {
@@ -43,7 +43,6 @@ export class RequestResetPassword {
         })
         .then(response => response.json())
         .then(data => {
-          console.log(data.redirect)
           window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
           this.router.navigateToRoute(data.redirect)
         })

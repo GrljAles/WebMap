@@ -17,13 +17,13 @@ export function configure(aurelia) {
     .plugin(PLATFORM.moduleName('aurelia-validation'))
     .plugin(PLATFORM.moduleName('aurelia-api'), config => {
       // Register hosts
-      config.registerEndpoint('backend', 'http://' + locations.backend + '/backend');
+      config.registerEndpoint('backendapi', 'http://' + locations.backend + '/backendapi');
       config.registerEndpoint('basemap','http://' + locations.backend + '/basemap');
-      config.registerEndpoint('login','http://' + locations.backend + '/backend/login');
-      config.registerEndpoint('registration','http://' + locations.backend + '/backend/registration');
+      config.registerEndpoint('login','http://' + locations.backend + '/backendapi/login');
+      config.registerEndpoint('registration','http://' + locations.backend + '/backendapi/registration');
       config.registerEndpoint('confirmemailnotification','http://' + locations.backend + '/emailOk');
       config.registerEndpoint('notificationredirect','http://' + locations.backend + '/notificationredirect');
-      config.registerEndpoint('refreshtoken','http://' + locations.backend + '/backend/token/refresh');
+      config.registerEndpoint('refreshtoken','http://' + locations.backend + '/backendapi/token/refresh');
       config.registerEndpoint('changeemail','http://' + locations.backend + '/changeemail');
       config.registerEndpoint('changepassword','http://' + locations.backend + '/changepassword');
     })

@@ -14,35 +14,45 @@ import * as dataData from 'resources/dataData/dataData.json';
 import moment from 'moment';
 import noUiSlider from 'materialize-css/extras/noUiSlider/noUiSlider';
 import 'materialize-css/extras/noUiSlider/nouislider.css';
+import {HttpClient} from 'aurelia-fetch-client';
+import {AuthService} from 'aurelia-authentication';
 import * as locations from "./resources/locations/locations.json";
 
-@inject(EventAggregator)
+@inject(EventAggregator, HttpClient, AuthService)
 export class BaseMap {
-  constructor(eventAggregator) {
+  constructor(eventAggregator, httpClient, authService) {
     this.ea = eventAggregator;
+    this.httpClient = httpClient;
+    this.authService = authService;
     this.opacityValue = 1;
     this.layers = dataData.default;
     this.collapsible = MdCollapsible;
     this.activeLayer = 0;
+    this.isActive = false;
     this.subscribe();
   }
+  toggleButton() {
+    this.isActive = !this.isActive;
+  }
+
   setOpacity1(value) {
-    this.layers[ii].opacity = value
+    this.layers[ii].opacity = value;
   }
 
   subscribe() {
     this.ea.subscribe('user-data-update', (data) => {
       this.userNameDisplay = data.userName;
+      this.userEmailDsplay = data.email;
     });
     this.ea.subscribe('authentication-change', authenticated => {
-      this.authenticated = authenticated
+      this.authenticated = authenticated;
     });
   }
 
   attached() {
-    var _this = this
-    this.opacitySliders = document.getElementsByClassName('opacity-slider')
-    for (var ii = 0; ii < this.opacitySliders.length; ii++) {
+    let _this = this;
+    this.opacitySliders = document.getElementsByClassName('opacity-slider');
+    for (let ii = 0; ii < this.opacitySliders.length; ii++) {
       noUiSlider.create(this.opacitySliders[ii], {
         start: [this.layers[ii].opacity],
         orientation: 'horizontal',
@@ -54,13 +64,13 @@ export class BaseMap {
       });
 
       this.opacitySliders[ii].noUiSlider.on('update', function (values, handle) {
-        _this.layers[_this.activeLayer].opacity = values[handle]
-        _this.changeOpacity(_this.activeLayer, values[handle])
+        _this.layers[_this.activeLayer].opacity = values[handle];
+        _this.changeOpacity(_this.activeLayer, values[handle]);
       });
     }
 
     this.dateSliders = document.getElementsByClassName('date-slider')
-    for (var ii = 0; ii < this.dateSliders.length; ii++) {
+    for (let ii = 0; ii < this.dateSliders.length; ii++) {
       noUiSlider.create(this.dateSliders[ii], {
         start: [0],
         step: 1,
@@ -73,14 +83,14 @@ export class BaseMap {
       });
 
       this.dateSliders[ii].noUiSlider.on('update', function (values, handle) {
-        let value = parseInt(values[handle])
-        _this.layers[_this.activeLayer].selectedDateIndex = value
-        _this.changeDisplayedDate(_this.activeLayer, value)
+        let value = parseInt(values[handle]);
+        _this.layers[_this.activeLayer].selectedDateIndex = value;
+        _this.changeDisplayedDate(_this.activeLayer, value);
       });
     }
 
     this.minmaxSliders = document.getElementsByClassName('min-max-slider')
-    for (var ii = 0; ii < this.minmaxSliders.length; ii++) {
+    for (let ii = 0; ii < this.minmaxSliders.length; ii++) {
       noUiSlider.create(this.minmaxSliders[ii], {
         start: [this.layers[ii].displaySettings.min, this.layers[ii].displaySettings.max],
         orientation: 'horizontal',
@@ -95,14 +105,14 @@ export class BaseMap {
         },
         connect: true,
         behaviour: 'drag-tap'
-      })
+      });
 
-      this.minmaxSliders[ii].noUiSlider.on('end', function (values) {
+      this.minmaxSliders[ii].noUiSlider.on('end', function(values) {
         let valueMin = parseFloat(values[0]);
         let valueMax = parseFloat(values[1]);
-        _this.layers[_this.activeLayer].displaySettings.min = valueMin
-        _this.layers[_this.activeLayer].displaySettings.max = valueMax
-        _this.calculateClassBreaks(_this.activeLayer, valueMin, valueMax)
+        _this.layers[_this.activeLayer].displaySettings.min = valueMin;
+        _this.layers[_this.activeLayer].displaySettings.max = valueMax;
+        _this.calculateClassBreaks(_this.activeLayer, valueMin, valueMax);
       });
     }
 
@@ -110,23 +120,24 @@ export class BaseMap {
       title: 'osm',
       id: 10000,
       source: new XYZ({
-        url: 'https://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
+        url: 'http://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
       })
-    }),
+    });
     this.NDVI = new TileLayer({
       title: this.layers[0].name,
       id: this.layers[0].id,
       source: new TileWMS({
         url: 'http://' + locations.backend + locations.mapserver,
         params: {
-          'map': locations.maps + "NDVITest.map",
-          'LAYERS':"products",
-          'date': "20190625"
-      },
-        projection: 'EPSG:3857',
+          'map': locations.maps + 'NDVI.map',
+          'LAYERS': 'products',
+          'date': '20190715',
+          'TILED': true
+        },
+        projection: 'EPSG:3857'
       }),
-      opacity: this.layers[0].opacity,
-    })
+      opacity: this.layers[0].opacity
+    });
 
     this.basemap = new Map({
       target: 'basemap',
@@ -135,108 +146,124 @@ export class BaseMap {
         this.NDVI
       ],
       view: new View({
-        center: transform([14.815333,46.119944], 'EPSG:4326', 'EPSG:3857'),
+        center: transform([14.815333, 46.119944], 'EPSG:4326', 'EPSG:3857'),
         projection: 'EPSG:3857',
         zoom: 8,
         maxZoom: 20
-      }),
+      })
     });
   }
   collapsibleOpen(idx) {
-    idx = parseInt(idx)
+    idx = parseInt(idx);
     this.layers[idx].active = 1;
-      this.changeDisplayedDate(idx, this.layers[idx].selectedDateIndex)
-      for (var ii of this.basemap.getLayers().getArray()) {
-        if (ii.getProperties().id === idx) {
-          ii.setVisible(true)
-        }
+    this.changeDisplayedDate(idx, this.layers[idx].selectedDateIndex);
+    for (let ii of this.basemap.getLayers().getArray()) {
+      if (ii.getProperties().id === idx) {
+        ii.setVisible(true);
       }
+    }
   }
   collapsibleClose(idx) {
-    idx = parseInt(idx)
+    idx = parseInt(idx);
     this.layers[idx].active = 0;
-      for (var ii of this.basemap.getLayers().getArray()) {
-        if (ii.getProperties().id === idx) {
-          ii.setVisible(false)
-        }
+    for (let ii of this.basemap.getLayers().getArray()) {
+      if (ii.getProperties().id === idx) {
+        ii.setVisible(false);
       }
+    }
   }
-  changeDisplayedDate(idx, dateIndex){
+  changeDisplayedDate(idx, dateIndex) {
     this.activeLayer = this.layers[idx].id;
-    let displayedDate = this.layers[idx].availableDates[(this.layers[idx].availableDates.length -1) + dateIndex]
-    this.layers[idx].displayedDate = moment(displayedDate, 'YYYYMMDD').format('DD.MM.YYYY')
-    this.changeLayerDate(idx, [{'date': displayedDate}])
-    this.calculateClassBreaks(idx, this.layers[idx].displaySettings.min, this.layers[idx].displaySettings.max)
+    let displayedDate = this.layers[idx].availableDates[(this.layers[idx].availableDates.length - 1) + dateIndex];
+    this.layers[idx].displayedDate = moment(displayedDate, 'YYYYMMDD').format('DD.MM.YYYY');
+    this.changeLayerDate(idx, [{'date': displayedDate}]);
+    this.calculateClassBreaks(idx, this.layers[idx].displaySettings.min, this.layers[idx].displaySettings.max);
   }
   changeOpacity(id, opacityValue) {
-    if (this.basemap){
-      for (var ii of this.basemap.getLayers().getArray()) {
+    if (this.basemap) {
+      for (let ii of this.basemap.getLayers().getArray()) {
         if (ii.getProperties().id === id) {
-          ii.setOpacity(opacityValue)
+          ii.setOpacity(opacityValue);
         }
       }
     }
-  }  
+  }
   changeLayerDate(idx, layerDate) {
-    if (this.basemap){
-      for (var ii of this.basemap.getLayers().getArray()) {
+    if (this.basemap) {
+      for (let ii of this.basemap.getLayers().getArray()) {
         if (ii.getProperties().id === idx) {
-          let newSource = ii.getSource()
+          let newSource = ii.getSource();
           for (let jj in layerDate) {
-            newSource.updateParams(layerDate[jj])
+            newSource.updateParams(layerDate[jj]);
           }
-          ii.setSource(newSource)
-
+          newSource.refresh()
         }
       }
     }
   }
-  changeLayerRange(idx, classBreaks) {
-    let breaks = {};
-    let colours = {}
-    for (let ii = 0; ii < classBreaks.length; ii++) {
-      breaks['b'+ii] = classBreaks[ii];
-      colours['c'+ii] = this.layers[idx].legend.colours[ii].join(' ');
-    }
-    this.changeLayerDate(idx, [breaks, colours])
+  changeLayerRange(idx, classBreaks, classColours) {
+    let layerRange = {'classBreaks': classBreaks, 'classColours': classColours};
+    this.httpClient.fetch('http://' + locations.backend + '/backendapi/changelayerrange', {
+      method: 'POST',
+      body: JSON.stringify({"layerRange": layerRange}),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'Fetch',
+        'Authorization': 'Bearer ' + this.authService.getAccessToken()
+      },
+      mode: 'cors'
+    })
+      .then(response => response.json())
+      .then(data => {
+        this.changeLayerDate(idx, [{'map': data.modifiedMapFile}, {'TIMESTAMP': new Date().getTime()}]);
+      });
   }
+
+
   resetRangeSettings(idx) {
     this.layers[idx].displaySettings.min = this.layers[idx].statistics.min;
     this.layers[idx].displaySettings.max = this.layers[idx].statistics.max;
     this.minmaxSliders[idx].noUiSlider.reset();
     this.calculateClassBreaks(idx, this.layers[idx].displaySettings.min, this.layers[idx].displaySettings.max);
   }
-  calculateClassBreaks(idx, min, max){
-    if (this.basemap){
-      let nClasses = this.layers[idx].displaySettings.nClasses;
-      let classRange = (max - min) / nClasses;
-      let classBreaks = [min.toFixed(2)];
-      for (let ii = 0; ii < nClasses; ii++) {
-        min += classRange;
-        classBreaks.push(min.toFixed(2))
+
+  calculateClassBreaks(idx, min, max) {
+    if (this.basemap) {
+      let colourRange = this.layers[idx].legend.colours;
+      let classRange = this.layers[idx].legend.classBreaks;
+      let classBreaks = [];
+      let classColours = [];
+      for (let ii = 0; ii <= classRange.length - 1; ii++) {
+        let currentClass = classRange[ii];
+        if (currentClass[0] >= min && currentClass[1] <= max) {
+          classBreaks.push(currentClass);
+          classColours.push(colourRange[ii]);
+        }
       }
-      this.calculateLegend(idx)
-      this.changeLayerRange(idx, classBreaks)
+      this.calculateLegend(idx, classBreaks, classColours);
+      this.changeLayerRange(idx, classBreaks, classColours);
     }
   }
-   calculateLegend(idx) {
-    if (this.basemap){
+
+  calculateLegend(idx, classBreaks, classColours) {
+    if (this.basemap) {
       if (document.getElementById('legend-colours-wraper' + idx)) {
-        document.getElementById('legend-colours-wraper' + idx).parentElement.removeChild(document.getElementById('legend-colours-wraper' + idx))
-      };
+        document.getElementById('legend-colours-wraper' + idx).parentElement.removeChild(document.getElementById('legend-colours-wraper' + idx));
+      }
       let legendColoursWraper = document.createElement('div');
       legendColoursWraper.id = 'legend-colours-wraper' + idx;
       legendColoursWraper.classList.add('legend-image');
-      let colourBoxWidth = ((document.getElementById('min-max-slider' + idx).offsetWidth / this.layers[idx].displaySettings.nClasses) * 100) / (document.getElementById('min-max-slider' + idx).offsetWidth);
-      for (let ii = this.layers[idx].displaySettings.nClasses; ii >= 1; ii--) {
+      let colourBoxWidth = ((document.getElementById('min-max-slider' + idx).offsetWidth / (this.layers[idx].displaySettings.nClasses)) * 100) / (document.getElementById('min-max-slider' + idx).offsetWidth);
+      for (let ii = classBreaks.length - 1; ii >= 1; ii--) {
         let colourBox = document.createElement('p');
         colourBox.classList.add('colour-box');
         if (this.layers[idx].legend.type === 'continous') {
-          let colour1 = 'rgb(' + this.layers[idx].legend.colours[ii].join() + ')';
-          let colour2 = 'rgb(' + this.layers[idx].legend.colours[ii-1].join() + ')';
+          let colour1 = 'rgb(' + classColours[ii][1].join() + ')';
+          let colour2 = 'rgb(' + classColours[ii][0].join() + ')';
           colourBox.setAttribute('style', 'background: linear-gradient(to right, ' + colour2 + ' 0%, ' + colour1 + ' 100%); width: ' + colourBoxWidth + '%; height: 5px');
         } else {
-          var colour1 = 'rgb(' + this.layers[idx].legend.colours[ii].join() + ')';
+          let colour1 = 'rgb(' + classColours[ii][0].join() + ')';
           colourBox.setAttribute('style', 'background: ' + colour1 + '; width: ' + colourBoxWidth + '%;' + 'height: 5px');
         }
         legendColoursWraper.appendChild(colourBox);

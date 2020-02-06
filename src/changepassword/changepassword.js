@@ -61,12 +61,12 @@ export class Resetpassword {
     if (this.authService.authenticated) {
       this.passwordUpdate = {
         oldPassword: this.oldPassword,
-        newPassword: this.newPassword,
+        newPassword: this.newPassword
       };
       this.controller.validate()
       .then(result  => {
           if (result.valid) {
-            httpClient.fetch('http://' + locations.backend + '/backend/updatepassword', {
+            httpClient.fetch('http://' + locations.backend + '/backendapi/updatepassword', {
             method: 'POST',
             body: JSON.stringify(this.passwordUpdate),
             headers: {

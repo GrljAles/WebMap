@@ -21,7 +21,8 @@
                 </div>
                 <div id="legend-holder${layer.id}"></div>
                 <div>
-                  <a md-button="floating: true;" md-tooltip="position: bottom; text: Reset range settings;" md-waves="color: light;" class="red" click.trigger="resetRangeSettings(layer.id)"><i class="material-icons">cached</i></a>
+                  <a md-button="floating: true;" md-tooltip="position: bottom; text: Reset range settings;" md-waves="color: light;" class.bind="isActive ? 'red' : 'blue'" click.trigger="toggleButton()"><i class="material-icons">cached</i></a>
+                  <a md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class="red" click.trigger="resetRangeSettings(layer.id)"><i class="material-icons">details</i></a>
                 </div>
               </div>
             </li>
