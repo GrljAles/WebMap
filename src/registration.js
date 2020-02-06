@@ -66,7 +66,6 @@ export class Registration {
           })
           .then(response => {
             if (response) {
-              console.log(response)
               window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
             }
           })

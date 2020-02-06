@@ -1,5 +1,5 @@
 export default {
-  endpoint: 'backend',
+  endpoint: 'backendapi',
   configureEndpoints: ['basemap'],
 
 // SPA related options

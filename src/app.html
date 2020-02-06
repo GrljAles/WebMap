@@ -14,6 +14,22 @@
   <md-sidenav class="teal darken-1" view-model.ref="sideNavRight" edge="right" close-on-click="true">
       <ul class="teal darken-4 white-text">
         <li md-waves class="sidenav-close" click.trigger="logout()">Logout</li>
+
+
+        <div class="collapsible-accordion">
+          <ul md-collapsible="accordion: false;">
+            <li>
+              <ul class="collapsible-header no-padding">
+                <li md-waves>Profile</li>
+              </ul>
+              <ul class="collapsible-body teal darken-2">
+                <li md-waves class="sidenav-close">Email: ${userEmailDisplay}</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+
         <div class="collapsible-accordion">
           <ul md-collapsible="accordion: false;">
             <li>

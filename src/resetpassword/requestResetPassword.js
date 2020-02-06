@@ -3,6 +3,7 @@ import {ValidationRules, ValidationController} from 'aurelia-validation';
 import {HttpClient} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from 'aurelia-router';
+import * as locations from "../resources/locations/locations.json";
 
 @inject(NewInstance.of(ValidationController), EventAggregator, Router, HttpClient)
 export class RequestResetPassword {
@@ -13,8 +14,8 @@ export class RequestResetPassword {
     this.controller = controller;
     this.router = router;
     this.ea = eventAggregator;
-    this.message = '';
-    this.email = 'alesinar.grlj@gmail.com';
+    this.message = null;
+    this.email = null;
 
     ValidationRules
       .ensure('email')
@@ -30,7 +31,7 @@ export class RequestResetPassword {
     this.controller.validate()
     .then(result  => {
         if (result.valid) {
-          this.httpClient.fetch('http://84.255.193.232/backend/requestresetpassword', {
+          this.httpClient.fetch('http://' + locations.backend + '/backendapi/requestresetpassword', {
           method: 'POST',
           body: JSON.stringify(this.userEmail),
           headers: {
@@ -42,7 +43,6 @@ export class RequestResetPassword {
         })
         .then(response => response.json())
         .then(data => {
-          console.log(data.redirect)
           window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
           this.router.navigateToRoute(data.redirect)
         })

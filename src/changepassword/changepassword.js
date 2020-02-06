@@ -5,6 +5,7 @@ import {ValidationRules, ValidationController} from 'aurelia-validation';
 import {HttpClient, json} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from 'aurelia-router';
+import * as locations from "../resources/locations/locations.json";
 
 let httpClient = new HttpClient();
 @inject(NewInstance.of(ValidationController), EventAggregator, AuthService, Router)
@@ -60,12 +61,12 @@ export class Resetpassword {
     if (this.authService.authenticated) {
       this.passwordUpdate = {
         oldPassword: this.oldPassword,
-        newPassword: this.newPassword,
+        newPassword: this.newPassword
       };
       this.controller.validate()
       .then(result  => {
           if (result.valid) {
-            httpClient.fetch('http://84.255.193.232/backend/updatepassword', {
+            httpClient.fetch('http://' + locations.backend + '/backendapi/updatepassword', {
             method: 'POST',
             body: JSON.stringify(this.passwordUpdate),
             headers: {
@@ -78,7 +79,6 @@ export class Resetpassword {
           })
           .then(response => response.json())
           .then(data => {
-            console.log(data)
             window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
             this.router.navigateToRoute(data.redirect)
           })

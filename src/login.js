@@ -3,6 +3,7 @@ import {inject, computedFrom} from 'aurelia-framework';
 import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
 import {Router} from 'aurelia-router';
 import {EventAggregator} from 'aurelia-event-aggregator';
+import * as locations from "./resources/locations/locations.json";
 
 @inject(AuthService, ValidationControllerFactory, Router, EventAggregator)
 export class Login {
@@ -14,19 +15,17 @@ export class Login {
     this.authService = authService;    
     this.providers = [];
 
-    this.userName = '';
-    this.password = '';
+    this.userName = 'alesinar';
+    this.password = 'jebote12';
     this.passwordType = 'password';
 
     ValidationRules
-    .ensure('userName')
+      .ensure('userName')
       .required().withMessage('is required.')
-    .ensure('password')
+      .ensure('password')
       .required().withMessage('is also required.')
-    .on(this)
-  };
-
-  
+      .on(this);
+  }
   // make a getter to get the authentication status.
   // use computedFrom to avoid dirty checking
   @computedFrom('authService.authenticated')
@@ -40,51 +39,47 @@ export class Login {
         if (result.valid) {
           return this.authService.login({
             userName: this.userName,
-            password: this.password,
+            password: this.password
           })
-          .then(response => {
-            this.ea.publish('user-data-update', {
-              userName: response.userName
+            .then(response => {
+              this.ea.publish('user-data-update', {
+                userName: response.userName,
+                email: response.email
+              });
             })
-          })
-          .catch(err => {
-            this.ea.publish('user-data-update', {userName: null});
-            window.setTimeout(() => this.ea.publish('user-management-notification', err.responseObject), 500);
-
-            this.router.navigateToRoute(err.responseObject.redirect)
-          });
-        };
-      })
-    }
+            .catch(err => {
+              this.ea.publish('user-data-update', {userName: null});
+              window.setTimeout(() => this.ea.publish('user-management-notification', err.responseObject), 500);
+              this.router.navigateToRoute(err.responseObject.redirect);
+            });
+        }
+      });
+  }
 
   revealPassword() {
     if (this.passwordType === 'password') {
-      this.passwordType = 'text'
+      this.passwordType = 'text';
+    } else {
+      this.passwordType = 'password';
     }
-    else {
-      this.passwordType = 'password'
-    };
-  };
+  }
 
-  requestResetPassword(){
-    var resetPasswordFor = {userName: this.userName}
+  requestResetPassword() {
+    let resetPasswordFor = {userName: this.userName}
     httpClient.fetch('http://' + locations.backend + '/backend/resetpassword', {
-    method: 'POST',
-    body: JSON.stringify(resetPasswordFor),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'Fetch'
-    },
-    mode: 'cors'
-  })
-  .then(response => response.json())
-  .then(data => {
-    window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
-    this.router.navigateToRoute(data.redirect)
-  })
-}
-
-  
-
+      method: 'POST',
+      body: JSON.stringify(resetPasswordFor),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'Fetch'
+      },
+      mode: 'cors'
+    })
+      .then(response => response.json())
+      .then(data => {
+        window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
+        this.router.navigateToRoute(data.redirect);
+      });
+  }
 }
