@@ -1,38 +1,52 @@
-import { MdCollapsible } from "aurelia-materialize-bridge";
-import {inject} from 'aurelia-framework';
-import {Map, View} from 'ol';
+import {
+  MdCollapsible
+} from 'aurelia-materialize-bridge';
+import {
+  inject
+} from 'aurelia-framework';
+import {
+  Map,
+  View
+} from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import ImageLayer from 'ol/layer/Image';
 import XYZ from 'ol/source/XYZ';
 import TileWMS from 'ol/source/TileWMS';
 import Image from 'ol/source/Image';
 import Control from 'ol/control/Control';
-import {transform} from 'ol/proj';
+import {
+  transform
+} from 'ol/proj';
 import State from 'ol/source/State';
-import {EventAggregator} from 'aurelia-event-aggregator';
+import {
+  EventAggregator
+} from 'aurelia-event-aggregator';
 import * as dataData from 'resources/dataData/dataData.json';
 import moment from 'moment';
 import noUiSlider from 'materialize-css/extras/noUiSlider/noUiSlider';
 import 'materialize-css/extras/noUiSlider/nouislider.css';
-import {HttpClient} from 'aurelia-fetch-client';
-import {AuthService} from 'aurelia-authentication';
-import * as locations from "./resources/locations/locations.json";
+import {
+  HttpClient
+} from 'aurelia-fetch-client';
+import {
+  AuthService
+} from 'aurelia-authentication';
+import * as locations from './resources/locations/locations.json';
+import {IdentifyTool} from './productTools/identify/identify.js';
 
-@inject(EventAggregator, HttpClient, AuthService)
+@inject(EventAggregator, HttpClient, AuthService, IdentifyTool)
 export class BaseMap {
-  constructor(eventAggregator, httpClient, authService) {
+  constructor(eventAggregator, httpClient, authService, identifyTool) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;
     this.authService = authService;
+    this.identifyTool = identifyTool;
+
     this.opacityValue = 1;
     this.layers = dataData.default;
     this.collapsible = MdCollapsible;
     this.activeLayer = 0;
-    this.isActive = false;
     this.subscribe();
-  }
-  toggleButton() {
-    this.isActive = !this.isActive;
   }
 
   setOpacity1(value) {
@@ -107,7 +121,7 @@ export class BaseMap {
         behaviour: 'drag-tap'
       });
 
-      this.minmaxSliders[ii].noUiSlider.on('end', function(values) {
+      this.minmaxSliders[ii].noUiSlider.on('end', function (values) {
         let valueMin = parseFloat(values[0]);
         let valueMax = parseFloat(values[1]);
         _this.layers[_this.activeLayer].displaySettings.min = valueMin;
@@ -152,7 +166,37 @@ export class BaseMap {
         maxZoom: 20
       })
     });
+
+    this.basemap.on('singleclick', function(evt) {
+      if (_this.identifyTool.indentifyButtonActive) {
+        _this.identifyTool.displayIdentifyResultWindow();
+        let viewRes = /** @type {number} */ (_this.basemap.getView().getResolution());
+        for (let layer of _this.basemap.getLayers().getArray()) {
+          if (layer.get('title') === _this.layers[_this.activeLayer].name) {
+            let pixelValueUrl = layer.getSource().getGetFeatureInfoUrl(evt.coordinate, viewRes, 'EPSG:3857', {
+              'INFO_FORMAT': 'application/json'
+            });
+            _this.httpClient.fetch(pixelValueUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'Fetch'
+              },
+              mode: 'cors'
+            })
+              .then(response => response.json())
+              .then(data => {
+                _this.identifyTool.getPixelValue(data.Value, evt.coordinate, layer.get('title'), _this.layers[_this.activeLayer].displayedDate);
+              });
+          }
+        }
+      } else {
+        return;
+      }
+    });
   }
+
   collapsibleOpen(idx) {
     idx = parseInt(idx);
     this.layers[idx].active = 1;
@@ -176,7 +220,9 @@ export class BaseMap {
     this.activeLayer = this.layers[idx].id;
     let displayedDate = this.layers[idx].availableDates[(this.layers[idx].availableDates.length - 1) + dateIndex];
     this.layers[idx].displayedDate = moment(displayedDate, 'YYYYMMDD').format('DD.MM.YYYY');
-    this.changeLayerDate(idx, [{'date': displayedDate}]);
+    this.changeLayerDate(idx, [{
+      'date': displayedDate
+    }]);
     this.calculateClassBreaks(idx, this.layers[idx].displaySettings.min, this.layers[idx].displaySettings.max);
   }
   changeOpacity(id, opacityValue) {
@@ -202,10 +248,15 @@ export class BaseMap {
     }
   }
   changeLayerRange(idx, classBreaks, classColours) {
-    let layerRange = {'classBreaks': classBreaks, 'classColours': classColours};
+    let layerRange = {
+      'classBreaks': classBreaks,
+      'classColours': classColours
+    };
     this.httpClient.fetch('http://' + locations.backend + '/backendapi/changelayerrange', {
       method: 'POST',
-      body: JSON.stringify({"layerRange": layerRange}),
+      body: JSON.stringify({
+        'layerRange': layerRange
+      }),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -216,7 +267,11 @@ export class BaseMap {
     })
       .then(response => response.json())
       .then(data => {
-        this.changeLayerDate(idx, [{'map': data.modifiedMapFile}, {'TIMESTAMP': new Date().getTime()}]);
+        this.changeLayerDate(idx, [{
+          'map': data.modifiedMapFile
+        }, {
+          'TIMESTAMP': new Date().getTime()
+        }]);
       });
   }
 

@@ -7,7 +7,7 @@ body {
   background-repeat:  no-repeat;
   background-attachment: fixed;
   background-size:  cover;
-  background-color: #999;
+  background-color: #4C7261;
 }
 .transparent-title {
   opacity: .6;
@@ -54,7 +54,7 @@ nav {
   border: none;
   height:90vh;
   overflow:auto;
-  background: #004d40
+  background:#4C7261;
 }
 
 .confirm-email-text {
@@ -71,7 +71,7 @@ i.icon-black {
   padding-left: 5%;
 }
 .sidenav {
-  background: #004d40
+  background: #4C7261;
 }
 .collapsible-header {
   padding: 0rem 1rem;
@@ -104,4 +104,10 @@ border-bottom: none;
 }
 .value-box {
   font-size: .8rem;
+}
+.rows-font-size {
+  font-size: .8rem;
+}
+td, th {
+  padding: 0px;
 }
