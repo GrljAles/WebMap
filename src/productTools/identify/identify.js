@@ -11,8 +11,8 @@ export class IdentifyTool {
     this.indentifyButtonActive = false;
     this.identifyArray = [];
     this.identifyResultWindow = false;
-    this.tableId = 0;
     this.deleteTable = false;
+    this.uriContent = "";
     this.subscribe();
   }
 
@@ -20,6 +20,7 @@ export class IdentifyTool {
 
   toggleIdentifyButton() {
     this.indentifyButtonActive = !this.indentifyButtonActive;
+    this.ea.publish('identify-button-trigger', {identifyButon: this.indentifyButtonActive});
   }
 
   displayIdentifyResultWindow() {
@@ -47,17 +48,21 @@ export class IdentifyTool {
     this.identifyResultWindow = false;
     this.identifyArray = [];
     this.tableId = 0;
+    this.ea.publish('delete-identify-features', {idsToDelete: -1});
   }
 
-  getPixelValue(pixelValue, clickedCoordinates, productTitle, productDate) {
+  getPixelValue(id, pixelValue, clickedCoordinates, productTitle, productDate) {
     // First round the value and coordiantes to 2 deccimal places as they are only used for display here
     clickedCoordinates[0] = + clickedCoordinates[0].toFixed(2);
     clickedCoordinates[1] = + clickedCoordinates[1].toFixed(2);
-    pixelValue = + pixelValue.toFixed(2);
+    if (typeof pixelValue === 'string') {}
+    else {
+      pixelValue = + pixelValue.toFixed(2);
+    }
     
     // Construct table row object as new array so we can merge it with this.identifyArray.
     this.identifyElement = [{
-      id: this.tableId,
+      id: id,
       name: "Name",
       product: productTitle,
       date: productDate,
@@ -67,8 +72,28 @@ export class IdentifyTool {
 
     // Add table row object to list of all objects with Array.prototype.push.apply() method, so Aurelia can keep track of changes of the array and update the view-model.
     Array.prototype.push.apply(this.identifyArray, this.identifyElement);
+  }
 
-    // increment tableId variable
-    this.tableId += 1;
+  deleteResultsTableRow(id) {
+    // First create array of table element indices
+    let idsArray = [];
+    for (let element of this.identifyArray) {
+      idsArray.push(element.id);
+    }
+    // Get the index of passed id and delete one table element at that index
+    let idIndex = idsArray.indexOf(id);
+    this.identifyArray.splice(idIndex, 1);
+    this.ea.publish('delete-identify-features', {idsToDelete: idIndex});
+  }
+
+  downloadResults() {
+    // Table is an array so we have to convert it to object first
+    let downloadTableObject = {};
+    for(let row in this.identifyArray) {
+      downloadTableObject[row] = this.identifyArray[row];
+    }
+    // Create URIcomponent and download as json
+    this.uriContent = "data:application/json;filename=identifyTable.json," + encodeURIComponent(JSON.stringify(downloadTableObject));
+    window.open(uriContent, 'identifyTable.json');
   }
 }

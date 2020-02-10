@@ -14,6 +14,10 @@ import XYZ from 'ol/source/XYZ';
 import TileWMS from 'ol/source/TileWMS';
 import Image from 'ol/source/Image';
 import Control from 'ol/control/Control';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+import CircleStyle from 'ol/style/Circle/';
+import Draw from 'ol/interaction/Draw/';
 import {
   transform
 } from 'ol/proj';
@@ -33,6 +37,9 @@ import {
 } from 'aurelia-authentication';
 import * as locations from './resources/locations/locations.json';
 import {IdentifyTool} from './productTools/identify/identify.js';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import Style from 'ol/style/Style';
 
 @inject(EventAggregator, HttpClient, AuthService, IdentifyTool)
 export class BaseMap {
@@ -46,6 +53,7 @@ export class BaseMap {
     this.layers = dataData.default;
     this.collapsible = MdCollapsible;
     this.activeLayer = 0;
+    this.lastidentifyFeatureId = 0;
     this.subscribe();
   }
 
@@ -61,6 +69,23 @@ export class BaseMap {
     this.ea.subscribe('authentication-change', authenticated => {
       this.authenticated = authenticated;
     });
+    this.ea.subscribe('identify-button-trigger', (data) => {
+      if (data.identifyButon) {
+        this.basemap.addInteraction(this.draw);
+      }
+      else {
+        this.basemap.removeInteraction(this.draw);
+      }
+    });
+    this.ea.subscribe('delete-identify-features', (data) => {
+      if (data.idsToDelete === -1) {
+        for (let feature of this.identifyPointsDrawSource.getFeatures()) {
+          this.identifyPointsDrawSource.removeFeature(feature)};
+      }
+      else {
+        this.identifyPointsDrawSource.removeFeature(this.identifyPointsDrawSource.getFeatures()[data.idsToDelete]);
+      }
+    })
   }
 
   attached() {
@@ -121,7 +146,7 @@ export class BaseMap {
         behaviour: 'drag-tap'
       });
 
-      this.minmaxSliders[ii].noUiSlider.on('end', function (values) {
+      this.minmaxSliders[ii].noUiSlider.on('end', function(values) {
         let valueMin = parseFloat(values[0]);
         let valueMax = parseFloat(values[1]);
         _this.layers[_this.activeLayer].displaySettings.min = valueMin;
@@ -153,11 +178,37 @@ export class BaseMap {
       opacity: this.layers[0].opacity
     });
 
+    this.identifyPointsDrawSource = new VectorSource;
+    this.identifyPoints = new VectorLayer({
+      source: this.identifyPointsDrawSource,
+      style: new Style({
+        fill: new Fill({
+          color: '#4C7261'
+        }),
+        stroke: new Stroke({
+          color: '#4C7261',
+          width: 3
+        }),
+        image: new CircleStyle({
+          radius: 3,
+          fill: new Fill({
+            color: '#212121'
+          })
+        })
+      })
+    });
+
+    this.draw = new Draw({
+      source: this.identifyPointsDrawSource,
+      type: 'Point'
+    });
+
     this.basemap = new Map({
       target: 'basemap',
       layers: [
         this.osmTopo,
-        this.NDVI
+        this.NDVI,
+        this.identifyPoints
       ],
       view: new View({
         center: transform([14.815333, 46.119944], 'EPSG:4326', 'EPSG:3857'),
@@ -187,13 +238,13 @@ export class BaseMap {
             })
               .then(response => response.json())
               .then(data => {
-                _this.identifyTool.getPixelValue(data.Value, evt.coordinate, layer.get('title'), _this.layers[_this.activeLayer].displayedDate);
+                _this.identifyTool.getPixelValue(_this.lastidentifyFeatureId, data.Value, evt.coordinate, layer.get('title'), _this.layers[_this.activeLayer].displayedDate);
+                _this.identifyPointsDrawSource.getFeatures()[_this.identifyPointsDrawSource.getFeatures().length - 1].setId(_this.lastidentifyFeatureId);
+                _this.lastidentifyFeatureId += 1;
               });
           }
         }
-      } else {
-        return;
-      }
+      } else {};
     });
   }
 

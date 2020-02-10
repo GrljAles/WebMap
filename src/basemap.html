@@ -21,13 +21,13 @@
                 </div>
                 <div id="legend-holder${layer.id}"></div>
                 <div>
-                  <a md-button="floating: true;" md-tooltip="position: bottom; text: Reset range settings;" md-waves="color: light;" class="red" click.trigger="resetRangeSettings(layer.id)"><i class="material-icons">cached</i></a>
+                  <a show.bind="!identifyTool.indentifyButtonActive" md-button="floating: true;" md-tooltip="position: bottom; text: Reset range settings;" md-waves="color: light;" class="red" click.trigger="resetRangeSettings(layer.id)"><i class="material-icons">cached</i></a>
                   <a md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.toggleIdentifyButton()"><i class="material-icons">details</i></a>
                   <a show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Hide the table with identify results;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.closeIdentifyResultWindow()"><i class="material-icons">clear_all</i></a>
                   <a show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Delete the results table?;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.confirmDeleteTable()"><i class="material-icons">${identifyTool.deleteTable ? 'close' : 'delete'}</i></a>
                   <a show.bind="identifyTool.deleteTable" md-button="floating: true;" md-tooltip="position: bottom; text: Yes, delete please;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.yesDeleteTable()"><i class="material-icons">check</i></a>
-                  <a show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.downloadResults()"><i class="material-icons">file_download</i></a>
-                  <a show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Upload results to server;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.uploadResults()"><i class="material-icons">file_upload</i></a>
+                  <a download show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.downloadResults()" download="identifyTable.json" href="${identifyTool.uriContent}"><i class="material-icons">file_download</i></a>
+                  <!-- <a show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Upload results to server;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.uploadResults()"><i class="material-icons">file_upload</i></a> -->
                 </div>
               </div>
             </li>
@@ -38,24 +38,24 @@
         <table class="responsive-table striped centered">
           <thead class="collection-header lime">
             <tr>
-                <th width="16.6">Id</th>
-                <th width="16.6">Name</th>
-                <th width="16.6">Product</th>
-                <th width="16.6">Date</th>
-                <th width="16.6">Coordinates</th>
-                <th width="16.6">Value</th>
-                <th width="16.6">x</th>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Product</th>
+                <th>Date</th>
+                <th>Coordinates</th>
+                <th>Value</th>
+                <th>x</th>
             </tr>
           </thead>
           <tbody class="rows-font-size lime">
-            <tr repeat.for="element of identifyTool.identifyArray" id=${element.id}>
-              <td width="16.6">${element.id}</td>
-              <td width="16.6"><input type="text" id="autocomplete-input" class="autocomplete" placeholder="${element.name}"></td>
-              <td width="16.6">${element.product}</td>
-              <td width="16.6">${element.date}</td>
-              <td width="16.6">${element.coordinates[0]}, ${element.coordinates[1]}</td>
-              <td width="16.6">${element.value}</td>
-              <td width="16.6"><a md-button="floating: true;" md-tooltip="position: bottom; text: Delete this row;" md-waves="color: light;" class="orange btn-small" click.trigger="resetRangeSettings(layer.id)"><i class="material-icons">close</i></a></td>
+            <tr repeat.for="element of identifyTool.identifyArray">
+              <td>${element.id}</td>
+              <td><input type="text" value.two-way="element.name" class="materialize-textarea" placeholder="${element.name}"></td>
+              <td>${element.product}</td>
+              <td>${element.date}</td>
+              <td>${element.coordinates[0]}, ${element.coordinates[1]}</td>
+              <td>${element.value}</td>
+              <td><a md-button="floating: true;" md-tooltip="position: bottom; text: Delete this row;" md-waves="color: light;" class="orange btn-small" click.trigger="identifyTool.deleteResultsTableRow(element.id)"><i class="material-icons">close</i></a></td>
             </tr>
           </tbody>
         </table>
