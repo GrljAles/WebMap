@@ -2,7 +2,7 @@
   <require from="materialize-css/dist/css/materialize.css"></require>
   <require from="./styles.css"></require>
   <nav>
-    <div class="nav-wrapper teal darken-4">
+    <div class="nav-wrapper light-green darken-4">
       <a href="#" class="brand-logo">WebMap Project</a>
       <ul class="right">
 <!--         <li><a md-sidenav-collapse="ref.bind: sideNavRight;" if.bind="authenticated">Tools</a></li>
@@ -11,8 +11,8 @@
       </ul>
     </div>
   </nav>
-  <md-sidenav class="teal darken-1" view-model.ref="sideNavRight" edge="right" close-on-click="true">
-      <ul class="teal darken-4 white-text">
+  <md-sidenav class="light-green darken-1" view-model.ref="sideNavRight" edge="right" close-on-click="true">
+      <ul class="light-green darken-4 white-text">
         <li md-waves class="sidenav-close" click.trigger="logout()">Logout</li>
 
 
@@ -22,7 +22,7 @@
               <ul class="collapsible-header no-padding">
                 <li md-waves>Profile</li>
               </ul>
-              <ul class="collapsible-body teal darken-2">
+              <ul class="collapsible-body light-green darken-2">
                 <li md-waves class="sidenav-close">Email: ${userEmailDisplay}</li>
               </ul>
             </li>
@@ -36,7 +36,7 @@
               <ul class="collapsible-header no-padding">
                 <li md-waves>Settings</li>
               </ul>
-              <ul class="collapsible-body teal darken-2">
+              <ul class="collapsible-body light-green darken-2">
                 <li md-waves class="sidenav-close" route-href="route: changeemail;" click.trigger="changeEmailNavigate()">Change email address</li>
                 <li md-waves class="sidenav-close" route-href="route: changepassword;"click.trigger="changePasswordNavigate()">Change password</li>
               </ul>
