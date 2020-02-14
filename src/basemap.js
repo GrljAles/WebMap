@@ -30,7 +30,7 @@ import moment from 'moment';
 import noUiSlider from 'materialize-css/extras/noUiSlider/noUiSlider';
 import 'materialize-css/extras/noUiSlider/nouislider.css';
 import {
-  HttpClient
+  HttpClient, json
 } from 'aurelia-fetch-client';
 import {
   AuthService
@@ -40,6 +40,7 @@ import {IdentifyTool} from './productTools/identify/identify.js';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
+import GeoJSON from 'ol/format/GeoJSON'
 
 @inject(EventAggregator, HttpClient, AuthService, IdentifyTool)
 export class BaseMap {
@@ -78,11 +79,11 @@ export class BaseMap {
       }
     });
     this.ea.subscribe('delete-identify-features', (data) => {
-      if (data.idsToDelete === -1) {
+      if (data.idsToDelete === 'all') {
         for (let feature of this.identifyPointsDrawSource.getFeatures()) {
           this.identifyPointsDrawSource.removeFeature(feature)};
-      }
-      else {
+        this.lastidentifyFeatureId = 0;
+      } else {
         this.identifyPointsDrawSource.removeFeature(this.identifyPointsDrawSource.getFeatures()[data.idsToDelete]);
       }
     })
@@ -191,8 +192,9 @@ export class BaseMap {
         }),
         image: new CircleStyle({
           radius: 3,
-          fill: new Fill({
-            color: '#212121'
+          stroke: new Stroke({
+            color: '#000000',
+            width: 2
           })
         })
       })
@@ -236,16 +238,50 @@ export class BaseMap {
               },
               mode: 'cors'
             })
-              .then(response => response.json())
+              .then(response => {
+                return response.text();
+              })
               .then(data => {
-                _this.identifyTool.getPixelValue(_this.lastidentifyFeatureId, data.Value, evt.coordinate, layer.get('title'), _this.layers[_this.activeLayer].displayedDate);
-                _this.identifyPointsDrawSource.getFeatures()[_this.identifyPointsDrawSource.getFeatures().length - 1].setId(_this.lastidentifyFeatureId);
-                _this.lastidentifyFeatureId += 1;
+                let aaa = JSON.parse(data);
+                _this.setIdentifyLayerProperties({
+                  value: aaa.Value,
+                  coordinates: evt.coordinate,
+                  product: layer.get('title'),
+                  date: _this.layers[_this.activeLayer].displayedDate
+                });
+              })
+              .catch(error => {
+                _this.setIdentifyLayerProperties({
+                  value: 'noData',
+                  coordinates: evt.coordinate,
+                  product: layer.get('title'),
+                  date: _this.layers[_this.activeLayer].displayedDate
+                });
               });
           }
         }
-      } else {};
+      }
     });
+  }
+
+  setIdentifyLayerProperties(propJson) {
+    let lastFeature = this.identifyPointsDrawSource.getFeatures()[this.identifyPointsDrawSource.getFeatures().length - 1]
+    lastFeature.setProperties(propJson);
+    lastFeature.setId(this.lastidentifyFeatureId);
+    this.setIdentifyTableProperties(propJson, this.lastidentifyFeatureId);
+    this.lastidentifyFeatureId += 1;
+  }
+
+  setIdentifyTableProperties(propJson, id) {
+    propJson.id = id;
+    this.identifyTool.getPixelValue(propJson)
+  }
+
+  saveIdentifyGeojson() {
+    let writer = new GeoJSON();
+    let geojsonStr = writer.writeFeatures(this.identifyPointsDrawSource.getFeatures());
+    console.log(geojsonStr)
+    this.identifyTool.downloadResults(geojsonStr);
   }
 
   collapsibleOpen(idx) {

@@ -26,8 +26,14 @@
                   <a show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Hide the table with identify results;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.closeIdentifyResultWindow()"><i class="material-icons">clear_all</i></a>
                   <a show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Delete the results table?;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.confirmDeleteTable()"><i class="material-icons">${identifyTool.deleteTable ? 'close' : 'delete'}</i></a>
                   <a show.bind="identifyTool.deleteTable" md-button="floating: true;" md-tooltip="position: bottom; text: Yes, delete please;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.yesDeleteTable()"><i class="material-icons">check</i></a>
-                  <a download show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.downloadResults()" download="identifyTable.json" href="${identifyTool.uriContent}"><i class="material-icons">file_download</i></a>
+                  <a show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="saveIdentifyGeojson()" download="identifyTable.geojson" href="${identifyTool.uriContent}"><i class="material-icons">file_download</i></a>
                   <!-- <a show.bind="identifyTool.identifyResultWindow" md-button="floating: true;" md-tooltip="position: bottom; text: Upload results to server;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.uploadResults()"><i class="material-icons">file_upload</i></a> -->
+                  <a md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.toggleIdentifyButton()"><i class="material-icons">dashboard</i></a>
+                  <a md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.toggleIdentifyButton()"><i class="material-icons">timeline</i></a>
+                  <a md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.toggleIdentifyButton()"><i class="material-icons">multiline_chart</i></a>
+                  <a md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.toggleIdentifyButton()"><i class="material-icons">terrain</i></a>
+
+
                 </div>
               </div>
             </li>
@@ -39,7 +45,6 @@
           <thead class="collection-header lime">
             <tr>
                 <th>Id</th>
-                <th>Name</th>
                 <th>Product</th>
                 <th>Date</th>
                 <th>Coordinates</th>
@@ -50,7 +55,6 @@
           <tbody class="rows-font-size lime">
             <tr repeat.for="element of identifyTool.identifyArray">
               <td>${element.id}</td>
-              <td><input type="text" value.two-way="element.name" class="materialize-textarea" placeholder="${element.name}"></td>
               <td>${element.product}</td>
               <td>${element.date}</td>
               <td>${element.coordinates[0]}, ${element.coordinates[1]}</td>

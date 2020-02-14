@@ -48,30 +48,19 @@ export class IdentifyTool {
     this.identifyResultWindow = false;
     this.identifyArray = [];
     this.tableId = 0;
-    this.ea.publish('delete-identify-features', {idsToDelete: -1});
+    this.ea.publish('delete-identify-features', {idsToDelete: 'all'});
   }
 
-  getPixelValue(id, pixelValue, clickedCoordinates, productTitle, productDate) {
+  getPixelValue(rowJson) {
     // First round the value and coordiantes to 2 deccimal places as they are only used for display here
-    clickedCoordinates[0] = + clickedCoordinates[0].toFixed(2);
-    clickedCoordinates[1] = + clickedCoordinates[1].toFixed(2);
-    if (typeof pixelValue === 'string') {}
+    rowJson.coordinates[0] = + rowJson.coordinates[0].toFixed(2);
+    rowJson.coordinates[1] = + rowJson.coordinates[1].toFixed(2);
+    if (typeof rowJson.value === 'string') {}
     else {
-      pixelValue = + pixelValue.toFixed(2);
+      rowJson.value = + rowJson.value.toFixed(2);
     }
-    
-    // Construct table row object as new array so we can merge it with this.identifyArray.
-    this.identifyElement = [{
-      id: id,
-      name: "Name",
-      product: productTitle,
-      date: productDate,
-      coordinates: clickedCoordinates,
-      value: pixelValue
-    }];
-
     // Add table row object to list of all objects with Array.prototype.push.apply() method, so Aurelia can keep track of changes of the array and update the view-model.
-    Array.prototype.push.apply(this.identifyArray, this.identifyElement);
+    Array.prototype.push.apply(this.identifyArray, [rowJson]);
   }
 
   deleteResultsTableRow(id) {
@@ -86,14 +75,14 @@ export class IdentifyTool {
     this.ea.publish('delete-identify-features', {idsToDelete: idIndex});
   }
 
-  downloadResults() {
+  downloadResults(geoJsonStr) {
     // Table is an array so we have to convert it to object first
-    let downloadTableObject = {};
+/*     let downloadTableObject = {};
     for(let row in this.identifyArray) {
       downloadTableObject[row] = this.identifyArray[row];
-    }
+    } */
     // Create URIcomponent and download as json
-    this.uriContent = "data:application/json;filename=identifyTable.json," + encodeURIComponent(JSON.stringify(downloadTableObject));
+    this.uriContent = "data:application/json;filename=identifyTable.json," + encodeURIComponent(geoJsonStr);
     window.open(uriContent, 'identifyTable.json');
   }
 }
