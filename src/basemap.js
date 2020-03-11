@@ -55,6 +55,14 @@ export class BaseMap {
     this.collapsible = MdCollapsible;
     this.activeLayer = 0;
     this.lastidentifyFeatureId = 0;
+    this.buttonCheck = {
+      refresh: true,
+      identify: false,
+      zonalStat: false,
+      tsChart: false,
+      zonalTSChart: false,
+      profile: false
+    };
     this.subscribe();
   }
 
@@ -70,7 +78,7 @@ export class BaseMap {
     this.ea.subscribe('authentication-change', authenticated => {
       this.authenticated = authenticated;
     });
-    this.ea.subscribe('identify-button-trigger', (data) => {
+    this.ea.subscribe('identify-draw-trigger', (data) => {
       if (data.identifyButon) {
         this.basemap.addInteraction(this.draw);
       }
@@ -221,7 +229,7 @@ export class BaseMap {
     });
 
     this.basemap.on('singleclick', function(evt) {
-      if (_this.identifyTool.indentifyButtonActive) {
+      if (_this.buttonCheck.identify) {
         _this.identifyTool.displayIdentifyResultWindow();
         let viewRes = /** @type {number} */ (_this.basemap.getView().getResolution());
         for (let layer of _this.basemap.getLayers().getArray()) {
@@ -262,6 +270,18 @@ export class BaseMap {
         }
       }
     });
+  }
+
+  toggleTool(buttonId) {
+    for (var i in  this.buttonCheck) {
+      if (i != buttonId) {
+        this.buttonCheck[i] = false;
+      }
+      else {
+        this.buttonCheck[buttonId] = !this.buttonCheck[buttonId];
+      }
+      this.ea.publish(i + '-button-trigger', {button: this.buttonCheck[i]});
+    }    
   }
 
   setIdentifyLayerProperties(propJson) {

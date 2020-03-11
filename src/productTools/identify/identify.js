@@ -16,22 +16,21 @@ export class IdentifyTool {
     this.subscribe();
   }
 
-  subscribe() {}
+  subscribe() {
+    this.ea.subscribe('identify-button-trigger', (data) => {
+      this.toggleIdentifyButton(data.button)
+    })
+  }
 
-  toggleIdentifyButton() {
-    this.indentifyButtonActive = !this.indentifyButtonActive;
-    this.ea.publish('identify-button-trigger', {identifyButon: this.indentifyButtonActive});
+  toggleIdentifyButton(buttonState) {
+    this.indentifyButtonActive = buttonState;
+    this.identifyResultWindow = buttonState;
+    this.ea.publish('identify-draw-trigger', {identifyButon: buttonState});
   }
 
   displayIdentifyResultWindow() {
     if (!this.identifyResultWindow) {
       this.identifyResultWindow = true;
-    }
-  }
-
-  closeIdentifyResultWindow() {
-    if (this.identifyResultWindow) {
-      this.identifyResultWindow = false;
     }
   }
 
