@@ -13,26 +13,51 @@ export class IdentifyTool {
     this.identifyResultWindow = false;
     this.deleteTable = false;
     this.uriContent = "";
+    this.buttonCheck = {
+      refresh: {
+        state: true,
+        drawGeom: null,
+      },
+      identify: {
+        state: false,
+        drawGeom: 'Point'
+      },
+      zonalStat: {
+        state: false,
+        drawGeom: 'Polygon'
+      },
+      tsChart: {
+        state: false,
+        drawGeom: 'Point'
+      },
+      zonalTSChart: {
+        state: false,
+        drawGeom: 'Polygon'
+      },
+      profile: {
+        state: false,
+        drawGeom: 'Line'
+      },
+    };
     this.subscribe();
   }
 
   subscribe() {
-    this.ea.subscribe('identify-button-trigger', (data) => {
-      this.toggleIdentifyButton(data.button)
+    this.ea.subscribe('button-trigger', (data) => {
+      this.toggleIdentifyButton(data)
     })
   }
 
-  toggleIdentifyButton(buttonState) {
-    this.indentifyButtonActive = buttonState;
-    this.identifyResultWindow = buttonState;
-    this.ea.publish('identify-draw-trigger', {identifyButon: buttonState});
+  toggleIdentifyButton(data) {
+    this.buttonCheck = data;
+    // this.ea.publish('draw-trigger', button);
   }
-
+/* 
   displayIdentifyResultWindow() {
     if (!this.identifyResultWindow) {
       this.identifyResultWindow = true;
     }
-  }
+  } */
 
   confirmDeleteTable() {
     this.deleteTable = !this.deleteTable;
@@ -44,16 +69,13 @@ export class IdentifyTool {
 
   yesDeleteTable() {
     this.deleteTable = false;
-    this.identifyResultWindow = false;
+    // this.identifyResultWindow = false;
     this.identifyArray = [];
     this.tableId = 0;
     this.ea.publish('delete-identify-features', {idsToDelete: 'all'});
   }
 
   getPixelValue(rowJson) {
-    // First round the value and coordiantes to 2 deccimal places as they are only used for display here
-    rowJson.coordinates[0] = + rowJson.coordinates[0].toFixed(2);
-    rowJson.coordinates[1] = + rowJson.coordinates[1].toFixed(2);
     if (typeof rowJson.value === 'string') {}
     else {
       rowJson.value = + rowJson.value.toFixed(2);
@@ -75,11 +97,6 @@ export class IdentifyTool {
   }
 
   downloadResults(geoJsonStr) {
-    // Table is an array so we have to convert it to object first
-/*     let downloadTableObject = {};
-    for(let row in this.identifyArray) {
-      downloadTableObject[row] = this.identifyArray[row];
-    } */
     // Create URIcomponent and download as json
     this.uriContent = "data:application/json;filename=identifyTable.json," + encodeURIComponent(geoJsonStr);
     window.open(uriContent, 'identifyTable.json');

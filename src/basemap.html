@@ -1,7 +1,7 @@
 <template>
   <require from="resources/value-converters/objectKeysValueConverter"></require>
   <div class="row">
-    <ul class="collection with-header col l3 m3 s3 layer-list scrollbar-hidden">
+    <ul class="light-green darken-1 collection with-header col l3 m3 s3 layer-list scrollbar-hidden">
       <li class="collection-header light-green darken-3"><h4>Layers</h4></li>
         <div class="collapsible-open-close-events">
           <ul md-collapsible md-on-open-start.delegate="collapsibleOpen($event.detail.el.childNodes[1].id)" md-on-close-start.delegate="collapsibleClose($event.detail.el.childNodes[1].id)">
@@ -31,12 +31,12 @@
                   <a md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.toggleIdentifyButton()"><i class="material-icons">multiline_chart</i></a>
                   <a md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="identifyTool.indentifyButtonActive ? 'red' : 'blue'" click.trigger="identifyTool.toggleIdentifyButton()"><i class="material-icons">terrain</i></a> -->
 
-                  <a id='refresh' md-button="floating: true;" md-tooltip="position: bottom; text: Reset range settings;" md-waves="color: light;" class="red" click.trigger="resetRangeSettings(layer.id)"><i class="material-icons">cached</i></a>
-                  <a id='identify' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" click.trigger="toggleTool('identify')" class.bind="buttonCheck.identify ? 'red' : 'blue'"><i class="material-icons">details</i></a>
-                  <a id='zonalStat' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.zonalStat ? 'red' : 'blue'" click.trigger="toggleTool('zonalStat')"><i class="material-icons">dashboard</i></a>
-                  <a id='tsChart' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.tsChart ? 'red' : 'blue'" click.trigger="toggleTool('tsChart')"><i class="material-icons">timeline</i></a>
-                  <a id='zonalTSChart' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.zonalTSChart ? 'red' : 'blue'" click.trigger="toggleTool('zonalTSChart')"><i class="material-icons">multiline_chart</i></a>
-                  <a id='profile' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.profile ? 'red' : 'blue'" click.trigger="toggleTool('profile')"><i class="material-icons">terrain</i></a>
+                  <a id='refresh' md-button="floating: true;" md-tooltip="position: bottom; text: Reset range settings;" md-waves="color: light;" class="tr-green" click.trigger="resetRangeSettings(layer.id)"><i class="material-icons icon-white">cached</i></a>
+                  <a id='identify' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" click.trigger="toggleTool('identify')" class.bind="buttonCheck.identify.state ? 'lime' : 'tr-green'"><i class.bind="buttonCheck.identify.state ? 'material-icons icon-grey' : 'material-icons icon-white'">details</i></a>
+                  <a id='zonalStat' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.zonalStat.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('zonalStat')"><i class.bind="buttonCheck.zonalStat.state ? 'material-icons icon-grey' : 'material-icons icon-white'">dashboard</i></a>
+                  <a id='tsChart' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.tsChart.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('tsChart')"><i class.bind="buttonCheck.tsChart.state ? 'material-icons icon-grey' : 'material-icons icon-white'">timeline</i></a>
+                  <a id='zonalTSChart' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.zonalTSChart.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('zonalTSChart')"><i class.bind="buttonCheck.zonalTSChart.state ? 'material-icons icon-grey' : 'material-icons icon-white'">multiline_chart</i></a>
+                  <a id='profile' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.profile.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('profile')"><i class.bind="buttonCheck.profile.state ? 'material-icons icon-grey' : 'material-icons icon-white'">terrain</i></a>
 
                 </div>
               </div>
@@ -44,7 +44,7 @@
           </ul>
         </div>
       </li>
-      <div show.bind="identifyTool.identifyResultWindow" class="col l12 m12 s12 scale-transition results-table lime">
+      <div show.bind="identifyTool.buttonCheck.identify.state" class="col l12 m12 s12 scale-transition results-table lime">
         <div>
           <div class='table-comtrolls-wrapper'>
             <h5 class='table-controll-title white-text'>RESULTS TABLE</h5>
@@ -52,6 +52,7 @@
               <a id='yesDelete' show.bind="identifyTool.deleteTable" md-button="floating: true;" md-tooltip="position: bottom; text: Yes, delete please;" md-waves="color: light;" class="tr-green" click.trigger="identifyTool.yesDeleteTable()"><i class="material-icons icon-grey">check</i></a>
               <a id='save' show.bind="buttonCheck.identify" md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;" md-waves="color: light;" class="tr-green" click.trigger="saveIdentifyGeojson()" download="identifyTable.geojson" href="${identifyTool.uriContent}"><i class="material-icons icon-grey">file_download</i></a>
               <a id='delete' show.bind="buttonCheck.identify" md-button="floating: true;" md-tooltip="position: bottom; text: Delete the results table?;" md-waves="color: light;" class="tr-green" click.trigger="identifyTool.confirmDeleteTable()"><i class="material-icons icon-grey">${identifyTool.deleteTable ? 'close' : 'delete'}</i></a>
+              <!-- <a id='save' show.bind="buttonCheck.identify" md-button="floating: true;" md-tooltip="position: bottom; text: Select/Draw mode;" md-waves="color: light;" class="tr-green" click.trigger="saveIdentifyGeojson()" download="identifyTable.geojson" href="${identifyTool.uriContent}"><i class="material-icons icon-grey">${identifyTool.deleteTable ? 'edit' : 'select_all'}</i></a> -->
             </span>
           </div>
           <table class="responsive-table striped centered">
@@ -60,9 +61,8 @@
                   <th>Id</th>
                   <th>Product</th>
                   <th>Date</th>
-                  <th>Coordinates</th>
                   <th>Value</th>
-                  <th>x</th>
+                  <th><a class="btn-flat"><i class="material-icons icon-grey">close</i></a></th>
               </tr>
             </thead>
             <tbody class="rows-font-size lime">
@@ -70,9 +70,8 @@
                 <td>${element.id}</td>
                 <td>${element.product}</td>
                 <td>${element.date}</td>
-                <td>${element.coordinates[0]}, ${element.coordinates[1]}</td>
                 <td>${element.value}</td>
-                <td><a md-button="floating: true;" md-tooltip="position: bottom; text: Delete this row;" md-waves="color: light;" class="orange btn-small" click.trigger="identifyTool.deleteResultsTableRow(element.id)"><i class="material-icons">close</i></a></td>
+                <td><a md-button="floating: true;" md-tooltip="position: bottom; text: Delete this row;" md-waves="color: light;" class="tr-button btn-small" click.trigger="identifyTool.deleteResultsTableRow(element.id)"><i class="material-icons icon-grey">close</i></a></td>
               </tr>
             </tbody>
           </table>

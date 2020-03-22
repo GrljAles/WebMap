@@ -17,7 +17,6 @@ import Control from 'ol/control/Control';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import CircleStyle from 'ol/style/Circle/';
-import Draw from 'ol/interaction/Draw/';
 import {
   transform
 } from 'ol/proj';
@@ -40,7 +39,10 @@ import {IdentifyTool} from './productTools/identify/identify.js';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
-import GeoJSON from 'ol/format/GeoJSON'
+import GeoJSON from 'ol/format/GeoJSON';
+import {Draw, Select, Snap} from 'ol/interaction';
+import {pointerMove} from 'ol/events/condition';
+import { none } from 'ol/centerconstraint';
 
 @inject(EventAggregator, HttpClient, AuthService, IdentifyTool)
 export class BaseMap {
@@ -55,13 +57,32 @@ export class BaseMap {
     this.collapsible = MdCollapsible;
     this.activeLayer = 0;
     this.lastidentifyFeatureId = 0;
+    this.drawGeomType = 'Point';
     this.buttonCheck = {
-      refresh: true,
-      identify: false,
-      zonalStat: false,
-      tsChart: false,
-      zonalTSChart: false,
-      profile: false
+      refresh: {
+        state: true,
+        drawGeom: null,
+      },
+      identify: {
+        state: false,
+        drawGeom: 'Point'
+      },
+      zonalStat: {
+        state: false,
+        drawGeom: 'Polygon'
+      },
+      tsChart: {
+        state: false,
+        drawGeom: 'Point'
+      },
+      zonalTSChart: {
+        state: false,
+        drawGeom: 'Polygon'
+      },
+      profile: {
+        state: false,
+        drawGeom: 'LineString'
+      },
     };
     this.subscribe();
   }
@@ -78,14 +99,10 @@ export class BaseMap {
     this.ea.subscribe('authentication-change', authenticated => {
       this.authenticated = authenticated;
     });
-    this.ea.subscribe('identify-draw-trigger', (data) => {
-      if (data.identifyButon) {
-        this.basemap.addInteraction(this.draw);
-      }
-      else {
-        this.basemap.removeInteraction(this.draw);
-      }
-    });
+/*     this.ea.subscribe('draw-trigger', (data) => {
+      this.toggleDrawInteraction(data.button)
+    }) */
+
     this.ea.subscribe('delete-identify-features', (data) => {
       if (data.idsToDelete === 'all') {
         for (let feature of this.identifyPointsDrawSource.getFeatures()) {
@@ -192,16 +209,16 @@ export class BaseMap {
       source: this.identifyPointsDrawSource,
       style: new Style({
         fill: new Fill({
-          color: '#4C7261'
+          color: 'rgba(0, 0, 0, 0.25)'
         }),
         stroke: new Stroke({
-          color: '#4C7261',
+          color: 'rgba(0, 0, 0, 1)',
           width: 3
         }),
         image: new CircleStyle({
           radius: 3,
           stroke: new Stroke({
-            color: '#000000',
+            color: 'rgba(0, 0, 0, 1',
             width: 2
           })
         })
@@ -210,7 +227,7 @@ export class BaseMap {
 
     this.draw = new Draw({
       source: this.identifyPointsDrawSource,
-      type: 'Point'
+      type: this.drawGeomType
     });
 
     this.basemap = new Map({
@@ -228,9 +245,19 @@ export class BaseMap {
       })
     });
 
+    var select = new Select({
+      condition: pointerMove
+    });
+
+/*     this.basemap.addInteraction(select);
+    var snap = new Snap({
+      source: this.identifyPoints.getSource()
+    });
+    this.basemap.addInteraction(snap); */
+
     this.basemap.on('singleclick', function(evt) {
-      if (_this.buttonCheck.identify) {
-        _this.identifyTool.displayIdentifyResultWindow();
+      if (_this.buttonCheck.identify.state) {
+        //_this.identifyTool.displayIdentifyResultWindow();
         let viewRes = /** @type {number} */ (_this.basemap.getView().getResolution());
         for (let layer of _this.basemap.getLayers().getArray()) {
           if (layer.get('title') === _this.layers[_this.activeLayer].name) {
@@ -270,32 +297,60 @@ export class BaseMap {
         }
       }
     });
+    if (_this.buttonCheck.zonalStat.state) {
+      _this.draw.on('drawend',
+        function(evt) {
+          _this.setIdentifyLayerProperties({
+            value: 'ksnlvn',
+            mmm: 655,
+            product: '',
+            jds: '5sd',
+            date: _this.layers[_this.activeLayer].displayedDate
+          });
+        });
+
+    }
   }
 
   toggleTool(buttonId) {
     for (var i in  this.buttonCheck) {
       if (i != buttonId) {
-        this.buttonCheck[i] = false;
+        this.buttonCheck[i].state = false;
       }
       else {
-        this.buttonCheck[buttonId] = !this.buttonCheck[buttonId];
+        this.buttonCheck[buttonId].state = !this.buttonCheck[buttonId].state;
+        this.toggleDrawInteraction(this.buttonCheck[buttonId])
       }
-      this.ea.publish(i + '-button-trigger', {button: this.buttonCheck[i]});
+      this.ea.publish('button-trigger', this.buttonCheck);
     }    
   }
 
+  toggleDrawInteraction(buttonProps) {
+    console.log(buttonProps)
+    if (buttonProps.state) {
+      this.basemap.removeInteraction(this.draw);
+      this.draw = new Draw({
+        source: this.identifyPointsDrawSource,
+        type: buttonProps.drawGeom
+      });
+  
+      this.basemap.addInteraction(this.draw);
+    }
+    else {
+      this.basemap.removeInteraction(this.draw);
+    }
+  }
+
   setIdentifyLayerProperties(propJson) {
+    console.log(this.identifyPointsDrawSource.getFeatures().length)
     let lastFeature = this.identifyPointsDrawSource.getFeatures()[this.identifyPointsDrawSource.getFeatures().length - 1]
     lastFeature.setProperties(propJson);
     lastFeature.setId(this.lastidentifyFeatureId);
-    this.setIdentifyTableProperties(propJson, this.lastidentifyFeatureId);
+    propJson.id = this.lastidentifyFeatureId
+    this.identifyTool.getPixelValue(propJson);
     this.lastidentifyFeatureId += 1;
   }
 
-  setIdentifyTableProperties(propJson, id) {
-    propJson.id = id;
-    this.identifyTool.getPixelValue(propJson)
-  }
 
   saveIdentifyGeojson() {
     let writer = new GeoJSON();

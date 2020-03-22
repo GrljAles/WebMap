@@ -127,8 +127,16 @@ td, th {
 .tr-green {
   background-color: rgba(242, 242, 242, 0.5) !important;
 }
+.tr-button {
+  webkit-box-shadow: none;
+  box-shadow: none;
+  background-color: rgba(255, 255, 255, 0) !important;
+}
 i.icon-grey {
   color: #688a5a;
+}
+i.icon-white {
+  color: white;
 }
 .scrollbar-hidden {
   overflow-x: hidden
