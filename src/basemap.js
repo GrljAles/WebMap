@@ -62,27 +62,33 @@ export class BaseMap {
       refresh: {
         state: true,
         drawGeom: null,
+        reledLayer: null
       },
       identify: {
         state: false,
-        drawGeom: 'Point'
+        drawGeom: 'Point',
+        relatedLayer: 'identifyPoints'
       },
       zonalStat: {
         state: false,
-        drawGeom: 'Polygon'
+        drawGeom: 'Polygon',
+        relatedLayer: 'zonalStatsPolygons'
       },
       tsChart: {
         state: false,
-        drawGeom: 'Point'
+        drawGeom: 'Point',
+        relatedLayer: 'tsPoints'
       },
       zonalTSChart: {
         state: false,
-        drawGeom: 'Polygon'
+        drawGeom: 'Polygon',
+        relatedLayer: 'zonalTSPolygons'
       },
       profile: {
         state: false,
-        drawGeom: 'LineString'
-      },
+        drawGeom: 'LineString',
+        relatedLayer: 'profileLine'
+      }
     };
     this.subscribe();
   }
@@ -99,19 +105,21 @@ export class BaseMap {
     this.ea.subscribe('authentication-change', authenticated => {
       this.authenticated = authenticated;
     });
-/*     this.ea.subscribe('draw-trigger', (data) => {
-      this.toggleDrawInteraction(data.button)
-    }) */
 
-    this.ea.subscribe('delete-identify-features', (data) => {
-      if (data.idsToDelete === 'all') {
-        for (let feature of this.identifyPointsDrawSource.getFeatures()) {
-          this.identifyPointsDrawSource.removeFeature(feature)};
-        this.lastidentifyFeatureId = 0;
-      } else {
-        this.identifyPointsDrawSource.removeFeature(this.identifyPointsDrawSource.getFeatures()[data.idsToDelete]);
+    this.ea.subscribe('delete-tool-features', (data) => {
+      for (let selectedLayer of this.basemap.getLayers().getArray()) {
+        if (selectedLayer.get('title') === data.layer) {
+          let selectedLayerSource = selectedLayer.getSource()
+          if (data.idsToDelete === 'all') {
+            for (let feature of selectedLayerSource.getFeatures()) {
+              selectedLayerSource.removeFeature(feature)};
+            this.lastidentifyFeatureId = 0;
+          } else {
+            selectedLayerSource.removeFeature(selectedLayerSource.getFeatures()[data.idsToDelete]);
+          }
+        }
       }
-    })
+    });
   }
 
   attached() {
@@ -204,25 +212,34 @@ export class BaseMap {
       opacity: this.layers[0].opacity
     });
 
-    this.identifyPointsDrawSource = new VectorSource;
-    this.identifyPoints = new VectorLayer({
-      source: this.identifyPointsDrawSource,
-      style: new Style({
-        fill: new Fill({
-          color: 'rgba(0, 0, 0, 0.25)'
-        }),
+    this.toolLayerStyle = new Style({
+      fill: new Fill({
+        color: 'rgba(0, 0, 0, 0.25)'
+      }),
+      stroke: new Stroke({
+        color: 'rgba(0, 0, 0, 1)',
+        width: 3
+      }),
+      image: new CircleStyle({
+        radius: 3,
         stroke: new Stroke({
-          color: 'rgba(0, 0, 0, 1)',
-          width: 3
-        }),
-        image: new CircleStyle({
-          radius: 3,
-          stroke: new Stroke({
-            color: 'rgba(0, 0, 0, 1',
-            width: 2
-          })
+          color: 'rgba(0, 0, 0, 1',
+          width: 2
         })
       })
+    });
+
+    this.identifyPointsDrawSource = new VectorSource;
+    this.identifyPoints = new VectorLayer({
+      title: 'identifyPoints',
+      source: this.identifyPointsDrawSource,
+      style: this.toolLayerStyle
+    });
+    this.zonalStatsPolysDrawSource = new VectorSource;
+    this.zonalStatsPolys = new VectorLayer({
+      title: 'zonalStatsPolygons',
+      source: this.zonalStatsPolysDrawSource,
+      style: this.toolLayerStyle
     });
 
     this.draw = new Draw({
@@ -286,7 +303,7 @@ export class BaseMap {
                 });
               })
               .catch(error => {
-                _this.setIdentifyLayerProperties({
+                _this.setIdentifyLayerProperties('identifyPoints', {
                   value: 'noData',
                   coordinates: evt.coordinate,
                   product: layer.get('title'),
@@ -300,11 +317,12 @@ export class BaseMap {
     if (_this.buttonCheck.zonalStat.state) {
       _this.draw.on('drawend',
         function(evt) {
-          _this.setIdentifyLayerProperties({
-            value: 'ksnlvn',
-            mmm: 655,
-            product: '',
-            jds: '5sd',
+          _this.setIdentifyLayerProperties('zonalStatsPolygons', {
+            min: 'ksnlvn',
+            max: 655,
+            mean: '',
+            std: '5sd',
+            range: 5,
             date: _this.layers[_this.activeLayer].displayedDate
           });
         });
@@ -341,22 +359,31 @@ export class BaseMap {
     }
   }
 
-  setIdentifyLayerProperties(propJson) {
-    console.log(this.identifyPointsDrawSource.getFeatures().length)
-    let lastFeature = this.identifyPointsDrawSource.getFeatures()[this.identifyPointsDrawSource.getFeatures().length - 1]
-    lastFeature.setProperties(propJson);
-    lastFeature.setId(this.lastidentifyFeatureId);
-    propJson.id = this.lastidentifyFeatureId
-    this.identifyTool.getPixelValue(propJson);
-    this.lastidentifyFeatureId += 1;
+  setIdentifyLayerProperties(whichLayer, propJson) {
+    for (let selectedLayer of this.basemap.getLayers().getArray()) {
+      if (selectedLayer.get('title') === whichLayer) {
+        let selectedLayerSource = selectedLayer.getSource();
+        let lastFeature = selectedLayerSource.getFeatures()[selectedLayerSource.getFeatures().length - 1]
+        lastFeature.setProperties(propJson);
+        lastFeature.setId(this.lastidentifyFeatureId);
+        propJson.id = this.lastidentifyFeatureId;
+        this.identifyTool.getPixelValue(whichLayer, propJson);
+        this.lastidentifyFeatureId += 1;
+      }
+    }
   }
 
 
-  saveIdentifyGeojson() {
+  saveIdentifyGeojson(whichLayer) {
     let writer = new GeoJSON();
-    let geojsonStr = writer.writeFeatures(this.identifyPointsDrawSource.getFeatures());
-    console.log(geojsonStr)
-    this.identifyTool.downloadResults(geojsonStr);
+    for (let selectedLayer of this.basemap.getLayers().getArray()) {
+      if (selectedLayer.get('title') === whichLayer) {
+        let selectedLayerSource = selectedLayer.getSource();
+        let geojsonStr = writer.writeFeatures(selectedLayerSource.getFeatures());
+        console.log(geojsonStr)
+        this.identifyTool.downloadResults(geojsonStr);
+      }
+    }
   }
 
   collapsibleOpen(idx) {
