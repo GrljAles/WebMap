@@ -86,12 +86,18 @@ export class IdentifyTool {
   }
 
   getPixelValue(whichTable, rowJson) {
-    if (typeof rowJson.value === 'string') {}
-    else {
-      rowJson.value = + rowJson.value.toFixed(2);
+    console.log(whichTable, rowJson)
+    if (rowJson.value) {
+      if (typeof rowJson.value === 'string') {}
+      else {
+        rowJson.value = + rowJson.value.toFixed(2);
+      }
+      // Add table row object to list of all objects with Array.prototype.push.apply() method, so Aurelia can keep track of changes of the array and update the view-model.
+      
+
     }
-    // Add table row object to list of all objects with Array.prototype.push.apply() method, so Aurelia can keep track of changes of the array and update the view-model.
     Array.prototype.push.apply(this.resultsTables[whichTable].table, [rowJson]);
+    console.log(this.resultsTables[whichTable].table)
   }
 
   deleteResultsTableRow(whichTable, id) {
