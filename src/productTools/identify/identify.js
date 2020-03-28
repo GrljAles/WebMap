@@ -97,13 +97,14 @@ export class IdentifyTool {
 
     }
     Array.prototype.push.apply(this.resultsTables[whichTable].table, [rowJson]);
-    console.log(this.resultsTables[whichTable].table)
   }
 
   deleteResultsTableRow(whichTable, id) {
+    console.log(whichTable)
     // First create array of table element indices
     let idsArray = [];
     for (let element of this.resultsTables[whichTable].table) {
+      
       idsArray.push(element.id);
     }
     // Get the index of passed id and delete one table element at that index

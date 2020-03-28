@@ -91,7 +91,6 @@
               <a id='yesDelete' show.bind="identifyTool.resultsTables.zonalStatsPolygons.delete" md-button="floating: true;" md-tooltip="position: bottom; text: Yes, delete please;" md-waves="color: light;" class="tr-green" click.trigger="identifyTool.yesDeleteTable('zonalStatsPolygons')"><i class="material-icons icon-grey">check</i></a>
               <a id='save' md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;" md-waves="color: light;" class="tr-green" click.trigger="saveIdentifyGeojson('zonalStatsPolygons')" download="zonalStatsPolygons.geojson" href="${identifyTool.uriContent}"><i class="material-icons icon-grey">file_download</i></a>
               <a id='deleteZonalStatsTable' md-button="floating: true;" md-tooltip="position: bottom; text: Delete the results table?;" md-waves="color: light;" class="tr-green" click.trigger="identifyTool.confirmDeleteTable('zonalStatsPolygons')"><i class="material-icons icon-grey">${identifyTool.resultsTables.zonalStatsPolygons.delete ? 'close' : 'delete'}</i></a>
-              <!-- <a id='save' show.bind="buttonCheck.identify" md-button="floating: true;" md-tooltip="position: bottom; text: Select/Draw mode;" md-waves="color: light;" class="tr-green" click.trigger="saveIdentifyGeojson()" download="identifyTable.geojson" href="${identifyTool.uriContent}"><i class="material-icons icon-grey">${identifyTool.deleteTable ? 'edit' : 'select_all'}</i></a> -->
             </span>
           </div>
           <table class="responsive-table striped centered">
@@ -118,7 +117,7 @@
                 <td>${element.mean}</td>
                 <td>${element.std}</td>
                 <td>${element.range}</td>
-                <td><a md-button="floating: true;" md-tooltip="position: bottom; text: Delete this row;" md-waves="color: light;" class="tr-button btn-small" click.trigger="identifyTool.deleteResultsTableRow(element.id)"><i class="material-icons icon-grey">close</i></a></td>
+                <td><a md-button="floating: true;" md-tooltip="position: bottom; text: Delete this row;" md-waves="color: light;" class="tr-button btn-small" click.trigger="identifyTool.deleteResultsTableRow('zonalStatsPolygons', element.id)"><i class="material-icons icon-grey">close</i></a></td>
               </tr>
             </tbody>
           </table>
