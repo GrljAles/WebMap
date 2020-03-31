@@ -107,18 +107,7 @@ export class BaseMap {
     });
 
     this.ea.subscribe('delete-tool-features', (data) => {
-      for (let selectedLayer of this.basemap.getLayers().getArray()) {
-        if (selectedLayer.get('title') === data.layer) {
-          let selectedLayerSource = selectedLayer.getSource()
-          if (data.idsToDelete === 'all') {
-            for (let feature of selectedLayerSource.getFeatures()) {
-              selectedLayerSource.removeFeature(feature)};
-            this.lastidentifyFeatureId = 0;
-          } else {
-            selectedLayerSource.removeFeature(selectedLayerSource.getFeatures()[data.idsToDelete]);
-          }
-        }
-      }
+      this.deleteToolFeatures(data);
     });
   }
 
@@ -274,15 +263,11 @@ export class BaseMap {
     this.basemap.addInteraction(snap); */
     this.zonalStatsPolys.getSource().on('addfeature', function(evt) {
       if (_this.buttonCheck.zonalStat.state) {
-        _this.setIdentifyLayerProperties('zonalStatsPolygons', {
-          min: 'ksnlvn',
-          max: 655,
-          mean: '',
-          std: '5sd',
-          range: 5,
-          product: _this.layers[_this.activeLayer].name,
-          date: _this.layers[_this.activeLayer].displayedDate
-        });
+        let zonalStatsParams = {
+          "product": _this.layers[_this.activeLayer].name,
+          "dates": _this.dateToYYYYMMDD(_this.layers[_this.activeLayer].displayedDate)
+        };
+        _this.zonalStatistcsRequest(zonalStatsParams);
       }
     });
 
@@ -328,6 +313,76 @@ export class BaseMap {
       }
     });
   }
+  dateToYYYYMMDD(dateString) {
+    let yyyy = dateString.split('.')[2];
+    let mm = dateString.split('.')[1];
+    let dd = dateString.split('.')[0];
+    return yyyy + mm + dd;
+  }
+
+  YYYYMMDDToDate(dateString) {
+    let yyyy = dateString.slice(0, 4);
+    let mm = dateString.slice(4, 6);
+    let dd = dateString.slice(6, 8);
+    return dd + '.' + mm + '.' + yyyy;
+  }
+
+  zonalStatistcsRequest(zonalStatsParams) {
+    let zonalPolysFeatures = this.zonalStatsPolysDrawSource.getFeatures();
+    let lastFeature = zonalPolysFeatures[zonalPolysFeatures.length - 1];
+    let tmpPolyDrawSource = new VectorSource;
+    tmpPolyDrawSource.addFeature(lastFeature);
+    let writer = new GeoJSON();
+    let geojsonStr = writer.writeFeatures(tmpPolyDrawSource.getFeatures())
+    tmpPolyDrawSource = null;
+    zonalStatsParams["zone"] = geojsonStr;
+    this.httpClient.fetch('http://' + locations.backend + '/backendapi/zonalstatistics', {
+      method: 'POST',
+      body: JSON.stringify(zonalStatsParams),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'Fetch',
+        'Authorization': 'Bearer ' + this.authService.getAccessToken()
+      },
+      mode: 'cors'
+    })
+      .then(response => response.json())
+      .then(data => {
+        data.date = this.YYYYMMDDToDate(data.date);
+        this.setIdentifyLayerProperties('zonalStatsPolygons', data);
+      });
+  }
+
+  setIdentifyLayerProperties(whichLayer, propJson) {
+    for (let selectedLayer of this.basemap.getLayers().getArray()) {
+      if (selectedLayer.get('title') === whichLayer) {
+        let selectedLayerSource = selectedLayer.getSource();
+        let lastFeature = selectedLayerSource.getFeatures()[selectedLayerSource.getFeatures().length - 1]
+        lastFeature.setProperties(propJson);
+        lastFeature.setId(this.lastidentifyFeatureId);
+        propJson.id = this.lastidentifyFeatureId;
+        this.identifyTool.getPixelValue(whichLayer, propJson);
+        this.lastidentifyFeatureId += 1;
+      }
+    }
+  }
+
+  deleteToolFeatures(deleteWhat) {
+    for (let selectedLayer of this.basemap.getLayers().getArray()) {
+      if (selectedLayer.get('title') === deleteWhat.layer) {
+        let selectedLayerSource = selectedLayer.getSource()
+        if (deleteWhat.idsToDelete === 'all') {
+          for (let feature of selectedLayerSource.getFeatures()) {
+            selectedLayerSource.removeFeature(feature);
+          }
+          this.lastidentifyFeatureId = 0;
+        } else {
+          selectedLayerSource.removeFeature(selectedLayerSource.getFeatures()[deleteWhat.idsToDelete]);
+        }
+      }
+    }
+  }
 
   toggleTool(buttonId) {
     for (let i in  this.buttonCheck) {
@@ -360,21 +415,6 @@ export class BaseMap {
       this.basemap.removeInteraction(this.draw);
     }
   }
-
-  setIdentifyLayerProperties(whichLayer, propJson) {
-    for (let selectedLayer of this.basemap.getLayers().getArray()) {
-      if (selectedLayer.get('title') === whichLayer) {
-        let selectedLayerSource = selectedLayer.getSource();
-        let lastFeature = selectedLayerSource.getFeatures()[selectedLayerSource.getFeatures().length - 1]
-        lastFeature.setProperties(propJson);
-        lastFeature.setId(this.lastidentifyFeatureId);
-        propJson.id = this.lastidentifyFeatureId;
-        this.identifyTool.getPixelValue(whichLayer, propJson);
-        this.lastidentifyFeatureId += 1;
-      }
-    }
-  }
-
 
   saveIdentifyGeojson(whichLayer) {
     let writer = new GeoJSON();

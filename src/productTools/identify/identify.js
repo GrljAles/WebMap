@@ -86,25 +86,20 @@ export class IdentifyTool {
   }
 
   getPixelValue(whichTable, rowJson) {
-    console.log(whichTable, rowJson)
     if (rowJson.value) {
       if (typeof rowJson.value === 'string') {}
       else {
         rowJson.value = + rowJson.value.toFixed(2);
-      }
-      // Add table row object to list of all objects with Array.prototype.push.apply() method, so Aurelia can keep track of changes of the array and update the view-model.
-      
-
+      }      
     }
+    // Add table row object to list of all objects with Array.prototype.push.apply() method, so Aurelia can keep track of changes of the array and update the view-model.
     Array.prototype.push.apply(this.resultsTables[whichTable].table, [rowJson]);
   }
 
   deleteResultsTableRow(whichTable, id) {
-    console.log(whichTable)
     // First create array of table element indices
     let idsArray = [];
     for (let element of this.resultsTables[whichTable].table) {
-      
       idsArray.push(element.id);
     }
     // Get the index of passed id and delete one table element at that index
@@ -114,7 +109,6 @@ export class IdentifyTool {
   }
 
   downloadResults(geoJsonStr) {
-    console.log(geoJsonStr)
     // Create URIcomponent and download as json
     this.uriContent = "data:application/json;filename=identifyTable.json," + encodeURIComponent(geoJsonStr);
     window.open(uriContent, 'identifyTable.json');
