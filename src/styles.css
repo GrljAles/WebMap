@@ -2,15 +2,22 @@ body, html {
   height: 100vh;
 }
 body { 
-  background-image: url(./resources/login/bg.jpg) ;
   background-position: center center;
   background-repeat:  no-repeat;
   background-attachment: fixed;
   background-size:  cover;
-  background-color: #4C7261;
+  background-color: #f2eadf;
 }
 .transparent-title {
   opacity: .6;
+}
+
+.logo-image-scale {
+  transform: scale(0.5);
+}
+
+.logo-row-height {
+height: 5rem;
 }
 .align-center {
   text-align: center;
@@ -162,4 +169,8 @@ i.icon-white {
   border-radius: 10px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
   background-color: #33691e;
+}
+
+.tool-options-wrapper {
+  padding: 2rem;
 }

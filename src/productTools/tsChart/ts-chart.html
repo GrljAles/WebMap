@@ -1,0 +1,26 @@
+<template>
+    <div class="col l12 m12 s12 scale-transition results-table lime">
+        <div class="table-comtrolls-wrapper">
+            <h5 class="table-controll-title white-text" click.trigger="printDocument()">TIME SERIES OPTIONS</h5>
+        </div>
+        <div class="row tool-options-wrapper">
+          <div class="row">
+            <div class="col s6 m6 l6">Selected product:</div><div class="col s6 m6 l6">${layers[activeLayer].name}</div>
+          </div>
+          <div class="row">
+            <div class="col s6 m6 l6">Starting date:</div><div class="col s6 m6 l6">${layers[activeLayer].availableDates[startingDateIndex]}</div>
+          </div>
+          <div class="row">
+            <div class="col s6 m6 l6">Ending date:</div><div class="col s6 m6 l6">${layers[activeLayer].availableDates[endingDateIndex]}</div>
+          </div>
+          <div class="row">Slide to adjust starting and ending dates
+              <div id="ts-date-slider"></div>
+          </div>
+          <div class="row align-center">
+            <div class="col s12 m4 l2"><p></p></div>
+            <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" name="ts-submit">Submit</a></div>
+            <div class="col s12 m4 l2"><p></p></div>
+          </div>
+        </div>
+    </div>
+</template>

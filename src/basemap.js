@@ -28,12 +28,8 @@ import * as dataData from 'resources/dataData/dataData.json';
 import moment from 'moment';
 import noUiSlider from 'materialize-css/extras/noUiSlider/noUiSlider';
 import 'materialize-css/extras/noUiSlider/nouislider.css';
-import {
-  HttpClient, json
-} from 'aurelia-fetch-client';
-import {
-  AuthService
-} from 'aurelia-authentication';
+import {HttpClient, json} from 'aurelia-fetch-client';
+import {AuthService} from 'aurelia-authentication';
 import * as locations from './resources/locations/locations.json';
 import {IdentifyTool} from './productTools/identify/identify.js';
 import VectorLayer from 'ol/layer/Vector';
@@ -43,9 +39,15 @@ import GeoJSON from 'ol/format/GeoJSON';
 import {Draw, Select, Snap} from 'ol/interaction';
 import {pointerMove} from 'ol/events/condition';
 import { none } from 'ol/centerconstraint';
+import { observable } from 'aurelia-framework';
 
 @inject(EventAggregator, HttpClient, AuthService, IdentifyTool)
+@observable('activeLayer')
+@observable('layers')
+
 export class BaseMap {
+  //activeLayer = 0;
+  
   constructor(eventAggregator, httpClient, authService, identifyTool) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;
@@ -92,6 +94,14 @@ export class BaseMap {
     };
     this.subscribe();
   }
+  // Observables observe variable (in method name before 'Chnaged' part) and fire function on change.
+  activeLayerChanged(newValue, oldValue) {
+    this.ea.publish('activeLayerChanged', newValue)
+  }
+  layersChanged(newValue, oldValue) {
+    this.ea.publish('layersChanged', newValue)
+  }
+
 
   setOpacity1(value) {
     this.layers[ii].opacity = value;
@@ -148,6 +158,7 @@ export class BaseMap {
         let value = parseInt(values[handle]);
         _this.layers[_this.activeLayer].selectedDateIndex = value;
         _this.changeDisplayedDate(_this.activeLayer, value);
+        console.log(_this.layers)
       });
     }
 
@@ -224,12 +235,21 @@ export class BaseMap {
       source: this.identifyPointsDrawSource,
       style: this.toolLayerStyle
     });
+
     this.zonalStatsPolysDrawSource = new VectorSource;
     this.zonalStatsPolys = new VectorLayer({
       title: 'zonalStatsPolygons',
       source: this.zonalStatsPolysDrawSource,
       style: this.toolLayerStyle
     });
+
+    this.tsChartPointsDrawSource = new VectorSource;
+    this.tsChartPoints = new VectorLayer({
+      title: 'tsPoints',
+      source: this.tsChartPointsDrawSource,
+      style: this.toolLayerStyle
+    });
+
 
     this.draw = new Draw({
       source: null,
@@ -242,7 +262,8 @@ export class BaseMap {
         this.osmTopo,
         this.NDVI,
         this.identifyPoints,
-        this.zonalStatsPolys
+        this.zonalStatsPolys,
+        this.tsChartPoints
       ],
       view: new View({
         center: transform([14.815333, 46.119944], 'EPSG:4326', 'EPSG:3857'),
@@ -268,6 +289,11 @@ export class BaseMap {
           "dates": _this.dateToYYYYMMDD(_this.layers[_this.activeLayer].displayedDate)
         };
         _this.zonalStatistcsRequest(zonalStatsParams);
+      }
+    });
+    this.tsChartPoints.getSource().on('addfeature', function(evt) {
+      if (_this.buttonCheck.tsChart.state) {
+        console.log(evt)
       }
     });
 
@@ -347,10 +373,24 @@ export class BaseMap {
       },
       mode: 'cors'
     })
-      .then(response => response.json())
+      .then(response => {
+        return response.text();
+      })
       .then(data => {
-        data.date = this.YYYYMMDDToDate(data.date);
-        this.setIdentifyLayerProperties('zonalStatsPolygons', data);
+        let zonalData = JSON.parse(data);
+        zonalData.date = this.YYYYMMDDToDate(zonalData.date);
+        this.setIdentifyLayerProperties('zonalStatsPolygons', zonalData);
+      })
+      .catch(error => {
+        this.setIdentifyLayerProperties('zonalStatsPolygons', {
+          min: '/',
+          max: '/',
+          mean: '/',
+          range: '/',
+          std: '/',
+          product: 'error',
+          date: '/'
+        });
       });
   }
 
