@@ -1,74 +1,56 @@
-import {
-  EventAggregator
-} from 'aurelia-event-aggregator';
-import {inject} from 'aurelia-dependency-injection';
-import * as locations from "../../resources/locations/locations.json";
+import {inject} from 'aurelia-framework';
+import {EventAggregator} from 'aurelia-event-aggregator';
+import {HttpClient, json} from 'aurelia-fetch-client';
+import {AuthService} from 'aurelia-authentication';
+import * as dataData from '../../resources/dataData/dataData.json';
 
-@inject(EventAggregator)
-export class IdentifyTool {
-  constructor(eventAggregator) {
+@inject(EventAggregator, HttpClient, AuthService)
+export class IdentiFy {
+  constructor(eventAggregator, httpClient, authService) {
     this.ea = eventAggregator;
-    this.indentifyButtonActive = false;
-    this.identifyResultWindow = false;
-    this.identifyArray = [];
-    this.zonalStatsArray = [];
-    this.uriContent = '';
-    this.buttonCheck = {
-      refresh: {
-        state: true,
-        drawGeom: null,
-        reledLayer: null
-      },
-      identify: {
-        state: false,
-        drawGeom: 'Point',
-        relatedLayer: 'identifyPoints'
-      },
-      zonalStat: {
-        state: false,
-        drawGeom: 'Polygon',
-        relatedLayer: 'zonalStatsPolygons'
-      },
-      tsChart: {
-        state: false,
-        drawGeom: 'Point',
-        relatedLayer: 'tsPoints'
-      },
-      zonalTSChart: {
-        state: false,
-        drawGeom: 'Polygon',
-        relatedLayer: 'zonalTSPolygons'
-      },
-      profile: {
-        state: false,
-        drawGeom: 'LineString',
-        relatedLayer: 'profileLine'
-      }
-    };
+    this.httpClient = httpClient;
+    this.authService = authService;
+    this.activeTable = null,
+    this.layers = dataData.default;
     this.resultsTables = {
       identifyPoints: {
         delete: false,
         table: [],
-        tableId: 0
+        tableId: 0,
+        tableHeader: ['Id', 'Product', 'Date', 'Value'],
+        tableTitle: 'RESULTS TABLE',
+        tableIcon: 'details'
       },
       zonalStatsPolygons: {
         delete: false,
         table: [],
-        tableId: 0
+        tableId: 0,
+        tableHeader: ['Id', 'Product', 'Date', 'Min', 'Max', 'Mean', 'Std', 'Range'],
+        tableTitle: 'RESULTS TABLE',
+        tableIcon: 'dashboard'
+      },
+      tsPoints: {
+        delete: false,
+        table: [],
+        tableId: 0,
+        tableHeader: ['Id', 'Product', 'X', 'Y'],
+        tableTitle: 'REQUESTED POINTS FOR TIME SERIES',
+        tableIcon: 'timeline'
       }
-    }
+    };
     this.subscribe();
   }
 
   subscribe() {
-    this.ea.subscribe('button-trigger', (data) => {
-      this.toggleIdentifyButton(data);
+    this.ea.subscribe('add-table-row', (data) => {
+      this.getPixelValue(data.layer, data.row);
+    });
+    this.ea.subscribe('activeTableChanged', data => {
+      this.activeTable = data;
     });
   }
 
-  toggleIdentifyButton(data) {
-    this.buttonCheck = data;
-  }
+  attached() {}
 
   confirmDeleteTable(whichTable) {
     this.resultsTables[whichTable].delete = !this.resultsTables[whichTable].delete;

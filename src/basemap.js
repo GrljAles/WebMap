@@ -31,7 +31,6 @@ import 'materialize-css/extras/noUiSlider/nouislider.css';
 import {HttpClient, json} from 'aurelia-fetch-client';
 import {AuthService} from 'aurelia-authentication';
 import * as locations from './resources/locations/locations.json';
-import {IdentifyTool} from './productTools/identify/identify.js';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
@@ -41,18 +40,17 @@ import {pointerMove} from 'ol/events/condition';
 import { none } from 'ol/centerconstraint';
 import { observable } from 'aurelia-framework';
 
-@inject(EventAggregator, HttpClient, AuthService, IdentifyTool)
+@inject(EventAggregator, HttpClient, AuthService)
 @observable('activeLayer')
-@observable('layers')
+@observable('buttonCheck')
 
 export class BaseMap {
   //activeLayer = 0;
   
-  constructor(eventAggregator, httpClient, authService, identifyTool) {
+  constructor(eventAggregator, httpClient, authService) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;
     this.authService = authService;
-    this.identifyTool = identifyTool;
 
     this.opacityValue = 1;
     this.layers = dataData.default;
@@ -98,8 +96,8 @@ export class BaseMap {
   activeLayerChanged(newValue, oldValue) {
     this.ea.publish('activeLayerChanged', newValue)
   }
-  layersChanged(newValue, oldValue) {
-    this.ea.publish('layersChanged', newValue)
+  buttonCheckChanged(newValue, oldValue) {
+    this.ea.publish('buttonCheckChanged', newValue)
   }
 
 
@@ -291,9 +289,23 @@ export class BaseMap {
         _this.zonalStatistcsRequest(zonalStatsParams);
       }
     });
-    this.tsChartPoints.getSource().on('addfeature', function(evt) {
+    
+    let tsFeatureCount = 0;
+    this.tsChartPointsDrawSource.on('addfeature', function(evt) {
       if (_this.buttonCheck.tsChart.state) {
-        console.log(evt)
+        if (tsFeatureCount < 10) {
+          let lastPointCoordinates = evt.feature.getGeometry().getCoordinates();
+          let tsPointData = {
+            product: _this.layers[_this.activeLayer].name,
+            x: Math.round((lastPointCoordinates[0] + Number.EPSILON) * 10000) / 10000,
+            y: Math.round((lastPointCoordinates[1] + Number.EPSILON) * 10000) / 10000
+          };
+          _this.setIdentifyLayerProperties('tsPoints', tsPointData);
+          tsFeatureCount += 1;
+        }
+        else {
+          _this.tsChartPointsDrawSource.removeFeature(evt.feature);
+        }
       }
     });
 
@@ -320,18 +332,16 @@ export class BaseMap {
               .then(data => {
                 let aaa = JSON.parse(data);
                 _this.setIdentifyLayerProperties('identifyPoints', {
-                  value: aaa.Value,
-                  coordinates: evt.coordinate,
                   product: layer.get('title'),
-                  date: _this.layers[_this.activeLayer].displayedDate
+                  date: _this.layers[_this.activeLayer].displayedDate,
+                  value: aaa.Value
                 });
               })
               .catch(error => {
                 _this.setIdentifyLayerProperties('identifyPoints', {
-                  value: 'noData',
-                  coordinates: evt.coordinate,
                   product: layer.get('title'),
-                  date: _this.layers[_this.activeLayer].displayedDate
+                  date: _this.layers[_this.activeLayer].displayedDate,
+                  value: 'noData',
                 });
               });
           }
@@ -383,13 +393,13 @@ export class BaseMap {
       })
       .catch(error => {
         this.setIdentifyLayerProperties('zonalStatsPolygons', {
+          product: 'error',
+          date: '/',
           min: '/',
           max: '/',
           mean: '/',
-          range: '/',
           std: '/',
-          product: 'error',
-          date: '/'
+          range: '/'
         });
       });
   }
@@ -398,11 +408,17 @@ export class BaseMap {
     for (let selectedLayer of this.basemap.getLayers().getArray()) {
       if (selectedLayer.get('title') === whichLayer) {
         let selectedLayerSource = selectedLayer.getSource();
-        let lastFeature = selectedLayerSource.getFeatures()[selectedLayerSource.getFeatures().length - 1]
+        let lastFeature = selectedLayerSource.getFeatures()[selectedLayerSource.getFeatures().length - 1];
         lastFeature.setProperties(propJson);
         lastFeature.setId(this.lastidentifyFeatureId);
-        propJson.id = this.lastidentifyFeatureId;
-        this.identifyTool.getPixelValue(whichLayer, propJson);
+        let nPropJson = Object.assign({id: this.lastidentifyFeatureId}, propJson);
+        //propJson.id = this.lastidentifyFeatureId;
+        //console.log(propJson)
+        this.ea.publish('add-table-row', {
+          layer: whichLayer,
+          row: nPropJson
+        });
+        //this.identifyTool.getPixelValue(whichLayer, propJson);
         this.lastidentifyFeatureId += 1;
       }
     }
@@ -431,9 +447,9 @@ export class BaseMap {
       }
       else {
         this.buttonCheck[buttonId].state = !this.buttonCheck[buttonId].state;
-        this.toggleDrawInteraction(this.buttonCheck[buttonId])
+        this.toggleDrawInteraction(this.buttonCheck[buttonId]);
+        this.ea.publish('activeTableChanged', this.buttonCheck[buttonId].relatedLayer);
       }
-      this.ea.publish('button-trigger', this.buttonCheck);
     }    
   }
 
@@ -448,6 +464,7 @@ export class BaseMap {
             type: buttonProps.drawGeom
           });
           this.basemap.addInteraction(this.draw);
+          //setTimeout(function(){ document.getElementById('tsChartOptions').scrollIntoView(false) }, 500);
         }
       }
     }

@@ -33,88 +33,15 @@
           </ul>
         </div>
       </li>
-
-      <!-- Indentify Table -->
-
-      <div show.bind="identifyTool.buttonCheck.identify.state" class="col l12 m12 s12 scale-transition results-table lime">
-        <div>
-          <div class='table-comtrolls-wrapper'>
-            <h5 class='table-controll-title white-text'>RESULTS TABLE</h5>
-            <span> 
-              <a id='yesDelete' show.bind="identifyTool.resultsTables.identifyPoints.delete" md-button="floating: true;" md-tooltip="position: bottom; text: Yes, delete please;" md-waves="color: light;" class="tr-green" click.trigger="identifyTool.yesDeleteTable('identifyPoints')"><i class="material-icons icon-grey">check</i></a>
-              <a id='save' md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;" md-waves="color: light;" class="tr-green" click.trigger="saveIdentifyGeojson('identifyPoints')" download="identifyTable.geojson" href="${identifyTool.uriContent}"><i class="material-icons icon-grey">file_download</i></a>
-              <a id='deleteIndentifyTable' md-button="floating: true;" md-tooltip="position: bottom; text: Delete the results table?;" md-waves="color: light;" class="tr-green" click.trigger="identifyTool.confirmDeleteTable('identifyPoints')"><i class="material-icons icon-grey">${identifyTool.resultsTables.identifyPoints.delete ? 'close' : 'delete'}</i></a>
-              <!-- <a id='save' show.bind="buttonCheck.identify" md-button="floating: true;" md-tooltip="position: bottom; text: Select/Draw mode;" md-waves="color: light;" class="tr-green" click.trigger="saveIdentifyGeojson()" download="identifyTable.geojson" href="${identifyTool.uriContent}"><i class="material-icons icon-grey">${identifyTool.deleteTable ? 'edit' : 'select_all'}</i></a> -->
-            </span>
-          </div>
-          <table class="responsive-table striped centered">
-            <thead class="collection-header lime">
-              <tr>
-                  <th>Id</th>
-                  <th>Product</th>
-                  <th>Date</th>
-                  <th>Value</th>
-                  <th><a class="btn-flat"><i class="material-icons icon-grey">close</i></a></th>
-              </tr>
-            </thead>
-            <tbody class="rows-font-size lime">
-              <tr repeat.for="element of identifyTool.resultsTables.identifyPoints.table">
-                <td>${element.id}</td>
-                <td>${element.product}</td>
-                <td>${element.date}</td>
-                <td>${element.value}</td>
-                <td><a md-button="floating: true;" md-tooltip="position: bottom; text: Delete this row;" md-waves="color: light;" class="tr-button btn-small" click.trigger="identifyTool.deleteResultsTableRow('identifyPoints', element.id)"><i class="material-icons icon-grey">close</i></a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Zonal Statistics Table -->
-
-      <div show.bind="identifyTool.buttonCheck.zonalStat.state" class="col l12 m12 s12 scale-transition results-table lime">
-        <div>
-          <div class='table-comtrolls-wrapper'>
-            <h5 class='table-controll-title white-text'>RESULTS TABLE</h5>
-            <span> 
-              <a id='yesDelete' show.bind="identifyTool.resultsTables.zonalStatsPolygons.delete" md-button="floating: true;" md-tooltip="position: bottom; text: Yes, delete please;" md-waves="color: light;" class="tr-green" click.trigger="identifyTool.yesDeleteTable('zonalStatsPolygons')"><i class="material-icons icon-grey">check</i></a>
-              <a id='save' md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;" md-waves="color: light;" class="tr-green" click.trigger="saveIdentifyGeojson('zonalStatsPolygons')" download="zonalStatsPolygons.geojson" href="${identifyTool.uriContent}"><i class="material-icons icon-grey">file_download</i></a>
-              <a id='deleteZonalStatsTable' md-button="floating: true;" md-tooltip="position: bottom; text: Delete the results table?;" md-waves="color: light;" class="tr-green" click.trigger="identifyTool.confirmDeleteTable('zonalStatsPolygons')"><i class="material-icons icon-grey">${identifyTool.resultsTables.zonalStatsPolygons.delete ? 'close' : 'delete'}</i></a>
-            </span>
-          </div>
-          <table class="responsive-table striped centered">
-            <thead class="collection-header lime">
-              <tr>
-                  <th>Id</th>
-                  <th>Product</th>
-                  <th>Date</th>
-                  <th>Min</th>
-                  <th>Max</th>
-                  <th>Mn</th>
-                  <th>Std</th>
-                  <th>Rng</th>
-                  <th><a class="btn-flat"><i class="material-icons icon-grey">close</i></a></th>
-              </tr>
-            </thead>
-            <tbody class="rows-font-size lime">
-              <tr repeat.for="element of identifyTool.resultsTables.zonalStatsPolygons.table">
-                <td>${element.id}</td>
-                <td>${element.product}</td>
-                <td>${element.date}</td>
-                <td>${element.min}</td>
-                <td>${element.max}</td>
-                <td>${element.mean}</td>
-                <td>${element.std}</td>
-                <td>${element.range}</td>
-                <td><a md-button="floating: true;" md-tooltip="position: bottom; text: Delete this row;" md-waves="color: light;" class="tr-button btn-small" click.trigger="identifyTool.deleteResultsTableRow('zonalStatsPolygons', element.id)"><i class="material-icons icon-grey">close</i></a></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <require from="productTools/tsChart/ts-chart"></require>
-      <ts-chart show.bind="buttonCheck.tsChart.state"></ts-chart>
     </ul>
     <div id="basemap" class="map col l9 m9 s9"></div>
-    </div>
+    <!-- Indentify Table -->
+    <require from="productTools/identify/identi-fy"></require>
+    <identi-fy show.bind="buttonCheck.identify.state"></identi-fy>
+    <!-- Time series chart options -->
+    <require from="productTools/tsChart/ts-chart"></require>
+    <ts-chart show.bind="buttonCheck.tsChart.state"></ts-chart>
+    <!-- Zonal Statistics Table -->
+    <identi-fy show.bind="buttonCheck.zonalStat.state"></identi-fy>
+  </div>
 </template>

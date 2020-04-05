@@ -2,7 +2,6 @@ import {inject} from 'aurelia-framework';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {HttpClient, json} from 'aurelia-fetch-client';
 import {AuthService} from 'aurelia-authentication';
-import * as locations from '../../../src/resources/locations/locations.json';
 import noUiSlider from 'materialize-css/extras/noUiSlider/noUiSlider';
 import 'materialize-css/extras/noUiSlider/nouislider.css';
 import * as dataData from '../../resources/dataData/dataData.json';
@@ -22,13 +21,8 @@ export class TsChart {
   subscribe() {
     this.ea.subscribe('activeLayerChanged', data => {
       this.activeLayer = data;
-      console.log(this.layers[this.activeLayer].name)
+      console.log(this.layers[this.activeLayer].name);
     });
-
-    this.ea.subscribe('layersChanged', data => {
-      this.layers = data;
-      console.log(this.layers)
-    }); 
   }
   
   attached() {
@@ -38,14 +32,20 @@ export class TsChart {
       start: [0, this.layers[this.activeLayer].availableDates.length - 1],
       step: 1,
       orientation: 'horizontal',
-      tooltips: [true, true],
+      //tooltips: [true, true],
       range: {
         'min': [0],
         'max': [this.layers[this.activeLayer].availableDates.length - 1]
       },
       pips: {
-        mode: 'range',
-        density: 30
+        mode: 'count',
+        values: this.layers[this.activeLayer].availableDates.length,
+        density: -1,
+        format: {
+          to: function(a) {
+            return _this.layers[_this.activeLayer].availableDates[a];
+          }
+        }
       },
       connect: true,
       behaviour: 'drag-tap'
@@ -54,7 +54,7 @@ export class TsChart {
     this.tsDatesSlider.noUiSlider.on('end', function(values) {
       _this.startingDateIndex = values[0];
       _this.endingDateIndex = values[1];
-      console.log(valueMin, valueMax);
+      console.log(_this.startingDateIndex, _this.endingDateIndex);
     });
   }
   printDocument() {
