@@ -44,9 +44,7 @@ import { observable } from 'aurelia-framework';
 @observable('activeLayer')
 @observable('buttonCheck')
 
-export class BaseMap {
-  //activeLayer = 0;
-  
+export class BaseMap {  
   constructor(eventAggregator, httpClient, authService) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;
@@ -58,6 +56,8 @@ export class BaseMap {
     this.activeLayer = 0;
     this.lastidentifyFeatureId = 0;
     this.drawGeomType = 'Point';
+    this.tsChartWindow = false;
+
     this.buttonCheck = {
       refresh: {
         state: true,
@@ -100,7 +100,6 @@ export class BaseMap {
     this.ea.publish('buttonCheckChanged', newValue)
   }
 
-
   setOpacity1(value) {
     this.layers[ii].opacity = value;
   }
@@ -116,6 +115,15 @@ export class BaseMap {
 
     this.ea.subscribe('delete-tool-features', (data) => {
       this.deleteToolFeatures(data);
+    });
+    this.ea.subscribe('give-me-geojson', whichLayer => {
+      this.saveIdentifyGeojson(whichLayer);
+    });
+    this.ea.subscribe('get-ts-table', whichLayer => {
+      this.tsFeatureCount = 0;
+    });
+    this.ea.subscribe('ts-chart-window-changed', data => {
+      this.tsChartWindow = data;
     });
   }
 
@@ -133,7 +141,7 @@ export class BaseMap {
         connect: 'lower'
       });
 
-      this.opacitySliders[ii].noUiSlider.on('update', function (values, handle) {
+      this.opacitySliders[ii].noUiSlider.on('update', function(values, handle) {
         _this.layers[_this.activeLayer].opacity = values[handle];
         _this.changeOpacity(_this.activeLayer, values[handle]);
       });
@@ -156,7 +164,6 @@ export class BaseMap {
         let value = parseInt(values[handle]);
         _this.layers[_this.activeLayer].selectedDateIndex = value;
         _this.changeDisplayedDate(_this.activeLayer, value);
-        console.log(_this.layers)
       });
     }
 
@@ -194,6 +201,7 @@ export class BaseMap {
         url: 'http://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
       })
     });
+
     this.NDVI = new TileLayer({
       title: this.layers[0].name,
       id: this.layers[0].id,
@@ -248,7 +256,6 @@ export class BaseMap {
       style: this.toolLayerStyle
     });
 
-
     this.draw = new Draw({
       source: null,
       type: null
@@ -290,10 +297,10 @@ export class BaseMap {
       }
     });
     
-    let tsFeatureCount = 0;
+    this.tsFeatureCount = 0;
     this.tsChartPointsDrawSource.on('addfeature', function(evt) {
       if (_this.buttonCheck.tsChart.state) {
-        if (tsFeatureCount < 10) {
+        if (_this.tsFeatureCount < 10) {
           let lastPointCoordinates = evt.feature.getGeometry().getCoordinates();
           let tsPointData = {
             product: _this.layers[_this.activeLayer].name,
@@ -301,7 +308,7 @@ export class BaseMap {
             y: Math.round((lastPointCoordinates[1] + Number.EPSILON) * 10000) / 10000
           };
           _this.setIdentifyLayerProperties('tsPoints', tsPointData);
-          tsFeatureCount += 1;
+          _this.tsFeatureCount += 1;
         }
         else {
           _this.tsChartPointsDrawSource.removeFeature(evt.feature);
@@ -341,7 +348,7 @@ export class BaseMap {
                 _this.setIdentifyLayerProperties('identifyPoints', {
                   product: layer.get('title'),
                   date: _this.layers[_this.activeLayer].displayedDate,
-                  value: 'noData',
+                  value: 'noData'
                 });
               });
           }
@@ -349,6 +356,7 @@ export class BaseMap {
       }
     });
   }
+
   dateToYYYYMMDD(dateString) {
     let yyyy = dateString.split('.')[2];
     let mm = dateString.split('.')[1];
@@ -412,13 +420,11 @@ export class BaseMap {
         lastFeature.setProperties(propJson);
         lastFeature.setId(this.lastidentifyFeatureId);
         let nPropJson = Object.assign({id: this.lastidentifyFeatureId}, propJson);
-        //propJson.id = this.lastidentifyFeatureId;
-        //console.log(propJson)
+
         this.ea.publish('add-table-row', {
           layer: whichLayer,
           row: nPropJson
         });
-        //this.identifyTool.getPixelValue(whichLayer, propJson);
         this.lastidentifyFeatureId += 1;
       }
     }
@@ -436,6 +442,17 @@ export class BaseMap {
         } else {
           selectedLayerSource.removeFeature(selectedLayerSource.getFeatures()[deleteWhat.idsToDelete]);
         }
+      }
+    }
+  }
+
+  saveIdentifyGeojson(whichLayer) {
+    let writer = new GeoJSON();
+    for (let selectedLayer of this.basemap.getLayers().getArray()) {
+      if (selectedLayer.get('title') === whichLayer) {
+        let selectedLayerSource = selectedLayer.getSource();
+        let geojsonStr = writer.writeFeatures(selectedLayerSource.getFeatures());
+        this.ea.publish('this-is-selected-table-geojson', geojsonStr)
       }
     }
   }
@@ -464,23 +481,11 @@ export class BaseMap {
             type: buttonProps.drawGeom
           });
           this.basemap.addInteraction(this.draw);
-          //setTimeout(function(){ document.getElementById('tsChartOptions').scrollIntoView(false) }, 500);
         }
       }
     }
     else {
       this.basemap.removeInteraction(this.draw);
-    }
-  }
-
-  saveIdentifyGeojson(whichLayer) {
-    let writer = new GeoJSON();
-    for (let selectedLayer of this.basemap.getLayers().getArray()) {
-      if (selectedLayer.get('title') === whichLayer) {
-        let selectedLayerSource = selectedLayer.getSource();
-        let geojsonStr = writer.writeFeatures(selectedLayerSource.getFeatures());
-        this.identifyTool.downloadResults(geojsonStr);
-      }
     }
   }
 
@@ -494,6 +499,7 @@ export class BaseMap {
       }
     }
   }
+
   collapsibleClose(idx) {
     idx = parseInt(idx);
     this.layers[idx].active = 0;
@@ -503,6 +509,7 @@ export class BaseMap {
       }
     }
   }
+
   changeDisplayedDate(idx, dateIndex) {
     this.activeLayer = this.layers[idx].id;
     let displayedDate = this.layers[idx].availableDates[(this.layers[idx].availableDates.length - 1) + dateIndex];
@@ -512,6 +519,7 @@ export class BaseMap {
     }]);
     this.calculateClassBreaks(idx, this.layers[idx].displaySettings.min, this.layers[idx].displaySettings.max);
   }
+
   changeOpacity(id, opacityValue) {
     if (this.basemap) {
       for (let ii of this.basemap.getLayers().getArray()) {
@@ -521,6 +529,7 @@ export class BaseMap {
       }
     }
   }
+
   changeLayerDate(idx, layerDate) {
     if (this.basemap) {
       for (let ii of this.basemap.getLayers().getArray()) {
@@ -534,6 +543,7 @@ export class BaseMap {
       }
     }
   }
+
   changeLayerRange(idx, classBreaks, classColours) {
     let layerRange = {
       'classBreaks': classBreaks,
@@ -561,7 +571,6 @@ export class BaseMap {
         }]);
       });
   }
-
 
   resetRangeSettings(idx) {
     this.layers[idx].displaySettings.min = this.layers[idx].statistics.min;

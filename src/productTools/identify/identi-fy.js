@@ -4,13 +4,15 @@ import {HttpClient, json} from 'aurelia-fetch-client';
 import {AuthService} from 'aurelia-authentication';
 import * as dataData from '../../resources/dataData/dataData.json';
 
+let instance = null;
+
 @inject(EventAggregator, HttpClient, AuthService)
 export class IdentiFy {
   constructor(eventAggregator, httpClient, authService) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;
     this.authService = authService;
-    this.activeTable = null,
+    this.activeTable = null;
     this.layers = dataData.default;
     this.resultsTables = {
       identifyPoints: {
@@ -39,18 +41,34 @@ export class IdentiFy {
       }
     };
     this.subscribe();
+
+    if (!instance) {
+      instance = this;
+    }
+    return instance;
   }
 
   subscribe() {
     this.ea.subscribe('add-table-row', (data) => {
       this.getPixelValue(data.layer, data.row);
     });
+
     this.ea.subscribe('activeTableChanged', data => {
       this.activeTable = data;
+    });
+    this.ea.subscribe('get-ts-table', whichTable => {
+      this.publishToolTable(whichTable)
+    });
+    this.ea.subscribe('this-is-selected-table-geojson', geoJsonStr => {
+      this.downloadResults(geoJsonStr);
     });
   }
 
   attached() {}
+
+  publishToolTable(whichTable) {
+    this.ea.publish('this-is-' + whichTable + '-table', this.resultsTables[whichTable].table);
+  }
 
   confirmDeleteTable(whichTable) {
     this.resultsTables[whichTable].delete = !this.resultsTables[whichTable].delete;
@@ -86,13 +104,21 @@ export class IdentiFy {
     }
     // Get the index of passed id and delete one table element at that index
     let idIndex = idsArray.indexOf(id);
-    this.resultsTables[whichTable].table.splice(idIndex, 1);
+    Array.prototype.splice.apply(this.resultsTables[whichTable].table, [idIndex, 1]);
     this.ea.publish('delete-tool-features', {layer: whichTable, idsToDelete: idIndex});
   }
 
+  requestGeojsonFromBasemap(whichLayer) {
+    this.ea.publish('give-me-geojson', whichLayer)
+  }
+
   downloadResults(geoJsonStr) {
-    // Create URIcomponent and download as json
-    this.uriContent = "data:application/json;filename=identifyTable.json," + encodeURIComponent(geoJsonStr);
-    window.open(uriContent, 'identifyTable.json');
+    let a = window.document.createElement('a');
+    let file = new Blob([geoJsonStr], {type: 'application/json'});
+    a.href = URL.createObjectURL(file);
+    a.download = 'identifyTable.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 }

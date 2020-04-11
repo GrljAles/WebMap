@@ -5,13 +5,17 @@ import {AuthService} from 'aurelia-authentication';
 import noUiSlider from 'materialize-css/extras/noUiSlider/noUiSlider';
 import 'materialize-css/extras/noUiSlider/nouislider.css';
 import * as dataData from '../../resources/dataData/dataData.json';
+import * as locations from '../../resources/locations/locations.json';
+import {ChartEl} from './chart-el';
 
-@inject(EventAggregator, HttpClient, AuthService)
+@inject(EventAggregator, HttpClient, AuthService, ChartEl)
 export class TsChart {
-  constructor(eventAggregator, httpClient, authService) {
+  constructor(eventAggregator, httpClient, authService, chartEl) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;
     this.authService = authService;
+    this.chartel = chartEl;
+
     this.activeLayer = 0;
     this.layers = dataData.default;
     this.startingDateIndex = 0;
@@ -21,10 +25,12 @@ export class TsChart {
   subscribe() {
     this.ea.subscribe('activeLayerChanged', data => {
       this.activeLayer = data;
-      console.log(this.layers[this.activeLayer].name);
+    });
+    this.ea.subscribe('this-is-tsPoints-table', table => {
+      this.pointsTable = table;
     });
   }
-  
+
   attached() {
     let _this = this;
     this.tsDatesSlider = document.getElementById('ts-date-slider');
@@ -52,12 +58,47 @@ export class TsChart {
     });
 
     this.tsDatesSlider.noUiSlider.on('end', function(values) {
-      _this.startingDateIndex = values[0];
-      _this.endingDateIndex = values[1];
-      console.log(_this.startingDateIndex, _this.endingDateIndex);
+      _this.startingDateIndex = parseInt(values[0]);
+      _this.endingDateIndex = parseInt(values[1]);
     });
   }
-  printDocument() {
-    console.log(document)
+
+  getPointsTable() {
+    return this.identify.publishToolTable('tsPoints')
+  }
+
+  tsChartRequest() {
+    this.ea.publish('get-ts-table', 'tsPoints')
+    if (this.pointsTable.length > 0) {
+      this.ea.publish('ts-chart-window-changed', true);
+      this.tsChartParams = {
+        "startingDateIndex": this.layers[this.activeLayer].availableDates[this.startingDateIndex],
+        "endingDateIndex": this.layers[this.activeLayer].availableDates[this.endingDateIndex],
+        "points": this.pointsTable,
+        "product": this.layers[this.activeLayer].name
+      };
+      this.httpClient.fetch('http://' + locations.backend + '/backendapi/tschartpoints', {
+        method: 'POST',
+        body: JSON.stringify(this.tsChartParams),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'Fetch',
+          'Authorization': 'Bearer ' + this.authService.getAccessToken()
+        },
+        mode: 'cors'
+      })
+        .then(response => {
+          return response.text();
+        })
+        .then(data => {
+          let tsChart = JSON.parse(data);
+          this.chartel.updateChart(tsChart);
+          this.pointsTable =  null;
+        })
+        .catch(error => {
+          this.chartel.chartError();
+        });
+    }
   }
 }

@@ -5,7 +5,6 @@
         <a md-button="floating: true;" class="tr-green"><i class="material-icons icon-grey">timeline</i></a>
         <h5 class="table-controll-title white-text">TIME SERIES OPTIONS</h5>
         <span></span>
-        
       </div>
       <div class="row tool-options-wrapper">
         <div class="row">
@@ -24,15 +23,13 @@
         <div class="row">Pick the time series chart locations on the map</div>
         <div class="row align-center">
           <div class="col s12 m4 l2"><p></p></div>
-          <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" name="ts-submit">Submit</a></div>
+          <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" click.trigger="tsChartRequest()">Submit</a></div>
           <div class="col s12 m4 l2"><p></p></div>
         </div>
       </div>
     </div>
     <div class="col l6 m6 s6 lime">
-      <require from="../identify/identi-fy"></require>
       <identi-fy></identi-fy>
     </div>
   </div>
-
 </template>

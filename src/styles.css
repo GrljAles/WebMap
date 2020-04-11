@@ -174,3 +174,11 @@ i.icon-white {
 .tool-options-wrapper {
   padding: 2rem;
 }
+.ts-chart-pos {
+  height: 30%;
+  background-color: #f2eadf;
+}
+.chart-height {
+  height: 40vh;
+  max-height: 700px;
+}

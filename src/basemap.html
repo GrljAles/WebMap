@@ -1,47 +1,52 @@
 <template>
   <require from="resources/value-converters/objectKeysValueConverter"></require>
-  <div class="row">
-    <ul class="light-green darken-1 collection with-header col l3 m3 s3 layer-list scrollbar-hidden">
-      <li class="collection-header light-green darken-3"><h4>Layers</h4></li>
-        <div class="collapsible-open-close-events">
-          <ul md-collapsible md-on-open-start.delegate="collapsibleOpen($event.detail.el.childNodes[1].id)" md-on-close-start.delegate="collapsibleClose($event.detail.el.childNodes[1].id)">
-            <li repeat.for="layer of layers | objectKeys">
-              <div class="collapsible-header light-green darken-${layer.id+2}" id=${layer.id}>
-                <h5 class="white-text">${layer.name}</h5>
-              </div>
-              <div id="collapsible-body${layer.id}" class="collapsible-body">
-                <div class="row">Slide to change opacity
-                  <div class="col s12 opacity-slider" id="opacity-slider${layer.id}"></div>
+  <div>
+    <div class="row">
+      <ul class="light-green darken-1 collection with-header col l3 m3 s3 layer-list scrollbar-hidden">
+        <li class="collection-header light-green darken-3"><h4>Layers</h4></li>
+          <div class="collapsible-open-close-events">
+            <ul md-collapsible md-on-open-start.delegate="collapsibleOpen($event.detail.el.childNodes[1].id)" md-on-close-start.delegate="collapsibleClose($event.detail.el.childNodes[1].id)">
+              <li repeat.for="layer of layers | objectKeys">
+                <div class="collapsible-header light-green darken-${layer.id+2}" id=${layer.id}>
+                  <h5 class="white-text">${layer.name}</h5>
                 </div>
-                <div class="row">Slide to display different dates <br>${layer.displayedDate}
-                  <div class="col s12 date-slider" id="date-slider${layer.id}"></div>
+                <div id="collapsible-body${layer.id}" class="collapsible-body">
+                  <div class="row">Slide to change opacity
+                    <div class="col s12 opacity-slider" id="opacity-slider${layer.id}"></div>
+                  </div>
+                  <div class="row">Slide to display different dates <br>${layer.displayedDate}
+                    <div class="col s12 date-slider" id="date-slider${layer.id}"></div>
+                  </div>
+                  <div class="row">Slide to adjust min (${layer.displaySettings.min}) and max (${layer.displaySettings.max}) values
+                    <div class="col s12 min-max-slider" id="min-max-slider${layer.id}"></div>
+                  </div>
+                  <div id="legend-holder${layer.id}"></div>
+                  <div>
+                    <a id='refresh' md-button="floating: true;" md-tooltip="position: bottom; text: Reset range settings;" md-waves="color: light;" class="tr-green" click.trigger="resetRangeSettings(layer.id)"><i class="material-icons icon-white">cached</i></a>
+                    <a id='identify' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" click.trigger="toggleTool('identify')" class.bind="buttonCheck.identify.state ? 'lime' : 'tr-green'"><i class.bind="buttonCheck.identify.state ? 'material-icons icon-grey' : 'material-icons icon-white'">details</i></a>
+                    <a id='zonalStat' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.zonalStat.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('zonalStat')"><i class.bind="buttonCheck.zonalStat.state ? 'material-icons icon-grey' : 'material-icons icon-white'">dashboard</i></a>
+                    <a id='tsChart' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.tsChart.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('tsChart')"><i class.bind="buttonCheck.tsChart.state ? 'material-icons icon-grey' : 'material-icons icon-white'">timeline</i></a>
+                    <a id='zonalTSChart' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.zonalTSChart.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('zonalTSChart')"><i class.bind="buttonCheck.zonalTSChart.state ? 'material-icons icon-grey' : 'material-icons icon-white'">multiline_chart</i></a>
+                    <a id='profile' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.profile.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('profile')"><i class.bind="buttonCheck.profile.state ? 'material-icons icon-grey' : 'material-icons icon-white'">terrain</i></a>
+                  </div>
                 </div>
-                <div class="row">Slide to adjust min (${layer.displaySettings.min}) and max (${layer.displaySettings.max}) values
-                  <div class="col s12 min-max-slider" id="min-max-slider${layer.id}"></div>
-                </div>
-                <div id="legend-holder${layer.id}"></div>
-                <div>
-                  <a id='refresh' md-button="floating: true;" md-tooltip="position: bottom; text: Reset range settings;" md-waves="color: light;" class="tr-green" click.trigger="resetRangeSettings(layer.id)"><i class="material-icons icon-white">cached</i></a>
-                  <a id='identify' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" click.trigger="toggleTool('identify')" class.bind="buttonCheck.identify.state ? 'lime' : 'tr-green'"><i class.bind="buttonCheck.identify.state ? 'material-icons icon-grey' : 'material-icons icon-white'">details</i></a>
-                  <a id='zonalStat' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.zonalStat.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('zonalStat')"><i class.bind="buttonCheck.zonalStat.state ? 'material-icons icon-grey' : 'material-icons icon-white'">dashboard</i></a>
-                  <a id='tsChart' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.tsChart.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('tsChart')"><i class.bind="buttonCheck.tsChart.state ? 'material-icons icon-grey' : 'material-icons icon-white'">timeline</i></a>
-                  <a id='zonalTSChart' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.zonalTSChart.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('zonalTSChart')"><i class.bind="buttonCheck.zonalTSChart.state ? 'material-icons icon-grey' : 'material-icons icon-white'">multiline_chart</i></a>
-                  <a id='profile' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked location;" md-waves="color: light;" class.bind="buttonCheck.profile.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('profile')"><i class.bind="buttonCheck.profile.state ? 'material-icons icon-grey' : 'material-icons icon-white'">terrain</i></a>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </li>
-    </ul>
-    <div id="basemap" class="map col l9 m9 s9"></div>
-    <!-- Indentify Table -->
-    <require from="productTools/identify/identi-fy"></require>
-    <identi-fy show.bind="buttonCheck.identify.state"></identi-fy>
-    <!-- Time series chart options -->
-    <require from="productTools/tsChart/ts-chart"></require>
-    <ts-chart show.bind="buttonCheck.tsChart.state"></ts-chart>
-    <!-- Zonal Statistics Table -->
-    <identi-fy show.bind="buttonCheck.zonalStat.state"></identi-fy>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <div id="basemap" class="map col l9 m9 s9">
+      </div>
+      <!-- Indentify Table -->
+      <!-- <require from="productTools/identify/identi-fy"></require> -->
+      <identi-fy show.bind="buttonCheck.identify.state"></identi-fy>
+      <require from="productTools/tsChart/chart-el"></require>
+      <chart-el show.bind="tsChartWindow"></chart-el>
+      <!-- Time series chart options -->
+      <require from="productTools/tsChart/ts-chart"></require>
+      <ts-chart show.bind="buttonCheck.tsChart.state"></ts-chart>
+      <!-- Zonal Statistics Table -->
+      <identi-fy show.bind="buttonCheck.zonalStat.state"></identi-fy>
+    </div>
   </div>
 </template>
