@@ -57,6 +57,8 @@ export class BaseMap {
     this.lastidentifyFeatureId = 0;
     this.drawGeomType = 'Point';
     this.tsChartWindow = false;
+    this.toolNotification = false;
+
 
     this.buttonCheck = {
       refresh: {
@@ -124,6 +126,12 @@ export class BaseMap {
     });
     this.ea.subscribe('ts-chart-window-changed', data => {
       this.tsChartWindow = data;
+    });
+    this.ea.subscribe('open-tool-notification', notificationStatus => {
+      this.toolNotification = notificationStatus.errorWindow;
+    });
+    this.ea.subscribe('close-tool-notification', notificationStatus => {
+      this.toolNotification = notificationStatus;
     });
   }
 
@@ -312,6 +320,13 @@ export class BaseMap {
         }
         else {
           _this.tsChartPointsDrawSource.removeFeature(evt.feature);
+          if (!_this.toolNotification) {
+            _this.ea.publish('open-tool-notification', {
+              errorWindow: true,
+              errorMessage: 'featureLimitPerRequest'
+            });
+          }
+
         }
       }
     });

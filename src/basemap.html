@@ -41,7 +41,7 @@
       <!-- <require from="productTools/identify/identi-fy"></require> -->
       <identi-fy show.bind="buttonCheck.identify.state"></identi-fy>
       <require from="productTools/tsChart/chart-el"></require>
-      <chart-el show.bind="tsChartWindow"></chart-el>
+      <chart-el show.bind="tsChartWindow" class="chart-height"></chart-el>
       <!-- Time series chart options -->
       <require from="productTools/tsChart/ts-chart"></require>
       <ts-chart show.bind="buttonCheck.tsChart.state"></ts-chart>
@@ -49,4 +49,5 @@
       <identi-fy show.bind="buttonCheck.zonalStat.state"></identi-fy>
     </div>
   </div>
+  <tool-notification show.bind="toolNotification"></tool-notification>
 </template>

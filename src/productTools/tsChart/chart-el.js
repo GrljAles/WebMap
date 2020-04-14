@@ -53,6 +53,11 @@ export class ChartEl {
       type: 'line',
       data: datas,
       options: {
+        legend: {
+          labels:{
+            fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif"
+          }
+        },
         scales: {
           xAxes: [{
             type: 'time',

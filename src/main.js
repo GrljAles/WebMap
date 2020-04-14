@@ -13,6 +13,7 @@ export function configure(aurelia) {
     .standardConfiguration()
     .globalResources(PLATFORM.moduleName('aurelia-authentication/authFilterValueConverter'))
     .globalResources(PLATFORM.moduleName('productTools/identify/identi-fy'))
+    .globalResources(PLATFORM.moduleName('notification/toolNotification'))
     .feature(PLATFORM.moduleName('resources/index'))
     .plugin(PLATFORM.moduleName('aurelia-materialize-bridge'), b => b.useAll())
     .plugin(PLATFORM.moduleName('aurelia-validation'))

@@ -97,7 +97,10 @@ export class TsChart {
           this.pointsTable =  null;
         })
         .catch(error => {
-          this.chartel.chartError();
+          this.ea.publish('open-tool-notification', {
+            errorWindow: true,
+            errorMessage: 'genericBackend'
+          });
         });
     }
   }

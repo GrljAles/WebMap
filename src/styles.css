@@ -174,11 +174,28 @@ i.icon-white {
 .tool-options-wrapper {
   padding: 2rem;
 }
+
 .ts-chart-pos {
   height: 30%;
   background-color: #f2eadf;
 }
+
 .chart-height {
-  height: 40vh;
+  height: 10vh !important;
   max-height: 700px;
+}
+
+.tool-notification {
+  position: fixed; /* or absolute */
+  top: 50%;
+  left: 50%;
+  padding: 2rem;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+  z-index: 2 !important;
+}
+
+.tool-notification-confirm-button {
+  margin: 1%;
+  left: 50%;
 }
