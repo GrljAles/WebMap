@@ -93,5 +93,16 @@ export class ChartEl {
     this.ea.publish('ts-chart-window-changed', false);
     this.tsChartWindowDelete = false;
   }
+
+  downloadChart() {
+    let a = window.document.createElement('a');
+    let chEl = window.document.getElementById('chart');
+    let file = chEl.toDataURL("image/png");
+    a.href = file;
+    a.download = 'tsChart.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 }
 
