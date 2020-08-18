@@ -38,6 +38,14 @@ export class IdentiFy {
         tableHeader: ['Id', 'Product', 'X', 'Y'],
         tableTitle: 'REQUESTED POINTS FOR TIME SERIES',
         tableIcon: 'timeline'
+      },
+      zonalTSPolygons: {
+        delete: false,
+        table: [],
+        tableId: 0,
+        tableHeader: ['Id', 'Product', 'Area'],
+        tableTitle: 'REQUESTED POLYGON FOR TIME SERIES',
+        tableIcon: 'multiline_chart'
       }
     };
     this.subscribe();

@@ -36,6 +36,7 @@ import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
 import GeoJSON from 'ol/format/GeoJSON';
 import {Draw, Select, Snap} from 'ol/interaction';
+import {getArea} from 'ol/sphere';
 import {pointerMove} from 'ol/events/condition';
 import { none } from 'ol/centerconstraint';
 import { observable } from 'aurelia-framework';
@@ -122,7 +123,7 @@ export class BaseMap {
       this.saveIdentifyGeojson(whichLayer);
     });
     this.ea.subscribe('get-ts-table', whichLayer => {
-      this.tsFeatureCount = 0;
+      this.tsPointFeatureCount = 0;
     });
     this.ea.subscribe('ts-chart-window-changed', data => {
       this.tsChartWindow = data;
@@ -263,6 +264,12 @@ export class BaseMap {
       source: this.tsChartPointsDrawSource,
       style: this.toolLayerStyle
     });
+    this.tsChartPolygonsDrawSource = new VectorSource;
+    this.tsChartPolygons = new VectorLayer({
+      title: 'zonalTSPolygons',
+      source: this.tsChartPolygonsDrawSource,
+      style: this.toolLayerStyle
+    });
 
     this.draw = new Draw({
       source: null,
@@ -276,7 +283,8 @@ export class BaseMap {
         this.NDVI,
         this.identifyPoints,
         this.zonalStatsPolys,
-        this.tsChartPoints
+        this.tsChartPoints,
+        this.tsChartPolygons
       ],
       view: new View({
         center: transform([14.815333, 46.119944], 'EPSG:4326', 'EPSG:3857'),
@@ -305,10 +313,10 @@ export class BaseMap {
       }
     });
     
-    this.tsFeatureCount = 0;
+    this.tsPointFeatureCount = 0;
     this.tsChartPointsDrawSource.on('addfeature', function(evt) {
       if (_this.buttonCheck.tsChart.state) {
-        if (_this.tsFeatureCount < 10) {
+        if (_this.tsPointFeatureCount < 10) {
           let lastPointCoordinates = evt.feature.getGeometry().getCoordinates();
           let tsPointData = {
             product: _this.layers[_this.activeLayer].name,
@@ -316,7 +324,7 @@ export class BaseMap {
             y: Math.round((lastPointCoordinates[1] + Number.EPSILON) * 10000) / 10000
           };
           _this.setIdentifyLayerProperties('tsPoints', tsPointData);
-          _this.tsFeatureCount += 1;
+          _this.tsPointFeatureCount += 1;
         }
         else {
           _this.tsChartPointsDrawSource.removeFeature(evt.feature);
@@ -326,7 +334,31 @@ export class BaseMap {
               errorMessage: 'featureLimitPerRequest'
             });
           }
+        }
+      }
+    });
 
+    this.tsPolygonFeatureCount = 0;
+    this.tsChartPolygonsDrawSource.on('addfeature', function(evt) {
+      if (_this.buttonCheck.zonalTSChart.state) {
+        if (_this.tsPolygonFeatureCount < 2) {
+          let lastPolygonArea = getArea(evt.feature.getGeometry());
+
+          let tsPolygonData = {
+            product: _this.layers[_this.activeLayer].name,
+            area: _this.formatArea(lastPolygonArea)
+          };
+          _this.setIdentifyLayerProperties('zonalTSPolygons', tsPolygonData);
+          _this.tsPolygonFeatureCount += 1;
+        }
+        else {
+          _this.tsChartPolygonsDrawSource.removeFeature(evt.feature);
+          if (!_this.toolNotification) {
+            _this.ea.publish('open-tool-notification', {
+              errorWindow: true,
+              errorMessage: 'featureLimitPerRequest'
+            });
+          }
         }
       }
     });
@@ -370,6 +402,18 @@ export class BaseMap {
         }
       }
     });
+  }
+  
+  formatArea(area) {
+    let output;
+    if (area > 10000) {
+      output = (Math.round(area / 1000000 * 100) / 100) +
+          ' ' + 'km<sup>2</sup>';
+    } else {
+      output = (Math.round(area * 100) / 100) +
+          ' ' + 'm<sup>2</sup>';
+    }
+    return output;
   }
 
   dateToYYYYMMDD(dateString) {
@@ -473,7 +517,7 @@ export class BaseMap {
   }
 
   toggleTool(buttonId) {
-    for (let i in  this.buttonCheck) {
+    for (let i in this.buttonCheck) {
       if (i !== buttonId) {
         this.buttonCheck[i].state = false;
       }
@@ -482,9 +526,18 @@ export class BaseMap {
         this.toggleDrawInteraction(this.buttonCheck[buttonId]);
         this.ea.publish('activeTableChanged', this.buttonCheck[buttonId].relatedLayer);
       }
-    }    
+    }
+    this.chartCheck(buttonId);
   }
 
+  chartCheck(buttonId) {
+    if (buttonId == 'tsChart') {
+      this.tsChartWindow = true;
+    }
+    else {
+      this.tsChartWindow = false;
+    }
+  }
   toggleDrawInteraction(buttonProps) {
     if (buttonProps.state) {
       this.basemap.removeInteraction(this.draw);

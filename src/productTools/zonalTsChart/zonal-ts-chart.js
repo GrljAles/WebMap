@@ -6,10 +6,10 @@ import noUiSlider from 'materialize-css/extras/noUiSlider/noUiSlider';
 import 'materialize-css/extras/noUiSlider/nouislider.css';
 import * as dataData from '../../resources/dataData/dataData.json';
 import * as locations from '../../resources/locations/locations.json';
-import {ChartEl} from './chart-el';
+import {ChartEl} from '../tsChart/chart-el';
 
 @inject(EventAggregator, HttpClient, AuthService, ChartEl)
-export class TsChart {
+export class ZonalTsChart {
   constructor(eventAggregator, httpClient, authService, chartEl) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;

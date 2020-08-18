@@ -1,12 +1,10 @@
 import {inject} from 'aurelia-framework';
 import {EventAggregator} from 'aurelia-event-aggregator';
-import { observable } from 'aurelia-framework';
 import {Chart} from 'chart.js';
 
 let instance = null;
 
 @inject(EventAggregator)
-@observable('tsChartWindow')
 export class ChartEl {
   constructor(eventAggregator) {
     this.ea = eventAggregator;
@@ -20,10 +18,6 @@ export class ChartEl {
       instance = this;
     }
     return instance;
-  }
-  // Observables observe variable (in method name before 'Chnaged' part) and fire function on change.
-  tsChartWindowChanged(newValue, oldValue) {
-    this.ea.publish('ts-chart-window-changed', newValue);
   }
 
   subscribe() {}
@@ -70,16 +64,6 @@ export class ChartEl {
     });
     this.myChart.update();
   }
-
-  chartError() {
-    console.log('savyxv')
-/*     let ctx = document.getElementById('chart');
-    let a = document.createElement("h1");
-    let node = document.createTextNode('An error ocured')
-    a.appendChild(node);
-    ctx.appendChild(a); */
-  }
-
   confirmDeleteChart() {
     this.tsChartWindowDelete = true;
   }
@@ -89,8 +73,8 @@ export class ChartEl {
   }
 
   yesDeleteChart() {
-    this.tsChartWindow = false;
     this.ea.publish('ts-chart-window-changed', false);
+    this.tsChartWindow = false;
     this.tsChartWindowDelete = false;
   }
 

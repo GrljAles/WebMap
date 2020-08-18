@@ -27,7 +27,7 @@
       </thead>
       <tbody class="rows-font-size lime">
         <tr repeat.for="element of resultsTables[activeTable].table">
-          <td repeat.for="colBody of element | objectKeys">${colBody}</td>
+          <td repeat.for="colBody of element | objectKeys" innerhtml.bind="colBody"></td>
           <td><a md-button="floating: true;" md-tooltip="position: bottom; text: Delete this row;"
               md-waves="color: light;" class="tr-button btn-small"
               click.trigger="deleteResultsTableRow(activeTable, element.id)"><i
