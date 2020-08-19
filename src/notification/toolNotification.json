@@ -1,4 +1,6 @@
 {
   "genericBackend": "Something went wrong while processing your request and someone was notified about it! Please try again later.",
-  "featureLimitPerRequest": "You reached the feature limit for this tool. Submit your request and continue adding features."
+  "featureLimitPerRequest": "You reached the feature limit for this tool. Submit your request and continue adding features.",
+  "polygonAreaTooLarge": "Area of this polygon is too large. Please draw a smaller polygon.",
+  "featureLimitPerRequestZonalTS": "You reached the feature limit for this tool. Delete the current polygon using the 'x' in the table below, draw a new polygon and submit the request."
 }

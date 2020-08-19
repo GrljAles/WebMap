@@ -134,6 +134,9 @@ export class BaseMap {
     this.ea.subscribe('close-tool-notification', notificationStatus => {
       this.toolNotification = notificationStatus;
     });
+    this.ea.subscribe('get-ts-poly-json', data => {
+      this.publishToolJson(data);
+    });
   }
 
   attached() {
@@ -313,10 +316,9 @@ export class BaseMap {
       }
     });
     
-    this.tsPointFeatureCount = 0;
     this.tsChartPointsDrawSource.on('addfeature', function(evt) {
       if (_this.buttonCheck.tsChart.state) {
-        if (_this.tsPointFeatureCount < 10) {
+        if (_this.tsChartPointsDrawSource.getFeatures().length < 11) {
           let lastPointCoordinates = evt.feature.getGeometry().getCoordinates();
           let tsPointData = {
             product: _this.layers[_this.activeLayer].name,
@@ -324,7 +326,6 @@ export class BaseMap {
             y: Math.round((lastPointCoordinates[1] + Number.EPSILON) * 10000) / 10000
           };
           _this.setIdentifyLayerProperties('tsPoints', tsPointData);
-          _this.tsPointFeatureCount += 1;
         }
         else {
           _this.tsChartPointsDrawSource.removeFeature(evt.feature);
@@ -338,25 +339,33 @@ export class BaseMap {
       }
     });
 
-    this.tsPolygonFeatureCount = 0;
     this.tsChartPolygonsDrawSource.on('addfeature', function(evt) {
       if (_this.buttonCheck.zonalTSChart.state) {
-        if (_this.tsPolygonFeatureCount < 2) {
+        if (_this.tsChartPolygonsDrawSource.getFeatures().length < 2) {
           let lastPolygonArea = getArea(evt.feature.getGeometry());
-
-          let tsPolygonData = {
-            product: _this.layers[_this.activeLayer].name,
-            area: _this.formatArea(lastPolygonArea)
-          };
-          _this.setIdentifyLayerProperties('zonalTSPolygons', tsPolygonData);
-          _this.tsPolygonFeatureCount += 1;
+          if (lastPolygonArea < 1000000) {
+            let tsPolygonData = {
+              product: _this.layers[_this.activeLayer].name,
+              area: _this.formatArea(lastPolygonArea)
+            };
+            _this.setIdentifyLayerProperties('zonalTSPolygons', tsPolygonData);
+          }
+          else {
+            _this.tsChartPolygonsDrawSource.removeFeature(evt.feature);
+            if (!_this.toolNotification) {
+              _this.ea.publish('open-tool-notification', {
+                errorWindow: true,
+                errorMessage: 'polygonAreaTooLarge'
+              });
+            }
+          }
         }
         else {
           _this.tsChartPolygonsDrawSource.removeFeature(evt.feature);
           if (!_this.toolNotification) {
             _this.ea.publish('open-tool-notification', {
               errorWindow: true,
-              errorMessage: 'featureLimitPerRequest'
+              errorMessage: 'featureLimitPerRequestZonalTS'
             });
           }
         }
@@ -492,7 +501,7 @@ export class BaseMap {
   deleteToolFeatures(deleteWhat) {
     for (let selectedLayer of this.basemap.getLayers().getArray()) {
       if (selectedLayer.get('title') === deleteWhat.layer) {
-        let selectedLayerSource = selectedLayer.getSource()
+        let selectedLayerSource = selectedLayer.getSource();
         if (deleteWhat.idsToDelete === 'all') {
           for (let feature of selectedLayerSource.getFeatures()) {
             selectedLayerSource.removeFeature(feature);
@@ -513,6 +522,14 @@ export class BaseMap {
         let geojsonStr = writer.writeFeatures(selectedLayerSource.getFeatures());
         this.ea.publish('this-is-selected-table-geojson', geojsonStr)
       }
+    }
+  }
+
+  publishToolJson(data) {
+    let writer = new GeoJSON();
+    if (data === 'zonalTSPolygons') {
+      let geojsonStr = writer.writeFeatures(this.tsChartPolygonsDrawSource.getFeatures());
+      this.ea.publish('this-is-zonalTSPolygons-table', geojsonStr);
     }
   }
 

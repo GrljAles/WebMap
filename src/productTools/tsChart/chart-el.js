@@ -33,7 +33,7 @@ export class ChartEl {
     return color;
   }
 
-  updateChart(datas) {
+  updateChart(datas, legendDisplay) {
     if (this.myChart) {
       this.myChart = null;
     }
@@ -48,7 +48,8 @@ export class ChartEl {
       data: datas,
       options: {
         legend: {
-          labels:{
+          display: legendDisplay,
+          labels: {
             fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif"
           }
         },

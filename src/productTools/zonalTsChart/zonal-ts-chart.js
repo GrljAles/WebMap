@@ -26,8 +26,8 @@ export class ZonalTsChart {
     this.ea.subscribe('activeLayerChanged', data => {
       this.activeLayer = data;
     });
-    this.ea.subscribe('this-is-tsPoints-table', table => {
-      this.pointsTable = table;
+    this.ea.subscribe('this-is-zonalTSPolygons-table', table => {
+      this.polyTable = table;
     });
   }
 
@@ -66,21 +66,17 @@ export class ZonalTsChart {
     });
   }
 
-  getPointsTable() {
-    return this.identify.publishToolTable('tsPoints')
-  }
-
   tsChartRequest() {
-    this.ea.publish('get-ts-table', 'tsPoints')
-    if (this.pointsTable.length > 0) {
+    this.ea.publish('get-ts-poly-json', 'zonalTSPolygons')
+    if (this.polyTable.length > 0) {
       this.ea.publish('ts-chart-window-changed', true);
       this.tsChartParams = {
         "startingDateIndex": this.layers[this.activeLayer].availableDates[this.startingDateIndex],
         "endingDateIndex": this.layers[this.activeLayer].availableDates[this.endingDateIndex],
-        "points": this.pointsTable,
+        "polygons": this.polyTable,
         "product": this.layers[this.activeLayer].name
       };
-      this.httpClient.fetch('http://' + locations.backend + '/backendapi/tschartpoints', {
+      this.httpClient.fetch('http://' + locations.backend + '/backendapi/tschartpolygons', {
         method: 'POST',
         body: JSON.stringify(this.tsChartParams),
         headers: {
@@ -96,8 +92,8 @@ export class ZonalTsChart {
         })
         .then(data => {
           let tsChart = JSON.parse(data);
-          this.chartel.updateChart(tsChart);
-          this.pointsTable =  null;
+          this.chartel.updateChart(tsChart, false);
+          this.polyTable =  null;
         })
         .catch(error => {
           this.ea.publish('open-tool-notification', {

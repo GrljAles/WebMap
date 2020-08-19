@@ -2,7 +2,7 @@
   <div class="row lime">
     <div id="tsChartOptions" class="col l6 m6 s6 scale-transition results-table lime">
       <div class="table-comtrolls-wrapper">
-        <a md-button="floating: true;" class="tr-green"><i class="material-icons icon-grey">timeline</i></a>
+        <a md-button="floating: true;" class="tr-green"><i class="material-icons icon-grey">multiline_chart</i></a>
         <h5 class="table-controll-title white-text">TIME SERIES OPTIONS</h5>
         <span></span>
       </div>
@@ -20,7 +20,7 @@
         <div class="row  tool-options-wrapper">
             <div id="ts-date-slider"></div>
         </div>
-        <div class="row">Pick the time series chart locations on the map. Maximim is 10 per request</div>
+        <div class="row">Draw the time series chart polygon on the map. Maximum is 1 per request and maximum area of single polygon is 1000000 m<sup>2</sup> </div>
         <div class="row align-center">
           <div class="col s12 m4 l2"><p></p></div>
           <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" click.trigger="tsChartRequest()">Submit</a></div>
