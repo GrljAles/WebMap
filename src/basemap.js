@@ -36,20 +36,22 @@ import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
 import GeoJSON from 'ol/format/GeoJSON';
 import {Draw, Select, Snap} from 'ol/interaction';
-import {getArea} from 'ol/sphere';
+import {getArea, getLength} from 'ol/sphere';
 import {pointerMove} from 'ol/events/condition';
 import { none } from 'ol/centerconstraint';
 import { observable } from 'aurelia-framework';
+import {ChartEl} from './productTools/tsChart/chart-el.js';
 
-@inject(EventAggregator, HttpClient, AuthService)
+@inject(EventAggregator, HttpClient, AuthService, ChartEl)
 @observable('activeLayer')
 @observable('buttonCheck')
 
 export class BaseMap {  
-  constructor(eventAggregator, httpClient, authService) {
+  constructor(eventAggregator, httpClient, authService, chartEl) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;
     this.authService = authService;
+    this.chartel = chartEl;
 
     this.opacityValue = 1;
     this.layers = dataData.default;
@@ -90,7 +92,7 @@ export class BaseMap {
       profile: {
         state: false,
         drawGeom: 'LineString',
-        relatedLayer: 'profileLine'
+        relatedLayer: 'profileLines'
       }
     };
     this.subscribe();
@@ -273,6 +275,12 @@ export class BaseMap {
       source: this.tsChartPolygonsDrawSource,
       style: this.toolLayerStyle
     });
+    this.profileLinesDrawSource = new VectorSource;
+    this.profileLines = new VectorLayer({
+      title: 'profileLines',
+      source: this.profileLinesDrawSource,
+      style: this.toolLayerStyle
+    });
 
     this.draw = new Draw({
       source: null,
@@ -287,7 +295,8 @@ export class BaseMap {
         this.identifyPoints,
         this.zonalStatsPolys,
         this.tsChartPoints,
-        this.tsChartPolygons
+        this.tsChartPolygons,
+        this.profileLines
       ],
       view: new View({
         center: transform([14.815333, 46.119944], 'EPSG:4326', 'EPSG:3857'),
@@ -312,6 +321,7 @@ export class BaseMap {
           "product": _this.layers[_this.activeLayer].name,
           "dates": _this.dateToYYYYMMDD(_this.layers[_this.activeLayer].displayedDate)
         };
+        zonalStatsParams["zone"] = _this.featuresToGeoJSON(evt.feature);
         _this.zonalStatistcsRequest(zonalStatsParams);
       }
     });
@@ -411,8 +421,25 @@ export class BaseMap {
         }
       }
     });
+    this.profileLinesDrawSource.on('addfeature', function(evt) {
+      if (_this.buttonCheck.profile.state) {
+        console.log(evt.feature.getGeometry().getCoordinates());
+        let lastLineLength = getLength(evt.feature.getGeometry());
+        let profileLineData = {
+          product: _this.layers[_this.activeLayer].name,
+          dates: _this.dateToYYYYMMDD(_this.layers[_this.activeLayer].displayedDate),
+          length: _this.formatLength(lastLineLength),
+          resolution: _this.layers[_this.activeLayer].dataProperties.resolution
+        };
+        _this.setIdentifyLayerProperties('profileLines', profileLineData);
+        //profileLineData.line = _this.featuresToGeoJSON(evt.feature);
+        profileLineData.p0 = evt.feature.getGeometry().getCoordinates()[0];
+        profileLineData.p1 = evt.feature.getGeometry().getCoordinates()[1];
+        _this.profileChartRequest(profileLineData);
+      }
+    });
   }
-  
+
   formatArea(area) {
     let output;
     if (area > 10000) {
@@ -421,6 +448,18 @@ export class BaseMap {
     } else {
       output = (Math.round(area * 100) / 100) +
           ' ' + 'm<sup>2</sup>';
+    }
+    return output;
+  }
+
+  formatLength(length) {
+    let output;
+    if (length > 1000) {
+      output = (Math.round(length / 1000 * 100) / 100) +
+          ' ' + 'km';
+    } else {
+      output = (Math.round(length * 100) / 100) +
+          ' ' + 'm';
     }
     return output;
   }
@@ -439,15 +478,16 @@ export class BaseMap {
     return dd + '.' + mm + '.' + yyyy;
   }
 
-  zonalStatistcsRequest(zonalStatsParams) {
-    let zonalPolysFeatures = this.zonalStatsPolysDrawSource.getFeatures();
-    let lastFeature = zonalPolysFeatures[zonalPolysFeatures.length - 1];
+  featuresToGeoJSON(features) {
     let tmpPolyDrawSource = new VectorSource;
-    tmpPolyDrawSource.addFeature(lastFeature);
+    tmpPolyDrawSource.addFeature(features);
     let writer = new GeoJSON();
     let geojsonStr = writer.writeFeatures(tmpPolyDrawSource.getFeatures())
     tmpPolyDrawSource = null;
-    zonalStatsParams["zone"] = geojsonStr;
+    return geojsonStr;
+  }
+
+  zonalStatistcsRequest(zonalStatsParams) {
     this.httpClient.fetch('http://' + locations.backend + '/backendapi/zonalstatistics', {
       method: 'POST',
       body: JSON.stringify(zonalStatsParams),
@@ -476,6 +516,35 @@ export class BaseMap {
           mean: '/',
           std: '/',
           range: '/'
+        });
+      });
+  }
+
+  profileChartRequest(profileLineData) {
+    console.log(JSON.stringify(profileLineData))
+    this.httpClient.fetch('http://' + locations.backend + '/backendapi/profilechart', {
+      method: 'POST',
+      body: JSON.stringify(profileLineData),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'Fetch',
+        'Authorization': 'Bearer ' + this.authService.getAccessToken()
+      },
+      mode: 'cors'
+    })
+      .then(response => {
+        return response.text();
+      })
+      .then(data => {
+        let profileChart = JSON.parse(data);
+        this.chartel.updateChart(profileChart, false);
+      })
+      .catch(error => {
+        console.log(error)
+        this.ea.publish('open-tool-notification', {
+          errorWindow: true,
+          errorMessage: 'genericBackend'
         });
       });
   }
@@ -548,7 +617,7 @@ export class BaseMap {
   }
 
   chartCheck(buttonId) {
-    if (buttonId == 'tsChart') {
+    if (buttonId === 'tsChart' || buttonId === 'zonalTSChart' || buttonId === 'profile') {
       this.tsChartWindow = true;
     }
     else {
@@ -556,14 +625,22 @@ export class BaseMap {
     }
   }
   toggleDrawInteraction(buttonProps) {
+    let maxPoints = 10000000000;
     if (buttonProps.state) {
       this.basemap.removeInteraction(this.draw);
       for (let selectedLayer of this.basemap.getLayers().getArray()) {
         if (selectedLayer.get('title') === buttonProps.relatedLayer) {
+          if (selectedLayer.get('title') === 'profileLines') {
+            maxPoints = 2;
+          }
+          else {
+            maxPoints = 10000000000;
+          }
           let selectedLayerSource = selectedLayer.getSource();
           this.draw = new Draw({
             source: selectedLayerSource,
-            type: buttonProps.drawGeom
+            type: buttonProps.drawGeom,
+            maxPoints: maxPoints
           });
           this.basemap.addInteraction(this.draw);
         }

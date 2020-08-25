@@ -46,6 +46,14 @@ export class IdentiFy {
         tableHeader: ['Id', 'Product', 'Area'],
         tableTitle: 'REQUESTED POLYGON FOR TIME SERIES',
         tableIcon: 'multiline_chart'
+      },
+      profileLines: {
+        delete: false,
+        table: [],
+        tableId: 0,
+        tableHeader: ['Id', 'Product', "Dates", 'Length'],
+        tableTitle: 'REQUESTED LINE FOR PROFILE',
+        tableIcon: 'landscape'
       }
     };
     this.subscribe();

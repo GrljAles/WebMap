@@ -71,9 +71,9 @@ export class TsChart {
   }
 
   tsChartRequest() {
+    this.chartel.updateChart({}, true);
     this.ea.publish('get-ts-table', 'tsPoints')
     if (this.pointsTable.length > 0) {
-      console.log(this.pointsTable)
       this.ea.publish('ts-chart-window-changed', true);
       this.tsChartParams = {
         "startingDateIndex": this.layers[this.activeLayer].availableDates[this.startingDateIndex],
@@ -97,6 +97,7 @@ export class TsChart {
         })
         .then(data => {
           let tsChart = JSON.parse(data);
+          console.log(tsChart)
           this.chartel.updateChart(tsChart, true);
           this.pointsTable =  null;
         })

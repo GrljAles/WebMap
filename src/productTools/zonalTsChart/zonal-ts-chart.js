@@ -66,7 +66,8 @@ export class ZonalTsChart {
     });
   }
 
-  tsChartRequest() {
+  zonalTSChartRequest() {
+    this.chartel.updateChart({}, false);
     this.ea.publish('get-ts-poly-json', 'zonalTSPolygons')
     if (this.polyTable.length > 0) {
       this.ea.publish('ts-chart-window-changed', true);

@@ -12,7 +12,6 @@ export class ChartEl {
     this.tsChartWindow = false;
 
     this.subscribe();
-    this.subscribe();
 
     if (!instance) {
       instance = this;
@@ -37,6 +36,7 @@ export class ChartEl {
     if (this.myChart) {
       this.myChart = null;
     }
+    console.log(datas)
     for (let ii in datas.datasets) {
       datas.datasets[ii].lineTension = 0;
       datas.datasets[ii].borderColor = this.getRandomColor();
