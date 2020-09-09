@@ -67,7 +67,13 @@ export class ZonalTsChart {
   }
 
   zonalTSChartRequest() {
-    this.chartel.updateChart({}, false);
+    let datas = {
+      data: {},
+      legendDisplay: false,
+      xAxisType: 'time',
+      xAxisUnit: 'day'
+    };
+    this.chartel.updateChart(datas);
     this.ea.publish('get-ts-poly-json', 'zonalTSPolygons')
     if (this.polyTable.length > 0) {
       this.ea.publish('ts-chart-window-changed', true);
@@ -93,7 +99,8 @@ export class ZonalTsChart {
         })
         .then(data => {
           let tsChart = JSON.parse(data);
-          this.chartel.updateChart(tsChart, false);
+          datas.data = tsChart
+          this.chartel.updateChart(datas);
           this.polyTable =  null;
         })
         .catch(error => {

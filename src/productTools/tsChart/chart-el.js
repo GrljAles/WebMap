@@ -32,32 +32,31 @@ export class ChartEl {
     return color;
   }
 
-  updateChart(datas, legendDisplay) {
+  updateChart(datas) {
     if (this.myChart) {
-      this.myChart = null;
+      this.myChart.destroy();
     }
-    console.log(datas)
-    for (let ii in datas.datasets) {
-      datas.datasets[ii].lineTension = 0;
-      datas.datasets[ii].borderColor = this.getRandomColor();
-      datas.datasets[ii].fill = false;
+    for (let ii in datas.data.datasets) {
+      datas.data.datasets[ii].lineTension = 0;
+      datas.data.datasets[ii].borderColor = this.getRandomColor();
+      datas.data.datasets[ii].fill = false;
     }
     let ctx = document.getElementById('chart');
     this.myChart = new Chart(ctx, {
       type: 'line',
-      data: datas,
+      data: datas.data,
       options: {
         legend: {
-          display: legendDisplay,
+          display: datas.legendDisplay,
           labels: {
             fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen-Sans, Ubuntu, Cantarell, Helvetica Neue, sans-serif"
           }
         },
         scales: {
           xAxes: [{
-            type: 'time',
+            type: datas.xAxisType,
             time: {
-              unit: 'day'
+              unit: datas.xAxisUnit
             }
           }]
         }

@@ -521,7 +521,14 @@ export class BaseMap {
   }
 
   profileChartRequest(profileLineData) {
-    console.log(JSON.stringify(profileLineData))
+    let datas = {
+      data: {},
+      legendDisplay: false,
+      xAxisType: 'linear',
+      xAxisUnit: null
+    };
+    this.chartel.updateChart(datas);
+    this.ea.publish('ts-chart-window-changed', true);
     this.httpClient.fetch('http://' + locations.backend + '/backendapi/profilechart', {
       method: 'POST',
       body: JSON.stringify(profileLineData),
@@ -538,10 +545,10 @@ export class BaseMap {
       })
       .then(data => {
         let profileChart = JSON.parse(data);
-        this.chartel.updateChart(profileChart, false);
+        datas.data = profileChart;
+        this.chartel.updateChart(datas);
       })
       .catch(error => {
-        console.log(error)
         this.ea.publish('open-tool-notification', {
           errorWindow: true,
           errorMessage: 'genericBackend'

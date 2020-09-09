@@ -71,8 +71,14 @@ export class TsChart {
   }
 
   tsChartRequest() {
-    this.chartel.updateChart({}, true);
-    this.ea.publish('get-ts-table', 'tsPoints')
+    let datas = {
+      data: {},
+      legendDisplay: true,
+      xAxisType: 'time',
+      xAxisUnit: 'day'
+    };
+    this.chartel.updateChart(datas);
+    this.ea.publish('get-ts-table', 'tsPoints');
     if (this.pointsTable.length > 0) {
       this.ea.publish('ts-chart-window-changed', true);
       this.tsChartParams = {
@@ -98,7 +104,9 @@ export class TsChart {
         .then(data => {
           let tsChart = JSON.parse(data);
           console.log(tsChart)
-          this.chartel.updateChart(tsChart, true);
+          datas.data = tsChart;
+          
+          this.chartel.updateChart(datas);
           this.pointsTable =  null;
         })
         .catch(error => {
