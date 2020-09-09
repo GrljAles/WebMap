@@ -10,19 +10,12 @@ export class ToolNotification {
     this.subscribe();
   }
   subscribe() {
-    // this.ea.subscribe('notification-data', (data) => {
-    //   this.setData(data);
-    // });
     this.ea.subscribe('open-tool-notification', notificationStatus => {
       this.toolError = notificationStatus.errorWindow;
       this.errorMessage = this.errorMessages[notificationStatus.errorMessage];
     });
   }
 
-/*   setData(data) {
-    this.notificationText = data;
-    this.showNotification = true;
-  } */
   closeNotification() {
     this.errorMessage = null;
     this.ea.publish('close-tool-notification', false);

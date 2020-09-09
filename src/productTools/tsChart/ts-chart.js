@@ -71,6 +71,10 @@ export class TsChart {
   }
 
   tsChartRequest() {
+    this.ea.publish('open-tool-preloader', {
+      preloaderWindow: true,
+      toolPreloaderMessage: 'TSChart'
+    });
     let datas = {
       data: {},
       legendDisplay: true,
@@ -105,11 +109,16 @@ export class TsChart {
           let tsChart = JSON.parse(data);
           console.log(tsChart)
           datas.data = tsChart;
-          
           this.chartel.updateChart(datas);
+          this.ea.publish('close-tool-preloader', {
+            preloaderWindow: false
+          });
           this.pointsTable =  null;
         })
         .catch(error => {
+          this.ea.publish('close-tool-preloader', {
+            preloaderWindow: false
+          });
           this.ea.publish('open-tool-notification', {
             errorWindow: true,
             errorMessage: 'genericBackend'

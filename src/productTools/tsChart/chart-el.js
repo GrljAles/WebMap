@@ -64,6 +64,7 @@ export class ChartEl {
     });
     this.myChart.update();
   }
+  
   confirmDeleteChart() {
     this.tsChartWindowDelete = true;
   }

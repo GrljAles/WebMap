@@ -67,6 +67,10 @@ export class ZonalTsChart {
   }
 
   zonalTSChartRequest() {
+    this.ea.publish('open-tool-preloader', {
+      preloaderWindow: true,
+      toolPreloaderMessage: 'zonalTSChart'
+    });
     let datas = {
       data: {},
       legendDisplay: false,
@@ -99,11 +103,17 @@ export class ZonalTsChart {
         })
         .then(data => {
           let tsChart = JSON.parse(data);
-          datas.data = tsChart
+          datas.data = tsChart;
           this.chartel.updateChart(datas);
+          this.ea.publish('close-tool-preloader', {
+            preloaderWindow: false
+          });
           this.polyTable =  null;
         })
         .catch(error => {
+          this.ea.publish('close-tool-preloader', {
+            preloaderWindow: false
+          });
           this.ea.publish('open-tool-notification', {
             errorWindow: true,
             errorMessage: 'genericBackend'

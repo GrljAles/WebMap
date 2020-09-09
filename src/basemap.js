@@ -61,6 +61,7 @@ export class BaseMap {
     this.drawGeomType = 'Point';
     this.tsChartWindow = false;
     this.toolNotification = false;
+    this.toolPreloader = false;
 
 
     this.buttonCheck = {
@@ -135,6 +136,12 @@ export class BaseMap {
     });
     this.ea.subscribe('close-tool-notification', notificationStatus => {
       this.toolNotification = notificationStatus;
+    });
+    this.ea.subscribe('open-tool-preloader', preloaderStatus => {
+      this.toolPreloader = preloaderStatus.preloaderWindow;
+    });
+    this.ea.subscribe('close-tool-preloader', preloaderStatus => {
+      this.toolPreloader = preloaderStatus.preloaderWindow;
     });
     this.ea.subscribe('get-ts-poly-json', data => {
       this.publishToolJson(data);
@@ -306,15 +313,6 @@ export class BaseMap {
       })
     });
 
-/*     var select = new Select({
-      condition: pointerMove
-    });
- */
-/*     this.basemap.addInteraction(select);
-    var snap = new Snap({
-      source: this.identifyPoints.getSource()
-    });
-    this.basemap.addInteraction(snap); */
     this.zonalStatsPolys.getSource().on('addfeature', function(evt) {
       if (_this.buttonCheck.zonalStat.state) {
         let zonalStatsParams = {
@@ -421,6 +419,7 @@ export class BaseMap {
         }
       }
     });
+
     this.profileLinesDrawSource.on('addfeature', function(evt) {
       if (_this.buttonCheck.profile.state) {
         console.log(evt.feature.getGeometry().getCoordinates());
@@ -488,6 +487,10 @@ export class BaseMap {
   }
 
   zonalStatistcsRequest(zonalStatsParams) {
+    this.ea.publish('open-tool-preloader', {
+      preloaderWindow: true,
+      toolPreloaderMessage: 'zonalStatistics'
+    });
     this.httpClient.fetch('http://' + locations.backend + '/backendapi/zonalstatistics', {
       method: 'POST',
       body: JSON.stringify(zonalStatsParams),
@@ -506,6 +509,9 @@ export class BaseMap {
         let zonalData = JSON.parse(data);
         zonalData.date = this.YYYYMMDDToDate(zonalData.date);
         this.setIdentifyLayerProperties('zonalStatsPolygons', zonalData);
+        this.ea.publish('close-tool-preloader', {
+          preloaderWindow: false
+        });
       })
       .catch(error => {
         this.setIdentifyLayerProperties('zonalStatsPolygons', {
@@ -517,10 +523,17 @@ export class BaseMap {
           std: '/',
           range: '/'
         });
+        this.ea.publish('close-tool-preloader', {
+          preloaderWindow: false
+        });
       });
   }
 
   profileChartRequest(profileLineData) {
+    this.ea.publish('open-tool-preloader', {
+      preloaderWindow: true,
+      toolPreloaderMessage: 'profileLine'
+    });
     let datas = {
       data: {},
       legendDisplay: false,
@@ -547,8 +560,14 @@ export class BaseMap {
         let profileChart = JSON.parse(data);
         datas.data = profileChart;
         this.chartel.updateChart(datas);
+        this.ea.publish('close-tool-preloader', {
+          preloaderWindow: false
+        });
       })
       .catch(error => {
+        this.ea.publish('close-tool-preloader', {
+          preloaderWindow: false
+        });
         this.ea.publish('open-tool-notification', {
           errorWindow: true,
           errorMessage: 'genericBackend'
