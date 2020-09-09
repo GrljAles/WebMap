@@ -773,20 +773,25 @@ export class BaseMap {
       let colourRange = this.layers[idx].legend.colours;
       let classRange = this.layers[idx].legend.classBreaks;
       let classBreaks = [];
+      let legendClassBreaks = [];
       let classColours = [];
       for (let ii = 0; ii <= classRange.length - 1; ii++) {
         let currentClass = classRange[ii];
         if (currentClass[0] >= min && currentClass[1] <= max) {
           classBreaks.push(currentClass);
+          legendClassBreaks.push(currentClass);
           classColours.push(colourRange[ii]);
         }
+        else {
+          legendClassBreaks.push([]);
+        }
       }
-      this.calculateLegend(idx, classBreaks, classColours);
+      this.calculateLegend(idx, legendClassBreaks);
       this.changeLayerRange(idx, classBreaks, classColours);
     }
   }
 
-  calculateLegend(idx, classBreaks, classColours) {
+  calculateLegend(idx, classBreaks) {
     if (this.basemap) {
       if (document.getElementById('legend-colours-wraper' + idx)) {
         document.getElementById('legend-colours-wraper' + idx).parentElement.removeChild(document.getElementById('legend-colours-wraper' + idx));
@@ -795,16 +800,32 @@ export class BaseMap {
       legendColoursWraper.id = 'legend-colours-wraper' + idx;
       legendColoursWraper.classList.add('legend-image');
       let colourBoxWidth = ((document.getElementById('min-max-slider' + idx).offsetWidth / (this.layers[idx].displaySettings.nClasses)) * 100) / (document.getElementById('min-max-slider' + idx).offsetWidth);
-      for (let ii = classBreaks.length - 1; ii >= 1; ii--) {
-        let colourBox = document.createElement('p');
+
+      for (let ii = 0; ii < this.layers[idx].legend.classBreaks.length; ii++) {
+        let colourBox = document.createElement('span');
+        colourBox.setAttribute('id', 'cb-span-' + ii);
         colourBox.classList.add('colour-box');
         if (this.layers[idx].legend.type === 'continous') {
-          let colour1 = 'rgb(' + classColours[ii][1].join() + ')';
-          let colour2 = 'rgb(' + classColours[ii][0].join() + ')';
-          colourBox.setAttribute('style', 'background: linear-gradient(to right, ' + colour2 + ' 0%, ' + colour1 + ' 100%); width: ' + colourBoxWidth + '%; height: 5px');
-        } else {
-          let colour1 = 'rgb(' + classColours[ii][0].join() + ')';
-          colourBox.setAttribute('style', 'background: ' + colour1 + '; width: ' + colourBoxWidth + '%;' + 'height: 5px');
+          if (this.layers[idx].legend.classBreaks[ii] === classBreaks[ii]) {
+            let colour1 = 'rgb(' + this.layers[idx].legend.colours[ii][1].join() + ')';
+            let colour2 = 'rgb(' + this.layers[idx].legend.colours[ii][0].join() + ')';
+            colourBox.setAttribute('style', 'background: linear-gradient(to right, ' + colour2 + ' 0%, ' + colour1 + ' 100%); width: ' + colourBoxWidth + '%; height: 15px');
+          }
+          else {
+            let colour1 = 'rgb(124, 179, 66)';
+            let colour2 = 'rgb(124, 179, 66)';
+            colourBox.setAttribute('style', 'background: linear-gradient(to right, ' + colour2 + ' 0%, ' + colour1 + ' 100%); width: ' + colourBoxWidth + '%; height: 15px');
+          }
+        }
+        else {
+          if (this.layers[idx].legend.classBreaks[ii] === classBreaks[ii]) {
+            let colour1 = 'rgb(' + this.layers[idx].legend.colours[ii][1].join() + ')';
+            colourBox.setAttribute('style', 'background: ' + colour1 + '; width: ' + colourBoxWidth + '%;' + 'height: 15px');
+          }
+          else {
+            let colour1 = 'rgb(124, 179, 66)';
+            colourBox.setAttribute('style', 'background: ' + colour1 + '; width: ' + colourBoxWidth + '%;' + 'height: 15px');
+          }   
         }
         legendColoursWraper.appendChild(colourBox);
       }

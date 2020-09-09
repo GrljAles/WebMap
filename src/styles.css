@@ -104,10 +104,11 @@ border-bottom: none;
 }
 .colour-box {
   height: 100%;
-  float: right;
+  float: left;
   text-align: left;
   font-size: .8rem;
   color: rgba(0, 0, 0, 0.7);
+  margin-bottom: 1rem;
 }
 .value-box {
   font-size: .8rem;
