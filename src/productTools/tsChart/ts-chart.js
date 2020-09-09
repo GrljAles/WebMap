@@ -107,7 +107,6 @@ export class TsChart {
         })
         .then(data => {
           let tsChart = JSON.parse(data);
-          console.log(tsChart)
           datas.data = tsChart;
           this.chartel.updateChart(datas);
           this.ea.publish('close-tool-preloader', {

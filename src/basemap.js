@@ -313,7 +313,7 @@ export class BaseMap {
       })
     });
 
-    this.zonalStatsPolys.getSource().on('addfeature', function(evt) {
+    this.zonalStatsPolysDrawSource.on('addfeature', function(evt) {
       if (_this.buttonCheck.zonalStat.state) {
         let zonalStatsParams = {
           "product": _this.layers[_this.activeLayer].name,
@@ -422,7 +422,6 @@ export class BaseMap {
 
     this.profileLinesDrawSource.on('addfeature', function(evt) {
       if (_this.buttonCheck.profile.state) {
-        console.log(evt.feature.getGeometry().getCoordinates());
         let lastLineLength = getLength(evt.feature.getGeometry());
         let profileLineData = {
           product: _this.layers[_this.activeLayer].name,
@@ -530,6 +529,7 @@ export class BaseMap {
   }
 
   profileChartRequest(profileLineData) {
+    this.chartel.destroyChart();
     this.ea.publish('open-tool-preloader', {
       preloaderWindow: true,
       toolPreloaderMessage: 'profileLine'
@@ -540,7 +540,7 @@ export class BaseMap {
       xAxisType: 'linear',
       xAxisUnit: null
     };
-    this.chartel.updateChart(datas);
+    this.chartel.destroyChart();
     this.ea.publish('ts-chart-window-changed', true);
     this.httpClient.fetch('http://' + locations.backend + '/backendapi/profilechart', {
       method: 'POST',
@@ -576,6 +576,7 @@ export class BaseMap {
   }
 
   setIdentifyLayerProperties(whichLayer, propJson) {
+    this.chartel.destroyChart();
     for (let selectedLayer of this.basemap.getLayers().getArray()) {
       if (selectedLayer.get('title') === whichLayer) {
         let selectedLayerSource = selectedLayer.getSource();
@@ -640,10 +641,11 @@ export class BaseMap {
       }
     }
     this.chartCheck(buttonId);
+    this.chartel.destroyChart();
   }
 
   chartCheck(buttonId) {
-    if (buttonId === 'tsChart' || buttonId === 'zonalTSChart' || buttonId === 'profile') {
+    if (buttonId === 'tsChart' && this.buttonCheck['tsChart'].state === true || buttonId === 'zonalTSChart'  && this.buttonCheck['zonalTSChart'].state === true || buttonId === 'profile' && this.buttonCheck['profile'].state === true ) {
       this.tsChartWindow = true;
     }
     else {

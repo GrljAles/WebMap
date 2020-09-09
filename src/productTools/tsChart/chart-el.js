@@ -32,9 +32,15 @@ export class ChartEl {
     return color;
   }
 
-  updateChart(datas) {
+  destroyChart() {
     if (this.myChart) {
       this.myChart.destroy();
+    }
+  }
+
+  updateChart(datas) {
+    if (this.myChart) {
+      this.destroyChart();
     }
     for (let ii in datas.data.datasets) {
       datas.data.datasets[ii].lineTension = 0;
@@ -77,6 +83,7 @@ export class ChartEl {
     this.ea.publish('ts-chart-window-changed', false);
     this.tsChartWindow = false;
     this.tsChartWindowDelete = false;
+    this.destroyChart();
   }
 
   downloadChart() {
