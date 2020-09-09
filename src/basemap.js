@@ -727,7 +727,7 @@ export class BaseMap {
           for (let jj in layerDate) {
             newSource.updateParams(layerDate[jj]);
           }
-          newSource.refresh()
+          newSource.refresh();
         }
       }
     }
