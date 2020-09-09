@@ -540,7 +540,6 @@ export class BaseMap {
       xAxisType: 'linear',
       xAxisUnit: null
     };
-    this.chartel.destroyChart();
     this.ea.publish('ts-chart-window-changed', true);
     this.httpClient.fetch('http://' + locations.backend + '/backendapi/profilechart', {
       method: 'POST',
