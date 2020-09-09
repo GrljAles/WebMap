@@ -16,7 +16,6 @@ export class sideNav {
     });
   }
   openSideNav(data) {
-    console.log(this.sideNavB)
     this.sideNav.open();
   }
 }

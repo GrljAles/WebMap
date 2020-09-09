@@ -17,7 +17,6 @@ import Control from 'ol/control/Control';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import CircleStyle from 'ol/style/Circle/';
-import Draw from 'ol/interaction/Draw/';
 import {
   transform
 } from 'ol/proj';
@@ -29,33 +28,82 @@ import * as dataData from 'resources/dataData/dataData.json';
 import moment from 'moment';
 import noUiSlider from 'materialize-css/extras/noUiSlider/noUiSlider';
 import 'materialize-css/extras/noUiSlider/nouislider.css';
-import {
-  HttpClient, json
-} from 'aurelia-fetch-client';
-import {
-  AuthService
-} from 'aurelia-authentication';
+import {HttpClient, json} from 'aurelia-fetch-client';
+import {AuthService} from 'aurelia-authentication';
 import * as locations from './resources/locations/locations.json';
-import {IdentifyTool} from './productTools/identify/identify.js';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
-import GeoJSON from 'ol/format/GeoJSON'
+import GeoJSON from 'ol/format/GeoJSON';
+import {Draw, Select, Snap} from 'ol/interaction';
+import {getArea, getLength} from 'ol/sphere';
+import {pointerMove} from 'ol/events/condition';
+import { none } from 'ol/centerconstraint';
+import { observable } from 'aurelia-framework';
+import {ChartEl} from './productTools/tsChart/chart-el.js';
 
-@inject(EventAggregator, HttpClient, AuthService, IdentifyTool)
-export class BaseMap {
-  constructor(eventAggregator, httpClient, authService, identifyTool) {
+@inject(EventAggregator, HttpClient, AuthService, ChartEl)
+@observable('activeLayer')
+@observable('buttonCheck')
+
+export class BaseMap {  
+  constructor(eventAggregator, httpClient, authService, chartEl) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;
     this.authService = authService;
-    this.identifyTool = identifyTool;
+    this.chartel = chartEl;
 
     this.opacityValue = 1;
     this.layers = dataData.default;
     this.collapsible = MdCollapsible;
     this.activeLayer = 0;
     this.lastidentifyFeatureId = 0;
+    this.drawGeomType = 'Point';
+    this.tsChartWindow = false;
+    this.toolNotification = false;
+    this.toolPreloader = false;
+
+
+    this.buttonCheck = {
+      refresh: {
+        state: true,
+        drawGeom: null,
+        relatedLayer: null
+      },
+      identify: {
+        state: false,
+        drawGeom: 'Point',
+        relatedLayer: 'identifyPoints'
+      },
+      zonalStat: {
+        state: false,
+        drawGeom: 'Polygon',
+        relatedLayer: 'zonalStatsPolygons'
+      },
+      tsChart: {
+        state: false,
+        drawGeom: 'Point',
+        relatedLayer: 'tsPoints'
+      },
+      zonalTSChart: {
+        state: false,
+        drawGeom: 'Polygon',
+        relatedLayer: 'zonalTSPolygons'
+      },
+      profile: {
+        state: false,
+        drawGeom: 'LineString',
+        relatedLayer: 'profileLines'
+      }
+    };
     this.subscribe();
+  }
+  // Observables observe variable (in method name before 'Chnaged' part) and fire function on change.
+  activeLayerChanged(newValue, oldValue) {
+    this.ea.publish('activeLayerChanged', newValue)
+  }
+  buttonCheckChanged(newValue, oldValue) {
+    this.ea.publish('buttonCheckChanged', newValue)
   }
 
   setOpacity1(value) {
@@ -70,23 +118,34 @@ export class BaseMap {
     this.ea.subscribe('authentication-change', authenticated => {
       this.authenticated = authenticated;
     });
-    this.ea.subscribe('identify-button-trigger', (data) => {
-      if (data.identifyButon) {
-        this.basemap.addInteraction(this.draw);
-      }
-      else {
-        this.basemap.removeInteraction(this.draw);
-      }
+
+    this.ea.subscribe('delete-tool-features', (data) => {
+      this.deleteToolFeatures(data);
     });
-    this.ea.subscribe('delete-identify-features', (data) => {
-      if (data.idsToDelete === 'all') {
-        for (let feature of this.identifyPointsDrawSource.getFeatures()) {
-          this.identifyPointsDrawSource.removeFeature(feature)};
-        this.lastidentifyFeatureId = 0;
-      } else {
-        this.identifyPointsDrawSource.removeFeature(this.identifyPointsDrawSource.getFeatures()[data.idsToDelete]);
-      }
-    })
+    this.ea.subscribe('give-me-geojson', whichLayer => {
+      this.saveIdentifyGeojson(whichLayer);
+    });
+    this.ea.subscribe('get-ts-table', whichLayer => {
+      this.tsPointFeatureCount = 0;
+    });
+    this.ea.subscribe('ts-chart-window-changed', data => {
+      this.tsChartWindow = data;
+    });
+    this.ea.subscribe('open-tool-notification', notificationStatus => {
+      this.toolNotification = notificationStatus.errorWindow;
+    });
+    this.ea.subscribe('close-tool-notification', notificationStatus => {
+      this.toolNotification = notificationStatus;
+    });
+    this.ea.subscribe('open-tool-preloader', preloaderStatus => {
+      this.toolPreloader = preloaderStatus.preloaderWindow;
+    });
+    this.ea.subscribe('close-tool-preloader', preloaderStatus => {
+      this.toolPreloader = preloaderStatus.preloaderWindow;
+    });
+    this.ea.subscribe('get-ts-poly-json', data => {
+      this.publishToolJson(data);
+    });
   }
 
   attached() {
@@ -103,7 +162,7 @@ export class BaseMap {
         connect: 'lower'
       });
 
-      this.opacitySliders[ii].noUiSlider.on('update', function (values, handle) {
+      this.opacitySliders[ii].noUiSlider.on('update', function(values, handle) {
         _this.layers[_this.activeLayer].opacity = values[handle];
         _this.changeOpacity(_this.activeLayer, values[handle]);
       });
@@ -163,6 +222,7 @@ export class BaseMap {
         url: 'http://{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png'
       })
     });
+
     this.NDVI = new TileLayer({
       title: this.layers[0].name,
       id: this.layers[0].id,
@@ -179,30 +239,59 @@ export class BaseMap {
       opacity: this.layers[0].opacity
     });
 
-    this.identifyPointsDrawSource = new VectorSource;
-    this.identifyPoints = new VectorLayer({
-      source: this.identifyPointsDrawSource,
-      style: new Style({
-        fill: new Fill({
-          color: '#4C7261'
-        }),
+    this.toolLayerStyle = new Style({
+      fill: new Fill({
+        color: 'rgba(0, 0, 0, 0.25)'
+      }),
+      stroke: new Stroke({
+        color: 'rgba(0, 0, 0, 1)',
+        width: 3
+      }),
+      image: new CircleStyle({
+        radius: 3,
         stroke: new Stroke({
-          color: '#4C7261',
-          width: 3
-        }),
-        image: new CircleStyle({
-          radius: 3,
-          stroke: new Stroke({
-            color: '#000000',
-            width: 2
-          })
+          color: 'rgba(0, 0, 0, 1',
+          width: 2
         })
       })
     });
 
-    this.draw = new Draw({
+    this.identifyPointsDrawSource = new VectorSource;
+    this.identifyPoints = new VectorLayer({
+      title: 'identifyPoints',
       source: this.identifyPointsDrawSource,
-      type: 'Point'
+      style: this.toolLayerStyle
+    });
+
+    this.zonalStatsPolysDrawSource = new VectorSource;
+    this.zonalStatsPolys = new VectorLayer({
+      title: 'zonalStatsPolygons',
+      source: this.zonalStatsPolysDrawSource,
+      style: this.toolLayerStyle
+    });
+
+    this.tsChartPointsDrawSource = new VectorSource;
+    this.tsChartPoints = new VectorLayer({
+      title: 'tsPoints',
+      source: this.tsChartPointsDrawSource,
+      style: this.toolLayerStyle
+    });
+    this.tsChartPolygonsDrawSource = new VectorSource;
+    this.tsChartPolygons = new VectorLayer({
+      title: 'zonalTSPolygons',
+      source: this.tsChartPolygonsDrawSource,
+      style: this.toolLayerStyle
+    });
+    this.profileLinesDrawSource = new VectorSource;
+    this.profileLines = new VectorLayer({
+      title: 'profileLines',
+      source: this.profileLinesDrawSource,
+      style: this.toolLayerStyle
+    });
+
+    this.draw = new Draw({
+      source: null,
+      type: null
     });
 
     this.basemap = new Map({
@@ -210,7 +299,11 @@ export class BaseMap {
       layers: [
         this.osmTopo,
         this.NDVI,
-        this.identifyPoints
+        this.identifyPoints,
+        this.zonalStatsPolys,
+        this.tsChartPoints,
+        this.tsChartPolygons,
+        this.profileLines
       ],
       view: new View({
         center: transform([14.815333, 46.119944], 'EPSG:4326', 'EPSG:3857'),
@@ -220,9 +313,75 @@ export class BaseMap {
       })
     });
 
+    this.zonalStatsPolysDrawSource.on('addfeature', function(evt) {
+      if (_this.buttonCheck.zonalStat.state) {
+        let zonalStatsParams = {
+          "product": _this.layers[_this.activeLayer].name,
+          "dates": _this.dateToYYYYMMDD(_this.layers[_this.activeLayer].displayedDate)
+        };
+        zonalStatsParams["zone"] = _this.featuresToGeoJSON(evt.feature);
+        _this.zonalStatistcsRequest(zonalStatsParams);
+      }
+    });
+    
+    this.tsChartPointsDrawSource.on('addfeature', function(evt) {
+      if (_this.buttonCheck.tsChart.state) {
+        if (_this.tsChartPointsDrawSource.getFeatures().length < 11) {
+          let lastPointCoordinates = evt.feature.getGeometry().getCoordinates();
+          let tsPointData = {
+            product: _this.layers[_this.activeLayer].name,
+            x: Math.round((lastPointCoordinates[0] + Number.EPSILON) * 10000) / 10000,
+            y: Math.round((lastPointCoordinates[1] + Number.EPSILON) * 10000) / 10000
+          };
+          _this.setIdentifyLayerProperties('tsPoints', tsPointData);
+        }
+        else {
+          _this.tsChartPointsDrawSource.removeFeature(evt.feature);
+          if (!_this.toolNotification) {
+            _this.ea.publish('open-tool-notification', {
+              errorWindow: true,
+              errorMessage: 'featureLimitPerRequest'
+            });
+          }
+        }
+      }
+    });
+
+    this.tsChartPolygonsDrawSource.on('addfeature', function(evt) {
+      if (_this.buttonCheck.zonalTSChart.state) {
+        if (_this.tsChartPolygonsDrawSource.getFeatures().length < 2) {
+          let lastPolygonArea = getArea(evt.feature.getGeometry());
+          if (lastPolygonArea < 1000000) {
+            let tsPolygonData = {
+              product: _this.layers[_this.activeLayer].name,
+              area: _this.formatArea(lastPolygonArea)
+            };
+            _this.setIdentifyLayerProperties('zonalTSPolygons', tsPolygonData);
+          }
+          else {
+            _this.tsChartPolygonsDrawSource.removeFeature(evt.feature);
+            if (!_this.toolNotification) {
+              _this.ea.publish('open-tool-notification', {
+                errorWindow: true,
+                errorMessage: 'polygonAreaTooLarge'
+              });
+            }
+          }
+        }
+        else {
+          _this.tsChartPolygonsDrawSource.removeFeature(evt.feature);
+          if (!_this.toolNotification) {
+            _this.ea.publish('open-tool-notification', {
+              errorWindow: true,
+              errorMessage: 'featureLimitPerRequestZonalTS'
+            });
+          }
+        }
+      }
+    });
+
     this.basemap.on('singleclick', function(evt) {
-      if (_this.identifyTool.indentifyButtonActive) {
-        _this.identifyTool.displayIdentifyResultWindow();
+      if (_this.buttonCheck.identify.state) {
         let viewRes = /** @type {number} */ (_this.basemap.getView().getResolution());
         for (let layer of _this.basemap.getLayers().getArray()) {
           if (layer.get('title') === _this.layers[_this.activeLayer].name) {
@@ -243,45 +402,281 @@ export class BaseMap {
               })
               .then(data => {
                 let aaa = JSON.parse(data);
-                _this.setIdentifyLayerProperties({
-                  value: aaa.Value,
-                  coordinates: evt.coordinate,
+                _this.setIdentifyLayerProperties('identifyPoints', {
                   product: layer.get('title'),
-                  date: _this.layers[_this.activeLayer].displayedDate
+                  date: _this.layers[_this.activeLayer].displayedDate,
+                  value: aaa.Value
                 });
               })
               .catch(error => {
-                _this.setIdentifyLayerProperties({
-                  value: 'noData',
-                  coordinates: evt.coordinate,
+                _this.setIdentifyLayerProperties('identifyPoints', {
                   product: layer.get('title'),
-                  date: _this.layers[_this.activeLayer].displayedDate
+                  date: _this.layers[_this.activeLayer].displayedDate,
+                  value: 'noData'
                 });
               });
           }
         }
       }
     });
+
+    this.profileLinesDrawSource.on('addfeature', function(evt) {
+      if (_this.buttonCheck.profile.state) {
+        let lastLineLength = getLength(evt.feature.getGeometry());
+        let profileLineData = {
+          product: _this.layers[_this.activeLayer].name,
+          dates: _this.dateToYYYYMMDD(_this.layers[_this.activeLayer].displayedDate),
+          length: _this.formatLength(lastLineLength),
+          resolution: _this.layers[_this.activeLayer].dataProperties.resolution
+        };
+        _this.setIdentifyLayerProperties('profileLines', profileLineData);
+        //profileLineData.line = _this.featuresToGeoJSON(evt.feature);
+        profileLineData.p0 = evt.feature.getGeometry().getCoordinates()[0];
+        profileLineData.p1 = evt.feature.getGeometry().getCoordinates()[1];
+        _this.profileChartRequest(profileLineData);
+      }
+    });
   }
 
-  setIdentifyLayerProperties(propJson) {
-    let lastFeature = this.identifyPointsDrawSource.getFeatures()[this.identifyPointsDrawSource.getFeatures().length - 1]
-    lastFeature.setProperties(propJson);
-    lastFeature.setId(this.lastidentifyFeatureId);
-    this.setIdentifyTableProperties(propJson, this.lastidentifyFeatureId);
-    this.lastidentifyFeatureId += 1;
+  formatArea(area) {
+    let output;
+    if (area > 10000) {
+      output = (Math.round(area / 1000000 * 100) / 100) +
+          ' ' + 'km<sup>2</sup>';
+    } else {
+      output = (Math.round(area * 100) / 100) +
+          ' ' + 'm<sup>2</sup>';
+    }
+    return output;
   }
 
-  setIdentifyTableProperties(propJson, id) {
-    propJson.id = id;
-    this.identifyTool.getPixelValue(propJson)
+  formatLength(length) {
+    let output;
+    if (length > 1000) {
+      output = (Math.round(length / 1000 * 100) / 100) +
+          ' ' + 'km';
+    } else {
+      output = (Math.round(length * 100) / 100) +
+          ' ' + 'm';
+    }
+    return output;
   }
 
-  saveIdentifyGeojson() {
+  dateToYYYYMMDD(dateString) {
+    let yyyy = dateString.split('.')[2];
+    let mm = dateString.split('.')[1];
+    let dd = dateString.split('.')[0];
+    return yyyy + mm + dd;
+  }
+
+  YYYYMMDDToDate(dateString) {
+    let yyyy = dateString.slice(0, 4);
+    let mm = dateString.slice(4, 6);
+    let dd = dateString.slice(6, 8);
+    return dd + '.' + mm + '.' + yyyy;
+  }
+
+  featuresToGeoJSON(features) {
+    let tmpPolyDrawSource = new VectorSource;
+    tmpPolyDrawSource.addFeature(features);
     let writer = new GeoJSON();
-    let geojsonStr = writer.writeFeatures(this.identifyPointsDrawSource.getFeatures());
-    console.log(geojsonStr)
-    this.identifyTool.downloadResults(geojsonStr);
+    let geojsonStr = writer.writeFeatures(tmpPolyDrawSource.getFeatures())
+    tmpPolyDrawSource = null;
+    return geojsonStr;
+  }
+
+  zonalStatistcsRequest(zonalStatsParams) {
+    this.ea.publish('open-tool-preloader', {
+      preloaderWindow: true,
+      toolPreloaderMessage: 'zonalStatistics'
+    });
+    this.httpClient.fetch('http://' + locations.backend + '/backendapi/zonalstatistics', {
+      method: 'POST',
+      body: JSON.stringify(zonalStatsParams),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'Fetch',
+        'Authorization': 'Bearer ' + this.authService.getAccessToken()
+      },
+      mode: 'cors'
+    })
+      .then(response => {
+        return response.text();
+      })
+      .then(data => {
+        let zonalData = JSON.parse(data);
+        zonalData.date = this.YYYYMMDDToDate(zonalData.date);
+        this.setIdentifyLayerProperties('zonalStatsPolygons', zonalData);
+        this.ea.publish('close-tool-preloader', {
+          preloaderWindow: false
+        });
+      })
+      .catch(error => {
+        this.setIdentifyLayerProperties('zonalStatsPolygons', {
+          product: 'error',
+          date: '/',
+          min: '/',
+          max: '/',
+          mean: '/',
+          std: '/',
+          range: '/'
+        });
+        this.ea.publish('close-tool-preloader', {
+          preloaderWindow: false
+        });
+      });
+  }
+
+  profileChartRequest(profileLineData) {
+    this.chartel.destroyChart();
+    this.ea.publish('open-tool-preloader', {
+      preloaderWindow: true,
+      toolPreloaderMessage: 'profileLine'
+    });
+    let datas = {
+      data: {},
+      legendDisplay: false,
+      xAxisType: 'linear',
+      xAxisUnit: null
+    };
+    this.chartel.destroyChart();
+    this.ea.publish('ts-chart-window-changed', true);
+    this.httpClient.fetch('http://' + locations.backend + '/backendapi/profilechart', {
+      method: 'POST',
+      body: JSON.stringify(profileLineData),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'Fetch',
+        'Authorization': 'Bearer ' + this.authService.getAccessToken()
+      },
+      mode: 'cors'
+    })
+      .then(response => {
+        return response.text();
+      })
+      .then(data => {
+        let profileChart = JSON.parse(data);
+        datas.data = profileChart;
+        this.chartel.updateChart(datas);
+        this.ea.publish('close-tool-preloader', {
+          preloaderWindow: false
+        });
+      })
+      .catch(error => {
+        this.ea.publish('close-tool-preloader', {
+          preloaderWindow: false
+        });
+        this.ea.publish('open-tool-notification', {
+          errorWindow: true,
+          errorMessage: 'genericBackend'
+        });
+      });
+  }
+
+  setIdentifyLayerProperties(whichLayer, propJson) {
+    this.chartel.destroyChart();
+    for (let selectedLayer of this.basemap.getLayers().getArray()) {
+      if (selectedLayer.get('title') === whichLayer) {
+        let selectedLayerSource = selectedLayer.getSource();
+        let lastFeature = selectedLayerSource.getFeatures()[selectedLayerSource.getFeatures().length - 1];
+        lastFeature.setProperties(propJson);
+        lastFeature.setId(this.lastidentifyFeatureId);
+        let nPropJson = Object.assign({id: this.lastidentifyFeatureId}, propJson);
+
+        this.ea.publish('add-table-row', {
+          layer: whichLayer,
+          row: nPropJson
+        });
+        this.lastidentifyFeatureId += 1;
+      }
+    }
+  }
+
+  deleteToolFeatures(deleteWhat) {
+    for (let selectedLayer of this.basemap.getLayers().getArray()) {
+      if (selectedLayer.get('title') === deleteWhat.layer) {
+        let selectedLayerSource = selectedLayer.getSource();
+        if (deleteWhat.idsToDelete === 'all') {
+          for (let feature of selectedLayerSource.getFeatures()) {
+            selectedLayerSource.removeFeature(feature);
+          }
+          this.lastidentifyFeatureId = 0;
+        } else {
+          selectedLayerSource.removeFeature(selectedLayerSource.getFeatures()[deleteWhat.idsToDelete]);
+        }
+      }
+    }
+  }
+
+  saveIdentifyGeojson(whichLayer) {
+    let writer = new GeoJSON();
+    for (let selectedLayer of this.basemap.getLayers().getArray()) {
+      if (selectedLayer.get('title') === whichLayer) {
+        let selectedLayerSource = selectedLayer.getSource();
+        let geojsonStr = writer.writeFeatures(selectedLayerSource.getFeatures());
+        this.ea.publish('this-is-selected-table-geojson', geojsonStr)
+      }
+    }
+  }
+
+  publishToolJson(data) {
+    let writer = new GeoJSON();
+    if (data === 'zonalTSPolygons') {
+      let geojsonStr = writer.writeFeatures(this.tsChartPolygonsDrawSource.getFeatures());
+      this.ea.publish('this-is-zonalTSPolygons-table', geojsonStr);
+    }
+  }
+
+  toggleTool(buttonId) {
+    for (let i in this.buttonCheck) {
+      if (i !== buttonId) {
+        this.buttonCheck[i].state = false;
+      }
+      else {
+        this.buttonCheck[buttonId].state = !this.buttonCheck[buttonId].state;
+        this.toggleDrawInteraction(this.buttonCheck[buttonId]);
+        this.ea.publish('activeTableChanged', this.buttonCheck[buttonId].relatedLayer);
+      }
+    }
+    this.chartCheck(buttonId);
+    this.chartel.destroyChart();
+  }
+
+  chartCheck(buttonId) {
+    if (buttonId === 'tsChart' && this.buttonCheck['tsChart'].state === true || buttonId === 'zonalTSChart'  && this.buttonCheck['zonalTSChart'].state === true || buttonId === 'profile' && this.buttonCheck['profile'].state === true ) {
+      this.tsChartWindow = true;
+    }
+    else {
+      this.tsChartWindow = false;
+    }
+  }
+  toggleDrawInteraction(buttonProps) {
+    let maxPoints = 10000000000;
+    if (buttonProps.state) {
+      this.basemap.removeInteraction(this.draw);
+      for (let selectedLayer of this.basemap.getLayers().getArray()) {
+        if (selectedLayer.get('title') === buttonProps.relatedLayer) {
+          if (selectedLayer.get('title') === 'profileLines') {
+            maxPoints = 2;
+          }
+          else {
+            maxPoints = 10000000000;
+          }
+          let selectedLayerSource = selectedLayer.getSource();
+          this.draw = new Draw({
+            source: selectedLayerSource,
+            type: buttonProps.drawGeom,
+            maxPoints: maxPoints
+          });
+          this.basemap.addInteraction(this.draw);
+        }
+      }
+    }
+    else {
+      this.basemap.removeInteraction(this.draw);
+    }
   }
 
   collapsibleOpen(idx) {
@@ -294,6 +689,7 @@ export class BaseMap {
       }
     }
   }
+
   collapsibleClose(idx) {
     idx = parseInt(idx);
     this.layers[idx].active = 0;
@@ -303,6 +699,7 @@ export class BaseMap {
       }
     }
   }
+
   changeDisplayedDate(idx, dateIndex) {
     this.activeLayer = this.layers[idx].id;
     let displayedDate = this.layers[idx].availableDates[(this.layers[idx].availableDates.length - 1) + dateIndex];
@@ -312,6 +709,7 @@ export class BaseMap {
     }]);
     this.calculateClassBreaks(idx, this.layers[idx].displaySettings.min, this.layers[idx].displaySettings.max);
   }
+
   changeOpacity(id, opacityValue) {
     if (this.basemap) {
       for (let ii of this.basemap.getLayers().getArray()) {
@@ -321,6 +719,7 @@ export class BaseMap {
       }
     }
   }
+
   changeLayerDate(idx, layerDate) {
     if (this.basemap) {
       for (let ii of this.basemap.getLayers().getArray()) {
@@ -334,6 +733,7 @@ export class BaseMap {
       }
     }
   }
+
   changeLayerRange(idx, classBreaks, classColours) {
     let layerRange = {
       'classBreaks': classBreaks,
@@ -361,7 +761,6 @@ export class BaseMap {
         }]);
       });
   }
-
 
   resetRangeSettings(idx) {
     this.layers[idx].displaySettings.min = this.layers[idx].statistics.min;

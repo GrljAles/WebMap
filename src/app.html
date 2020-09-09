@@ -3,19 +3,15 @@
   <require from="./styles.css"></require>
   <nav>
     <div class="nav-wrapper light-green darken-4">
-      <a href="#" class="brand-logo">WebMap Project</a>
+      <a href="#" class="brand-logo">Sattilia</a>
       <ul class="right">
-<!--         <li><a md-sidenav-collapse="ref.bind: sideNavRight;" if.bind="authenticated">Tools</a></li>
-        <li><a click.trigger="layerMenuToggle()" if.bind="authenticated">Layers</a></li> -->
         <li><a md-sidenav-collapse="ref.bind: sideNavRight;" if.bind="authenticated">${userNameDisplay}</a></li>
       </ul>
     </div>
   </nav>
   <md-sidenav class="light-green darken-1" view-model.ref="sideNavRight" edge="right" close-on-click="true">
-      <ul class="light-green darken-4 white-text">
+      <ul class="light-green darken-1 white-text">
         <li md-waves class="sidenav-close" click.trigger="logout()">Logout</li>
-
-
         <div class="collapsible-accordion">
           <ul md-collapsible="accordion: false;">
             <li>
@@ -28,7 +24,6 @@
             </li>
           </ul>
         </div>
-
 
         <div class="collapsible-accordion">
           <ul md-collapsible="accordion: false;">

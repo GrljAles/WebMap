@@ -1,0 +1,39 @@
+<template>
+  <require from="../../resources/value-converters/objectKeysValueConverter"></require>
+  <div class="col l12 m12 s12 scale-transition results-table lime">
+    <div class='table-comtrolls-wrapper'>
+      <a md-button="floating: true;" class="tr-green"><i class="material-icons icon-grey">${resultsTables[activeTable].tableIcon}</i></a>
+      <h5 class='table-controll-title white-text'>${resultsTables[activeTable].tableTitle}</h5>
+      <span>
+        <a id='yesDelete' show.bind="resultsTables[activeTable].delete" md-button="floating: true;"
+          md-tooltip="position: bottom; text: Yes, delete please;" md-waves="color: light;" class="tr-green"
+          click.trigger="yesDeleteTable(activeTable)"><i class="material-icons icon-grey">check</i></a>
+        <a id='save' md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;"
+          md-waves="color: light;" class="tr-green" click.trigger="requestGeojsonFromBasemap(activeTable)"
+          download="activeTable.geojson" href="${uriContent}"><i
+            class="material-icons icon-grey">file_download</i></a>
+        <a id='deleteIndentifyTable' md-button="floating: true;"
+          md-tooltip="position: bottom; text: Delete the results table?;" md-waves="color: light;" class="tr-green"
+          click.trigger="confirmDeleteTable(activeTable)"><i
+            class="material-icons icon-grey">${resultsTables[activeTable].delete ? 'close' : 'delete'}</i></a>
+      </span>
+    </div>
+    <table class="responsive-table striped centered">
+      <thead class="collection-header lime">
+        <tr>
+          <th repeat.for="colHead of resultsTables[activeTable].tableHeader">${colHead}</th>
+          <th><a class="btn-flat"><i class="material-icons icon-grey">close</i></a></th>
+        </tr>
+      </thead>
+      <tbody class="rows-font-size lime">
+        <tr repeat.for="element of resultsTables[activeTable].table">
+          <td repeat.for="colBody of element | objectKeys" innerhtml.bind="colBody"></td>
+          <td><a md-button="floating: true;" md-tooltip="position: bottom; text: Delete this row;"
+              md-waves="color: light;" class="tr-button btn-small"
+              click.trigger="deleteResultsTableRow(activeTable, element.id)"><i
+                class="material-icons icon-grey">close</i></a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>

@@ -1,0 +1,35 @@
+<template>
+  <div class="row lime">
+    <div id="tsChartOptions" class="col l6 m6 s6 scale-transition results-table lime">
+      <div class="table-comtrolls-wrapper">
+        <a md-button="floating: true;" class="tr-green"><i class="material-icons icon-grey">timeline</i></a>
+        <h5 class="table-controll-title white-text">TIME SERIES OPTIONS</h5>
+        <span></span>
+      </div>
+      <div class="row tool-options-wrapper">
+        <div class="row">
+          <div class="col s6 m6 l6">Selected product:</div><div class="col s6 m6 l6">${layers[activeLayer].name}</div>
+        </div>
+        <div class="row">
+          <div class="col s6 m6 l6">Starting date:</div><div class="col s6 m6 l6">${layers[activeLayer].availableDates[startingDateIndex]}</div>
+        </div>
+        <div class="row">
+          <div class="col s6 m6 l6">Ending date:</div><div class="col s6 m6 l6">${layers[activeLayer].availableDates[endingDateIndex]}</div>
+        </div>
+        <div class="row">Slide to adjust starting and ending dates</div>
+        <div class="row  tool-options-wrapper">
+            <div id="ts-date-slider"></div>
+        </div>
+        <div class="row">Pick the time series chart locations on the map. Maximim is 10 per request</div>
+        <div class="row align-center">
+          <div class="col s12 m4 l2"><p></p></div>
+          <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" click.trigger="tsChartRequest()">Submit</a></div>
+          <div class="col s12 m4 l2"><p></p></div>
+        </div>
+      </div>
+    </div>
+    <div class="col l6 m6 s6 lime">
+      <identi-fy></identi-fy>
+    </div>
+  </div>
+</template>

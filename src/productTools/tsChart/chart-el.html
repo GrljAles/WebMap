@@ -1,0 +1,16 @@
+<template>
+  <div class="col l12 m12 s12 scale-transition results-table ts-chart-pos">
+    <div class='table-comtrolls-wrapper'>
+      <a md-button="floating: true;" class="tr-green"><i class="material-icons icon-grey">timeline</i></a>
+      <h5 class='table-controll-title white-text'>RESULTS CHART</h5>
+      <span>
+        <a id='yesDelete' show.bind="tsChartWindowDelete" md-button="floating: true;" md-tooltip="position: bottom; text: Yes, delete please;" md-waves="color: light;" class="tr-green" click.trigger="yesDeleteChart()"><i class="material-icons icon-grey">check</i></a>
+        <a id='save' md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;" md-waves="color: light;" class="tr-green" click.trigger="downloadChart()" download="tsChart.png" href=""><i class="material-icons icon-grey">file_download</i></a>
+        <a id='deleteIndentifyTable' md-button="floating: true;" md-tooltip="position: bottom; text: Delete the results table?;" md-waves="color: light;" class="tr-green" click.trigger="confirmDeleteChart()"><i class="material-icons icon-grey">${resultsTables[activeTable].delete ? 'close' : 'delete'}</i></a>
+      </span>
+    </div>
+    </div>
+    <div class="row tool-options-wrapper">
+      <canvas id="chart"></canvas>
+    </div>
+</template>

@@ -16,7 +16,7 @@ export class Login {
     this.providers = [];
 
     this.userName = 'alesinar';
-    this.password = 'jebote12';
+    this.password = 'Jebote12';
     this.passwordType = 'password';
 
     ValidationRules
