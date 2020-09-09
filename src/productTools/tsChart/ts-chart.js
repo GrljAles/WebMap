@@ -81,7 +81,6 @@ export class TsChart {
       xAxisType: 'time',
       xAxisUnit: 'day'
     };
-    this.chartel.updateChart(datas);
     this.ea.publish('get-ts-table', 'tsPoints');
     if (this.pointsTable.length > 0) {
       this.ea.publish('ts-chart-window-changed', true);

@@ -77,7 +77,6 @@ export class ZonalTsChart {
       xAxisType: 'time',
       xAxisUnit: 'day'
     };
-    this.chartel.updateChart(datas);
     this.ea.publish('get-ts-poly-json', 'zonalTSPolygons')
     if (this.polyTable.length > 0) {
       this.ea.publish('ts-chart-window-changed', true);
