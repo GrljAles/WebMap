@@ -21,8 +21,20 @@
     "output": "dist"
   },
   "loader": {
-    "id": "none",
-    "displayName": "None"
+  	"type": "require",
+  	"configTarget": "vendor-bundle.js",
+  	"includeBundleMetadataInConfig": "auto",
+  	"plugins": [
+  		{
+  			"name": "text",
+  			"extensions": [
+  				".html",
+  				".css",
+  				".json"
+  			],
+  			"stub": true
+  		}
+  	]
   },
   "transpiler": {
     "id": "babel",

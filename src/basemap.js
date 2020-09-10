@@ -41,16 +41,25 @@ import {pointerMove} from 'ol/events/condition';
 import { none } from 'ol/centerconstraint';
 import { observable } from 'aurelia-framework';
 import {ChartEl} from './productTools/tsChart/chart-el.js';
+import {I18N} from 'aurelia-i18n';
 
-@inject(EventAggregator, HttpClient, AuthService, ChartEl)
+@inject(EventAggregator, HttpClient, AuthService, I18N, ChartEl)
 @observable('activeLayer')
 @observable('buttonCheck')
 
 export class BaseMap {  
-  constructor(eventAggregator, httpClient, authService, chartEl) {
+  constructor(eventAggregator, httpClient, authService, i18n, chartEl) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;
     this.authService = authService;
+    this.i18n = i18n;
+    console.log(this.i18n.tr('Layers'));
+    this.i18n
+      .setLocale('si')
+      .then( () => {
+      // locale is loaded
+      });
+
     this.chartel = chartEl;
 
     this.opacityValue = 1;
