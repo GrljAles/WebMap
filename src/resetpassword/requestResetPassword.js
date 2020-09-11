@@ -4,12 +4,25 @@ import {HttpClient} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from 'aurelia-router';
 import * as locations from "../resources/locations/locations.json";
+import {I18N} from 'aurelia-i18n';
 
-@inject(NewInstance.of(ValidationController), EventAggregator, Router, HttpClient)
+@inject(NewInstance.of(ValidationController), EventAggregator, Router, HttpClient, I18N)
 export class RequestResetPassword {
   controller = null;
 
-  constructor(controller, eventAggregator, router, httpClient) {
+  errorMessages = {
+    si:
+    {
+      emailRequired: 'morate vpisati',
+      emailInvalid: 'ni še veljaven'
+    },
+    en: {
+      emailRequired: 'must be provided',
+      emailInvalid: 'is not yet a valid address'
+    }
+  }
+
+  constructor(controller, eventAggregator, router, httpClient, i18n) {
     this.httpClient = httpClient
     this.controller = controller;
     this.router = router;
@@ -17,10 +30,13 @@ export class RequestResetPassword {
     this.message = null;
     this.email = null;
 
+    this.i18n = i18n;
+    this.language = this.i18n.getLocale();
+
     ValidationRules
       .ensure('email')
-        .required().withMessage('must be provided.')
-        .email().withMessage('is not yet a valid address.')
+      .required().withMessage(this.i18n.tr(this.errorMessages[this.language].emailRequired))
+      .email().withMessage(this.i18n.tr(this.errorMessages[this.language].emailInvalid))
       .on(this)
     }
 

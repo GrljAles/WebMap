@@ -5,29 +5,46 @@ import {HttpClient} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from 'aurelia-router';
 import * as locations from "../resources/locations/locations.json";
+import {I18N} from 'aurelia-i18n';
 
 let httpClient = new HttpClient();
-@inject(AuthService, ValidationControllerFactory, Router, EventAggregator)
+@inject(AuthService, ValidationControllerFactory, Router, EventAggregator, I18N)
 export class ChangeEmail {
   controller = null;
+  errorMessages = {
+    si:
+    {
+      emailRequired: 'morate vpisati',
+      emailInvalid: 'ni veljaven',
+    },
+    en: {
+      emailRequired: 'has to be provided',
+      emailInvalid: 'is not a valid email address',
+    }
+  }
 
-  constructor(authService, controllerFactory, router, eventAggregator) {
+  constructor(authService, controllerFactory, router, eventAggregator, i18n) {
     this.ea = eventAggregator;
     this.router = router;
 
     this.controller = controllerFactory.createForCurrentScope();
 
     this.authService = authService;
+
+    this.i18n = i18n;
+    this.language = this.i18n.getLocale();
+
     this.providers = [];
     this.subscribe();
 
     this.newEmail = null;
 
     ValidationRules
-    .ensure('newEmail')
-      .required().withMessage('is required.')
-    .on(this)
-  };
+      .ensure('newEmail')
+      .required().withMessage(this.i18n.tr(this.errorMessages[this.language].emailRequired))
+      .email().withMessage(this.i18n.tr(this.errorMessages[this.language].emailInvalid))
+      .on(this)
+    };
 
   subscribe() {
   }

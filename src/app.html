@@ -9,17 +9,17 @@
       </ul>
     </div>
   </nav>
-  <md-sidenav class="light-green darken-1" view-model.ref="sideNavRight" edge="right" close-on-click="true">
-      <ul class="light-green darken-1 white-text">
-        <li md-waves class="sidenav-close" click.trigger="logout()">Logout</li>
+  <md-sidenav class="light-green darken-3" view-model.ref="sideNavRight" edge="right" close-on-click="true">
+      <ul class="light-green darken-3 white-text">
+        <li md-waves class="sidenav-close" click.trigger="logout()" t="logout"></li>
         <div class="collapsible-accordion">
           <ul md-collapsible="accordion: false;">
             <li>
               <ul class="collapsible-header no-padding">
-                <li md-waves>Profile</li>
+                <li md-waves t="profile"></li>
               </ul>
               <ul class="collapsible-body light-green darken-2">
-                <li md-waves class="sidenav-close">Email: ${userEmailDisplay}</li>
+                <li md-waves class="sidenav-close" t="[prepend]email">: ${userEmailDisplay}</li>
               </ul>
             </li>
           </ul>
@@ -29,16 +29,16 @@
           <ul md-collapsible="accordion: false;">
             <li>
               <ul class="collapsible-header no-padding">
-                <li md-waves>Settings</li>
+                <li md-waves t="settings"></li>
               </ul>
               <ul class="collapsible-body light-green darken-2">
-                <li md-waves class="sidenav-close" route-href="route: changeemail;" click.trigger="changeEmailNavigate()">Change email address</li>
-                <li md-waves class="sidenav-close" route-href="route: changepassword;"click.trigger="changePasswordNavigate()">Change password</li>
+                <li md-waves class="sidenav-close" route-href="route: changeemail;" click.trigger="changeEmailNavigate()" t="email-change"></li>
+                <li md-waves class="sidenav-close" route-href="route: changepassword;"click.trigger="changePasswordNavigate()" t="pass-change"></li>
               </ul>
             </li>
           </ul>
         </div>
-        <li md-waves>Help</li>
+        <li md-waves t="help"></li>
       </ul>
     </md-sidenav>
   <router-view></router-view>

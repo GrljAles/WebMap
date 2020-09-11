@@ -6,9 +6,10 @@ import {HttpClient, json} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from 'aurelia-router';
 import * as locations from "../resources/locations/locations.json";
+import {I18N} from 'aurelia-i18n';
 
 let httpClient = new HttpClient();
-@inject(NewInstance.of(ValidationController), EventAggregator, AuthService, Router)
+@inject(NewInstance.of(ValidationController), EventAggregator, AuthService, Router, I18N)
 
 export class Resetpassword {
   controller = null;
@@ -16,12 +17,29 @@ export class Resetpassword {
   newPassword = null;
   newPasswordConfirm = null;
   passwordType = 'password';
+  errorMessages = {
+    si:
+    {
+      passwordRequired: 'ni bilo vpisano',
+      paswordLengh: 'mora vsebovati vsaj osem znakov',
+      confirmPasswordRequred: ', če ne se ne morate vpisati',
+      confirmPasswordMatches: 'ne zgleda enako kot prvo'
+    },
+    en: {
+      passwordRequired: 'was not provided',
+      paswordLengh: 'has to be at least eight characters long',
+      confirmPasswordRequred: ', else you can not register',
+      confirmPasswordMatches: 'does not look like the first one'
+    }
+  }
 
-  constructor(controller, eventAggregator, authService, router) {
+  constructor(controller, eventAggregator, authService, router,i18n) {
     this.controller = controller;
     this.ea = eventAggregator;
     this.authService = authService;
     this.router = router;
+    this.i18n = i18n;
+    this.language = this.i18n.getLocale();
     this.subscribe();
 
     ValidationRules.customRule(
@@ -33,19 +51,16 @@ export class Resetpassword {
         || obj[otherPropertyName] === null
         || obj[otherPropertyName] === undefined
         || obj[otherPropertyName] === ''
-        || value === obj[otherPropertyName],
-      "? This dosen't look like the same password"
-    );
+        || value === obj[otherPropertyName], this.i18n.tr(this.errorMessages[this.language].confirmPasswordMatches));
 
     ValidationRules
     .ensure(a => a.oldPassword)
-      .required().withMessage('was not provided.')
-      .minLength(8).withMessage('is supposed to be at least 8 characters long.')
+      .required().withMessage(this.errorMessages[this.language].passwordRequired)
     .ensure(a => a.newPassword)
-      .required().withMessage('was not provided.')
-      .minLength(8).withMessage('should be at least 8 characters long.')
+      .required().withMessage(this.errorMessages[this.language].passwordRequired)
+      .minLength(8).withMessage(this.errorMessages[this.language].paswordLengh)
     .ensure(a => a.newPasswordConfirm)
-      .required().withMessage('else you cannot register.')
+      .required().withMessage(this.errorMessages[this.language].confirmPasswordRequred)
       .satisfiesRule('matchesProperty', 'newPassword')
     .on(this)
   };

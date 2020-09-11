@@ -53,7 +53,6 @@ export class BaseMap {
     this.httpClient = httpClient;
     this.authService = authService;
     this.i18n = i18n;
-    console.log(this.i18n.tr('Layers'));
     this.i18n
       .setLocale('si')
       .then( () => {

@@ -1,12 +1,15 @@
 import {inject} from 'aurelia-framework';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import * as toolPreloader from './toolPreloader.json';
+import {I18N} from 'aurelia-i18n';
 
-@inject(EventAggregator)
+@inject(EventAggregator, I18N)
 export class ToolPreloader {
-  constructor(eventAggregator) {
+  constructor(eventAggregator, i18n) {
     this.ea = eventAggregator;
-    this.preloaderMessages = toolPreloader.default;
+    this.i18n = i18n;
+    this.language = this.i18n.getLocale();
+    this.preloaderMessages = toolPreloader.default[this.language];
     this.subscribe();
   }
   subscribe() {

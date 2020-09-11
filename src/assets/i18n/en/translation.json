@@ -1,10 +1,14 @@
 {
-  "Layers": "Layers",
-  "lives": "{{count}} life remaining",
-  "lives_plural": "{{count}} lives remaining",
-  "friend": "A friend",
-  "friend_male": "A boyfriend",
-  "friend_female": "A girlfriend"
+  "layers": "Layers",
+  "op-slider": "Slide to change opacity",
+  "date-slider": "Slide to display different dates",
+  "min-max-slider": "Slide to adjust min and max values",
+  "preciptiation": "A boyfriend",
+  "logout": "Logout",
+  "profile": "Profile",
+  "email": "Email",
+  "settings": "Settings",
+  "help": "Help",
+  "emiail-change": "Change email address",
+  "pass-change": "Change password"
 }
-
-

@@ -2,8 +2,9 @@ import {AuthService} from 'aurelia-authentication';
 import {inject, NewInstance} from 'aurelia-dependency-injection';
 import {ValidationRules, ValidationController} from 'aurelia-validation';
 import {EventAggregator} from 'aurelia-event-aggregator';
+import {I18N} from 'aurelia-i18n';
 
-@inject(NewInstance.of(ValidationController), EventAggregator, AuthService)
+@inject(NewInstance.of(ValidationController), EventAggregator, AuthService, I18N)
 export class Registration {
   controller;
   message = '';
@@ -14,11 +15,38 @@ export class Registration {
   password = '';
   confirmPassword = '';
   passwordType = 'password';
+  errorMessages = {
+    si:
+    {
+      firstNameRequred: 'rabimo',
+      lastNameRequired: 'tudi rabimo',
+      usernameRequired: 'ne sme biti prazno',
+      emailRequired: 'morate vpisati',
+      emailInvalid: 'ni veljaven',
+      passwordRequired: 'ni bilo vpisano',
+      paswordLengh: 'mora vsebovati vsaj osem znakov',
+      confirmPasswordRequred: ', če ne se ne morate vpisati',
+      confirmPasswordMatches: 'ne zgleda enako kot prvo'
+    },
+    en: {
+      firstNameRequred: 'is required',
+      lastNameRequired: 'is also required',
+      usernameRequired: 'can not be empty',
+      emailRequired: 'has to be provided',
+      emailInvalid: 'is not a valid email address',
+      passwordRequired: 'was not provided',
+      paswordLengh: 'has to be at least eight characters long',
+      confirmPasswordRequred: ', else you can not register',
+      confirmPasswordMatches: 'does not look like the first one'
+    }
+  }
 
-  constructor(controller, eventAggregator, authService) {
+  constructor(controller, eventAggregator, authService, i18n) {
     this.controller = controller;
     this.ea = eventAggregator;
     this.authService = authService;
+    this.i18n = i18n;
+    this.language = this.i18n.getLocale();
 
     ValidationRules.customRule(
       'matchesProperty',
@@ -29,27 +57,26 @@ export class Registration {
         || obj[otherPropertyName] === null
         || obj[otherPropertyName] === undefined
         || obj[otherPropertyName] === ''
-        || value === obj[otherPropertyName],
-      "? This dosen't look like the same password"
+        || value === obj[otherPropertyName], this.i18n.tr(this.errorMessages[this.language].confirmPasswordMatches)
     );
 
     ValidationRules
       .ensure('firstName')
-        .required().withMessage('is required.')
+        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].firstNameRequred))
       .ensure('lastName')
-        .required().withMessage('is also required.')
+        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].lastNameRequired))
       .ensure('userName')
-        .required().withMessage('cannot be blank.')
+        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].usernameRequired))
       .ensure('email')
-        .required().withMessage('must be provided.')
-        .email().withMessage('you provided is not a valid address.')
+        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].emailRequired))
+        .email().withMessage(this.i18n.tr(this.errorMessages[this.language].emailInvalid))
       .ensure(a => a.password)
-        .required().withMessage('was not provided.')
-        .minLength(8).withMessage('should be at least 8 characters long.')
+        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].passwordRequired))
+        .minLength(8).withMessage(this.i18n.tr(this.errorMessages[this.language].paswordLengh))
       .ensure(a => a.confirmPassword)
-        .required().withMessage(' else you cannot register.')
+        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].confirmPasswordRequred))
         .satisfiesRule('matchesProperty', 'password')
-      .on(this)
+      .on(this);
     }
 
   register() {
