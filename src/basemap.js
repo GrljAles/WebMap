@@ -434,11 +434,10 @@ export class BaseMap {
         let profileLineData = {
           product: _this.layers[_this.activeLayer].name,
           dates: _this.dateToYYYYMMDD(_this.layers[_this.activeLayer].displayedDate),
-          length: _this.formatLength(lastLineLength),
-          resolution: _this.layers[_this.activeLayer].dataProperties.resolution
+          length: _this.formatLength(lastLineLength)
         };
         _this.setIdentifyLayerProperties('profileLines', profileLineData);
-        //profileLineData.line = _this.featuresToGeoJSON(evt.feature);
+        profileLineData.resolution = _this.layers[_this.activeLayer].dataProperties.resolution;
         profileLineData.p0 = evt.feature.getGeometry().getCoordinates()[0];
         profileLineData.p1 = evt.feature.getGeometry().getCoordinates()[1];
         _this.profileChartRequest(profileLineData);
