@@ -17,21 +17,7 @@ export class Resetpassword {
   newPassword = null;
   newPasswordConfirm = null;
   passwordType = 'password';
-  errorMessages = {
-    si:
-    {
-      passwordRequired: 'ni bilo vpisano',
-      paswordLengh: 'mora vsebovati vsaj osem znakov',
-      confirmPasswordRequred: ', če ne se ne morate vpisati',
-      confirmPasswordMatches: 'ne zgleda enako kot prvo'
-    },
-    en: {
-      passwordRequired: 'was not provided',
-      paswordLengh: 'has to be at least eight characters long',
-      confirmPasswordRequred: ', else you can not register',
-      confirmPasswordMatches: 'does not look like the first one'
-    }
-  }
+
 
   constructor(controller, eventAggregator, authService, router,i18n) {
     this.controller = controller;
@@ -51,16 +37,16 @@ export class Resetpassword {
         || obj[otherPropertyName] === null
         || obj[otherPropertyName] === undefined
         || obj[otherPropertyName] === ''
-        || value === obj[otherPropertyName], this.i18n.tr(this.errorMessages[this.language].confirmPasswordMatches));
+        || value === obj[otherPropertyName], "confirmPasswordMatches");
 
     ValidationRules
     .ensure(a => a.oldPassword)
-      .required().withMessage(this.errorMessages[this.language].passwordRequired)
+      .required().withMessage("passwordRequired")
     .ensure(a => a.newPassword)
-      .required().withMessage(this.errorMessages[this.language].passwordRequired)
-      .minLength(8).withMessage(this.errorMessages[this.language].paswordLengh)
+      .required().withMessage("passwordRequired")
+      .minLength(8).withMessage("paswordLengh")
     .ensure(a => a.newPasswordConfirm)
-      .required().withMessage(this.errorMessages[this.language].confirmPasswordRequred)
+      .required().withMessage("confirmPasswordRequred")
       .satisfiesRule('matchesProperty', 'newPassword')
     .on(this)
   };

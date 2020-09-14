@@ -25,14 +25,14 @@ export function configure(aurelia) {
     .plugin(PLATFORM.moduleName('aurelia-api'), config => {
       // Register hosts
       config.registerEndpoint('backendapi', 'http://' + locations.backend + '/backendapi');
-      config.registerEndpoint('basemap','http://' + locations.backend + '/basemap');
-      config.registerEndpoint('login','http://' + locations.backend + '/backendapi/login');
-      config.registerEndpoint('registration','http://' + locations.backend + '/backendapi/registration');
-      config.registerEndpoint('confirmemailnotification','http://' + locations.backend + '/emailOk');
-      config.registerEndpoint('notificationredirect','http://' + locations.backend + '/notificationredirect');
-      config.registerEndpoint('refreshtoken','http://' + locations.backend + '/backendapi/token/refresh');
-      config.registerEndpoint('changeemail','http://' + locations.backend + '/changeemail');
-      config.registerEndpoint('changepassword','http://' + locations.backend + '/changepassword');
+      config.registerEndpoint('basemap', 'http://' + locations.backend + '/basemap');
+      config.registerEndpoint('login', 'http://' + locations.backend + '/backendapi/login');
+      config.registerEndpoint('registration', 'http://' + locations.backend + '/backendapi/registration');
+      config.registerEndpoint('confirmemailnotification', 'http://' + locations.backend + '/emailOk');
+      config.registerEndpoint('notificationredirect', 'http://' + locations.backend + '/notificationredirect');
+      config.registerEndpoint('refreshtoken', 'http://' + locations.backend + '/backendapi/token/refresh');
+      config.registerEndpoint('changeemail', 'http://' + locations.backend + '/changeemail');
+      config.registerEndpoint('changepassword', 'http://' + locations.backend + '/changepassword');
     })
     /* configure aurelia-authentication */
     .plugin(PLATFORM.moduleName('aurelia-authentication'), config => {
@@ -55,7 +55,7 @@ export function configure(aurelia) {
       let aliases = ['t', 'i18n'];
       TCustomAttribute.configureAliases(aliases);
       return instance.setup({
-        resources: resBundle, //<-- configure aurelia-i18n to use your bundled translations
+        resources: resBundle,
         detection: {
           order: ['localStorage', 'cookie', 'navigator'],
           lookupCookie: 'i18next',
@@ -63,8 +63,9 @@ export function configure(aurelia) {
           caches: ['localStorage', 'cookie']
         },
         attributes: aliases,
-        fallbackLng: 'en',
-        debug: true,
+        language: 'si',
+        fallbackLng: 'si',
+        debug: false
       });
     });
 

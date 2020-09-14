@@ -9,15 +9,11 @@ export class Notification {
   }
   subscribe() {
     this.ea.subscribe('notification-data', (data) => {
-      this.setData(data);
+      this.notificationText = data;
+      this.showNotification = true;
     });
-    //here you recieve data and turn on alerts
   }
 
-  setData(data) {
-    this.notificationText = data;
-    this.showNotification = true;
-  }
   closeNotification() {
     this.showNotification = false;
   }

@@ -11,17 +11,6 @@ let httpClient = new HttpClient();
 @inject(AuthService, ValidationControllerFactory, Router, EventAggregator, I18N)
 export class ChangeEmail {
   controller = null;
-  errorMessages = {
-    si:
-    {
-      emailRequired: 'morate vpisati',
-      emailInvalid: 'ni veljaven',
-    },
-    en: {
-      emailRequired: 'has to be provided',
-      emailInvalid: 'is not a valid email address',
-    }
-  }
 
   constructor(authService, controllerFactory, router, eventAggregator, i18n) {
     this.ea = eventAggregator;
@@ -41,10 +30,10 @@ export class ChangeEmail {
 
     ValidationRules
       .ensure('newEmail')
-      .required().withMessage(this.i18n.tr(this.errorMessages[this.language].emailRequired))
-      .email().withMessage(this.i18n.tr(this.errorMessages[this.language].emailInvalid))
+      .required().withMessage("emailRequired")
+      .email().withMessage("emailInvalid")
       .on(this)
-    };
+  };
 
   subscribe() {
   }

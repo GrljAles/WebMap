@@ -11,7 +11,7 @@
         <div validation-errors.bind="firstNameErrors">
           <input id="firstName" class="align-center" type="text" value.bind = "firstName & validateOnChangeOrBlur"/>
           <!-- <h5 t="[prepend]first-name"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of firstNameErrors">${errorInfo.error.message}</span></h5> -->
-          <h5 t="[prepend]first-name"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of firstNameErrors">${errorInfo.error.message}</span></h5>
+          <h5 t="[prepend]first-name"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of firstNameErrors" t.bind="errorInfo.error.message"></span></h5>
         </div>
       </div>
       <div class="col s12 m4 l2"><p></p></div>
@@ -21,7 +21,7 @@
       <div class="col s12 m4 l8">
         <div validation-errors.bind="lastNameErrors">
           <input id="lastName" class="align-center" type="text" value.bind = "lastName & validateOnChangeOrBlur"/>
-          <h5 t="[prepend]last-name"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of lastNameErrors">${errorInfo.error.message}</span></h5>
+          <h5 t="[prepend]last-name"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of lastNameErrors" t.bind="errorInfo.error.message"></span></h5>
         </div>
       </div>
       <div class="col s12 m4 l2"><p></p></div>
@@ -31,7 +31,7 @@
       <div class="col s12 m4 l8">
         <div validation-errors.bind="userNameErrors">
           <input id="userName" class="align-center" type="text" value.bind = "userName & validateOnChangeOrBlur"/>
-          <h5 t="[prepend]username"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of userNameErrors">${errorInfo.error.message}</span></h5>
+          <h5 t="[prepend]username"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of userNameErrors" t.bind="errorInfo.error.message"></span></h5>
         </div>
       </div>
       <div class="col s12 m4 l2"><p></p></div>
@@ -41,7 +41,7 @@
       <div class="col s12 m4 l8">
         <div validation-errors.bind="emailErrors">
           <input id="email" class="align-center" type="text" value.bind = "email & validateOnChangeOrBlur"/>
-          <h5 t="[prepend]email"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of emailErrors">${errorInfo.error.message}</span></h5>
+          <h5 t="[prepend]email"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of emailErrors" t.bind="errorInfo.error.message"></span></h5>
         </div>
       </div>
       <div class="col s12 m4 l2"><p></p></div>
@@ -51,7 +51,7 @@
       <div class="col s12 m4 l8">
           <div validation-errors.bind="passwordErrors">
             <input id="password" class="align-center"type.bind="passwordType" value.bind = "password & validateOnChangeOrBlur"/>
-            <h5 t="[prepend]password"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of passwordErrors">${errorInfo.error.message}</span></h5>
+            <h5 t="[prepend]password"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of passwordErrors" t.bind="errorInfo.error.message"></span></h5>
           </div>
       </div>
       <div class="col s12 m4 l2"><p></p></div>
@@ -61,7 +61,7 @@
       <div class="col s12 m4 l8">
         <div validation-errors.bind="confirmPasswordErrors">
           <input id="confirmPassword" class="align-center" type.bind="passwordType" value.bind = "confirmPassword & validateOnChangeOrBlur"/>
-          <h5 t="[prepend]confirm-password"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of confirmPasswordErrors">${errorInfo.error.message}</span></h5>
+          <h5 t="[prepend]confirm-password"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of confirmPasswordErrors" t.bind="errorInfo.error.message"></span></h5>
         </div>
       </div>
       <span><i class="grow material-icons" click.trigger="revealPassword()">remove_red_eye</i></span>

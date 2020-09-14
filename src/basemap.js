@@ -1,26 +1,15 @@
-import {
-  MdCollapsible
-} from 'aurelia-materialize-bridge';
-import {
-  inject
-} from 'aurelia-framework';
-import {
-  Map,
-  View
-} from 'ol';
+import {MdCollapsible} from 'aurelia-materialize-bridge';
+import {inject} from 'aurelia-framework';
+import {Map, View} from 'ol';
 import TileLayer from 'ol/layer/Tile';
-import ImageLayer from 'ol/layer/Image';
 import XYZ from 'ol/source/XYZ';
 import TileWMS from 'ol/source/TileWMS';
-import Image from 'ol/source/Image';
-import Control from 'ol/control/Control';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import CircleStyle from 'ol/style/Circle/';
 import {
   transform
 } from 'ol/proj';
-import State from 'ol/source/State';
 import {
   EventAggregator
 } from 'aurelia-event-aggregator';
@@ -28,35 +17,28 @@ import * as dataData from 'resources/dataData/dataData.json';
 import moment from 'moment';
 import noUiSlider from 'materialize-css/extras/noUiSlider/noUiSlider';
 import 'materialize-css/extras/noUiSlider/nouislider.css';
-import {HttpClient, json} from 'aurelia-fetch-client';
+import {HttpClient} from 'aurelia-fetch-client';
 import {AuthService} from 'aurelia-authentication';
 import * as locations from './resources/locations/locations.json';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Style from 'ol/style/Style';
 import GeoJSON from 'ol/format/GeoJSON';
-import {Draw, Select, Snap} from 'ol/interaction';
+import {Draw} from 'ol/interaction';
 import {getArea, getLength} from 'ol/sphere';
-import {pointerMove} from 'ol/events/condition';
-import { none } from 'ol/centerconstraint';
-import { observable } from 'aurelia-framework';
+import {observable} from 'aurelia-framework';
 import {ChartEl} from './productTools/tsChart/chart-el.js';
-import {I18N} from 'aurelia-i18n';
 
-@inject(EventAggregator, HttpClient, AuthService, I18N, ChartEl)
+@inject(EventAggregator, HttpClient, AuthService, ChartEl)
 @observable('activeLayer')
 @observable('buttonCheck')
 
 export class BaseMap {  
-  constructor(eventAggregator, httpClient, authService, i18n, chartEl) {
+  constructor(eventAggregator, httpClient, authService, chartEl) {
     this.ea = eventAggregator;
     this.httpClient = httpClient;
     this.authService = authService;
-    this.i18n = i18n;
-
-
     this.chartel = chartEl;
-
     this.opacityValue = 1;
     this.layers = dataData.default;
     this.collapsible = MdCollapsible;
@@ -66,7 +48,6 @@ export class BaseMap {
     this.tsChartWindow = false;
     this.toolNotification = false;
     this.toolPreloader = false;
-
 
     this.buttonCheck = {
       refresh: {
@@ -172,7 +153,7 @@ export class BaseMap {
       });
     }
 
-    this.dateSliders = document.getElementsByClassName('date-slider')
+    this.dateSliders = document.getElementsByClassName('date-slider');
     for (let ii = 0; ii < this.dateSliders.length; ii++) {
       noUiSlider.create(this.dateSliders[ii], {
         start: [0],
@@ -185,7 +166,7 @@ export class BaseMap {
         connect: 'upper'
       });
 
-      this.dateSliders[ii].noUiSlider.on('update', function (values, handle) {
+      this.dateSliders[ii].noUiSlider.on('update', function(values, handle) {
         let value = parseInt(values[handle]);
         _this.layers[_this.activeLayer].selectedDateIndex = value;
         _this.changeDisplayedDate(_this.activeLayer, value);
@@ -828,7 +809,7 @@ export class BaseMap {
           else {
             let colour1 = 'rgb(124, 179, 66)';
             colourBox.setAttribute('style', 'background: ' + colour1 + '; width: ' + colourBoxWidth + '%;' + 'height: 15px');
-          }   
+          }
         }
         legendColoursWraper.appendChild(colourBox);
       }

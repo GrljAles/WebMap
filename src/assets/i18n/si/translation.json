@@ -67,5 +67,22 @@
   "results-table-profileLines-Id": "Id",
   "results-table-profileLines-Product": "Kazalnik", 
   "results-table-profileLines-Dates": "Datum", 
-  "results-table-profileLines-Length": "Dolžina"
+  "results-table-profileLines-Length": "Dolžina",
+  "firstNameRequred": " rabimo",
+  "lastNameRequired": " tudi rabimo",
+  "usernameRequired": " ne sme biti prazno",
+  "emailRequired": " morate vpisati",
+  "emailInvalid": " ni veljaven",
+  "passwordRequired": " ni bilo vpisano",
+  "paswordLengh": " mora vsebovati vsaj osem znakov",
+  "confirmPasswordRequred": " , če ne se ne morate vpisati",
+  "confirmPasswordMatches": " ne zgleda enako kot prvo",
+  "zonalTSChart": "Vaša zahteva za časovno vrsto poligona se obdeluje. To lahko traja nekaj časa, prosimo počakajte na rezultate.",
+  "TSChart": "Vaša zahteva za časovne vrste izbranih točk se obdeluje. Navadno smo pri tem opravilu kar hitri. Prosimo počakajte na rezultate.",
+  "zonalStatistics": "Samo trenutek, statistike se izračunavajo.",
+  "profileLine": "Pridobivamo vrednosti ob črti. To nam bo vzelo samo nekaj trenutkov.",
+  "genericBackend": "Med obdelavo vaše zahteve je prišlo do napake. O tem smo nekoga obvestili. Poskusite ponovno kasneje.",
+  "featureLimitPerRequest": "Dosegli ste omejite števila objektov za to orodje. Z dodajenjem boste lahko nadaljevali po potrditvi trenutne izbire.",
+  "polygonAreaTooLarge": "Površina poligona je prevelika. Narišite manjši poligon.",
+  "featureLimitPerRequestZonalTS": "Dosegli ste omejite števila objektov za to orodje. Izbrišite trenutni poligon z 'X' v spodnji tabeli, narišite nov poligon in potrdite izbiro."
 }

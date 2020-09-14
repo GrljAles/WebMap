@@ -17,7 +17,7 @@
       <div class="col s12 m4 l8">
         <div validation-errors.bind="userNameErrors">
           <input id="userName" name="userName" class="align-center brown-text" type="text" value.bind = "userName & validateOnChangeOrBlur"/>
-          <h5 class="brown-text" t="[prepend]username"><span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of userNameErrors">${errorInfo.error.message}</span></h5>
+          <h5 class="brown-text" t="[prepend]username"><span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of userNameErrors" t.bind="errorInfo.error.message"></span></h5>
           </div>
       </div>
       <div class="col s12 m4 l2"><p></p></div>
@@ -27,7 +27,7 @@
       <div class="col s12 m4 l8">
         <div validation-errors.bind="passwordErrors">
           <input id="password" name="password" class="align-center brown-text"type.bind="passwordType" value.bind = "password & validateOnChangeOrBlur"/>
-          <h5 class="brown-text" t="[prepend]password"> <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of passwordErrors">${errorInfo.error.message}</span></h5>
+          <h5 class="brown-text" t="[prepend]password"><span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of passwordErrors" t.bind="errorInfo.error.message"></span></h5>
         </div>
       </div>
       <span><i class="grow material-icons" click.trigger="revealPassword()">remove_red_eye</i></span>    

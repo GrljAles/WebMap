@@ -21,9 +21,9 @@ export class Login {
 
     ValidationRules
       .ensure('userName')
-      .required().withMessage('is required.')
+      .required().withMessage("usernameRequired")
       .ensure('password')
-      .required().withMessage('is also required.')
+      .required().withMessage("passwordRequired")
       .on(this);
   }
   // make a getter to get the authentication status.

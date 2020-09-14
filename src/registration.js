@@ -15,31 +15,6 @@ export class Registration {
   password = '';
   confirmPassword = '';
   passwordType = 'password';
-  errorMessages = {
-    si:
-    {
-      firstNameRequred: 'rabimo',
-      lastNameRequired: 'tudi rabimo',
-      usernameRequired: 'ne sme biti prazno',
-      emailRequired: 'morate vpisati',
-      emailInvalid: 'ni veljaven',
-      passwordRequired: 'ni bilo vpisano',
-      paswordLengh: 'mora vsebovati vsaj osem znakov',
-      confirmPasswordRequred: ', če ne se ne morate vpisati',
-      confirmPasswordMatches: 'ne zgleda enako kot prvo'
-    },
-    en: {
-      firstNameRequred: 'is required',
-      lastNameRequired: 'is also required',
-      usernameRequired: 'can not be empty',
-      emailRequired: 'has to be provided',
-      emailInvalid: 'is not a valid email address',
-      passwordRequired: 'was not provided',
-      paswordLengh: 'has to be at least eight characters long',
-      confirmPasswordRequred: ', else you can not register',
-      confirmPasswordMatches: 'does not look like the first one'
-    }
-  }
 
   constructor(controller, eventAggregator, authService, i18n) {
     this.controller = controller;
@@ -47,7 +22,6 @@ export class Registration {
     this.authService = authService;
     this.i18n = i18n;
     this.language = this.i18n.getLocale();
-    console.log(this.language)
 
     ValidationRules.customRule(
       'matchesProperty',
@@ -58,24 +32,23 @@ export class Registration {
         || obj[otherPropertyName] === null
         || obj[otherPropertyName] === undefined
         || obj[otherPropertyName] === ''
-        || value === obj[otherPropertyName], this.i18n.tr(this.errorMessages[this.language].confirmPasswordMatches)
-    );
+        || value === obj[otherPropertyName], "confirmPasswordMatches");
 
     ValidationRules
       .ensure('firstName')
-        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].firstNameRequred))
+        .required().withMessage("firstNameRequred")
       .ensure('lastName')
-        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].lastNameRequired))
+        .required().withMessage("lastNameRequired")
       .ensure('userName')
-        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].usernameRequired))
+        .required().withMessage("usernameRequired")
       .ensure('email')
-        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].emailRequired))
-        .email().withMessage(this.i18n.tr(this.errorMessages[this.language].emailInvalid))
+        .required().withMessage("emailRequired")
+        .email().withMessage("emailInvalid")
       .ensure(a => a.password)
-        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].passwordRequired))
-        .minLength(8).withMessage(this.i18n.tr(this.errorMessages[this.language].paswordLengh))
+        .required().withMessage("passwordRequired")
+        .minLength(8).withMessage("paswordLengh")
       .ensure(a => a.confirmPassword)
-        .required().withMessage(this.i18n.tr(this.errorMessages[this.language].confirmPasswordRequred))
+        .required().withMessage("confirmPasswordRequred")
         .satisfiesRule('matchesProperty', 'password')
       .on(this);
     }
@@ -92,18 +65,18 @@ export class Registration {
             password: this.password,
             confirmPassword: this.confirmPassword
           })
-          .then(response => {
-            if (response) {
+            .then(response => {
+              if (response) {
+                window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
+              }
+            })
+            .catch(err => {
+              this.ea.publish('user-data-update', {userName: null});
               window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
-            }
-          })
-          .catch(err => {
-            this.ea.publish('user-data-update', {userName: null});
-            window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
-          });
+            });
         }
-      })
-    }
+      });
+  }
 
   revealPassword() {
     if (this.passwordType === 'password') {
@@ -111,6 +84,6 @@ export class Registration {
     }
     else {
       this.passwordType = 'password'
-    };
-  };
-};
+    }
+  }
+}
