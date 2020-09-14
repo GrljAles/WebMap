@@ -7,6 +7,7 @@ import * as locations from './resources/locations/locations.json';
 import resBundle from 'i18next-resource-store-loader!./assets/i18n/index.js';
 import {I18N, TCustomAttribute} from 'aurelia-i18n';
 import Backend from 'i18next-xhr-backend'; // <-- your previously installed backend plugin
+import LngDetector from 'i18next-browser-languagedetector';
 
 // remove out if you don't want a Promise polyfill (remove also from webpack.config.js)
 Bluebird.config({ warnings: { wForgottenReturn: false } });
@@ -47,15 +48,23 @@ export function configure(aurelia) {
     .developmentLogging(environment.debug ? 'debug' : 'warn')
     .plugin(PLATFORM.moduleName('aurelia-i18n'), instance => {
       // register backend plugin
-      instance.i18next.use(Backend);
-      let aliases = ['t','i18n'];
+      instance.i18next
+        .use(Backend)
+        .use(LngDetector);
+
+      let aliases = ['t', 'i18n'];
       TCustomAttribute.configureAliases(aliases);
       return instance.setup({
-        resources  : resBundle, //<-- configure aurelia-i18n to use your bundled translations
-        lng        : 'si',
-        attributes : aliases,
+        resources: resBundle, //<-- configure aurelia-i18n to use your bundled translations
+        detection: {
+          order: ['localStorage', 'cookie', 'navigator'],
+          lookupCookie: 'i18next',
+          lookupLocalStorage: 'i18nextLng',
+          caches: ['localStorage', 'cookie']
+        },
+        attributes: aliases,
         fallbackLng: 'en',
-        debug      : true,
+        debug: true,
       });
     });
 

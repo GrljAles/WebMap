@@ -47,6 +47,7 @@ export class Registration {
     this.authService = authService;
     this.i18n = i18n;
     this.language = this.i18n.getLocale();
+    console.log(this.language)
 
     ValidationRules.customRule(
       'matchesProperty',
