@@ -6,14 +6,16 @@ import {sideNav} from "./sideNav/sideNav";
 import * as locations from './resources/locations/locations.json';
 import {AuthService} from 'aurelia-authentication';
 import {HttpClient} from 'aurelia-fetch-client';
+import {I18N} from 'aurelia-i18n';
 
-@inject(AuthService, EventAggregator, HttpClient)
+@inject(AuthService, EventAggregator, HttpClient, I18N)
 export class App {
-  constructor(authService, eventAggregator, httpClient) {
+  constructor(authService, eventAggregator, httpClient, i18n) {
     this.httpClient = httpClient;
     this.authService = authService;
     this.ea = eventAggregator;
     this.sideNav = sideNav;
+    this.i18n = i18n;
 
     if (window.localStorage.getItem("aurelia_authentication")) {
       this.userNameDisplay = JSON.parse(window.localStorage.getItem("aurelia_authentication")).userName;
@@ -87,6 +89,11 @@ export class App {
   refreshToken() {
     this.authService.updateToken()
   }
+
+  changeLanguage(language) {
+    this.i18n.setLocale(language)
+  }
+  
   configureRouter(config, router) {
     config.title = 'Sattilia';
 

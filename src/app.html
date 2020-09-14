@@ -13,7 +13,7 @@
       <ul class="light-green darken-3 white-text">
         <li md-waves class="sidenav-close" click.trigger="logout()" t="logout"></li>
         <div class="collapsible-accordion">
-          <ul md-collapsible="accordion: false;">
+          <ul md-collapsible="accordion: true;">
             <li>
               <ul class="collapsible-header no-padding">
                 <li md-waves t="profile"></li>
@@ -22,23 +22,30 @@
                 <li md-waves class="sidenav-close" t="[prepend]email">: ${userEmailDisplay}</li>
               </ul>
             </li>
-          </ul>
-        </div>
-
-        <div class="collapsible-accordion">
-          <ul md-collapsible="accordion: false;">
             <li>
               <ul class="collapsible-header no-padding">
-                <li md-waves t="settings"></li>
+                <li md-waves t="user-settings"></li>
               </ul>
               <ul class="collapsible-body light-green darken-2">
                 <li md-waves class="sidenav-close" route-href="route: changeemail;" click.trigger="changeEmailNavigate()" t="email-change"></li>
                 <li md-waves class="sidenav-close" route-href="route: changepassword;"click.trigger="changePasswordNavigate()" t="pass-change"></li>
               </ul>
             </li>
+            <li>
+              <ul class="collapsible-header no-padding">
+                <li md-waves t="app-settings"></li>
+              </ul>
+              <ul class="collapsible-body light-green darken-2">
+                <li md-waves class="no-padding light-green darken-2" md-dropdown="activates: language-dropdown; cover-trigger: false;" t="language-change"></li>
+                <ul id="language-dropdown">
+                  <li md-waves><a class="light-green darken-2" click.trigger="changeLanguage('si')" t="language-change-slo"></a></li>
+                  <li md-waves><a class="light-green darken-2" click.trigger="changeLanguage('en')" t="language-change-en"></a></li>
+                </ul>
+              </ul>
+            </li>
           </ul>
+          <li md-waves t="help"></li>
         </div>
-        <li md-waves t="help"></li>
       </ul>
     </md-sidenav>
   <router-view></router-view>
