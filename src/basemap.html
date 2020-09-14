@@ -3,7 +3,7 @@
   <div>
     <div class="row">
       <ul class="light-green darken-1 collection with-header col l3 m3 s3 layer-list scrollbar-hidden">
-        <li class="collection-header light-green darken-3"><h4>Layers</h4></li>
+        <li class="collection-header light-green darken-3"><h4 t="layers">Layers</h4></li>
           <div class="collapsible-open-close-events">
             <ul md-collapsible md-on-open-start.delegate="collapsibleOpen($event.detail.el.childNodes[1].id)" md-on-close-start.delegate="collapsibleClose($event.detail.el.childNodes[1].id)">
               <li repeat.for="layer of layers | objectKeys">
@@ -11,13 +11,16 @@
                   <h5 class="white-text">${layer.name}</h5>
                 </div>
                 <div id="collapsible-body${layer.id}" class="collapsible-body">
-                  <div class="row">Slide to change opacity
+                  <div class="row">
+                    <div t="[text]op-slider" ></div>
                     <div class="col s12 opacity-slider" id="opacity-slider${layer.id}"></div>
                   </div>
-                  <div class="row">Slide to display different dates <br>${layer.displayedDate}
+                  <div class="row">
+                    <div t="[prepend]date-slider" > [${layer.displayedDate}]</div>
                     <div class="col s12 date-slider" id="date-slider${layer.id}"></div>
                   </div>
-                  <div class="row">Slide to adjust min (${layer.displaySettings.min}) and max (${layer.displaySettings.max}) values
+                  <div class="row">
+                    <div t="[prepend]min-max-slider"> [${layer.displaySettings.min}] - [${layer.displaySettings.max}]</div>
                     <div class="col s12 min-max-slider" id="min-max-slider${layer.id}"></div>
                   </div>
                   <div id="legend-holder${layer.id}"></div>

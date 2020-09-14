@@ -51,7 +51,7 @@ export class IdentiFy {
         delete: false,
         table: [],
         tableId: 0,
-        tableHeader: ['Id', 'Product', "Dates", 'Length'],
+        tableHeader: ['Id', 'Product', 'Dates', 'Length'],
         tableTitle: 'REQUESTED LINE FOR PROFILE',
         tableIcon: 'landscape'
       }

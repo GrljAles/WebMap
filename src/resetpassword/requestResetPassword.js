@@ -10,7 +10,7 @@ export class RequestResetPassword {
   controller = null;
 
   constructor(controller, eventAggregator, router, httpClient) {
-    this.httpClient = httpClient
+    this.httpClient = httpClient;
     this.controller = controller;
     this.router = router;
     this.ea = eventAggregator;
@@ -19,35 +19,35 @@ export class RequestResetPassword {
 
     ValidationRules
       .ensure('email')
-        .required().withMessage('must be provided.')
-        .email().withMessage('is not yet a valid address.')
-      .on(this)
-    }
+      .required().withMessage("emailRequired")
+      .email().withMessage("emailInvalid")
+      .on(this);
+  }
 
   requestResetPassword() {
     this.userEmail = {
-      email: this.email,
+      email: this.email
     };
     this.controller.validate()
-    .then(result  => {
+      .then(result  => {
         if (result.valid) {
           this.httpClient.fetch('http://' + locations.backend + '/backendapi/requestresetpassword', {
-          method: 'POST',
-          body: JSON.stringify(this.userEmail),
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'Fetch'
-          },
-          mode: 'cors'
-        })
-        .then(response => response.json())
-        .then(data => {
-          window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
-          this.router.navigateToRoute(data.redirect)
-        })
-      }
-    })
+            method: 'POST',
+            body: JSON.stringify(this.userEmail),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'Fetch'
+            },
+            mode: 'cors'
+          })
+            .then(response => response.json())
+            .then(data => {
+              window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
+              this.router.navigateToRoute(data.redirect);
+            }
+            );
+        }
+      });
   }
-
-  }
+}

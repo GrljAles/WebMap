@@ -3,27 +3,27 @@
     <div id="tsChartOptions" class="col l6 m6 s6 scale-transition results-table lime">
       <div class="table-comtrolls-wrapper">
         <a md-button="floating: true;" class="tr-green"><i class="material-icons icon-grey">multiline_chart</i></a>
-        <h5 class="table-controll-title white-text">TIME SERIES OPTIONS</h5>
+        <h5 class="table-controll-title white-text" t="ts-options"></h5>
         <span></span>
       </div>
       <div class="row tool-options-wrapper">
         <div class="row">
-          <div class="col s6 m6 l6">Selected product:</div><div class="col s6 m6 l6">${layers[activeLayer].name}</div>
+          <div class="col s6 m6 l6" t="[prepend]selected-product">:</div><div class="col s6 m6 l6">${layers[activeLayer].name}</div>
         </div>
         <div class="row">
-          <div class="col s6 m6 l6">Starting date:</div><div class="col s6 m6 l6">${layers[activeLayer].availableDates[startingDateIndex]}</div>
+          <div class="col s6 m6 l6" t="[prepend]starting-date">:</div><div class="col s6 m6 l6">${layers[activeLayer].availableDates[startingDateIndex]}</div>
         </div>
         <div class="row">
-          <div class="col s6 m6 l6">Ending date:</div><div class="col s6 m6 l6">${layers[activeLayer].availableDates[endingDateIndex]}</div>
+          <div class="col s6 m6 l6" t="[prepend]ending-date">:</div><div class="col s6 m6 l6">${layers[activeLayer].availableDates[endingDateIndex]}</div>
         </div>
-        <div class="row">Slide to adjust starting and ending dates</div>
+        <div class="row" t="ts-slider"></div>
         <div class="row  tool-options-wrapper">
             <div id="ts-date-slider"></div>
         </div>
-        <div class="row">Draw the time series chart polygon on the map. Maximum is 1 per request and maximum area of single polygon is 1000000 m<sup>2</sup> </div>
+        <div class="row" t="[prepend]ts-polygons"><sup>2</sup>.</div>
         <div class="row align-center">
           <div class="col s12 m4 l2"><p></p></div>
-          <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" click.trigger="zonalTSChartRequest()">Submit</a></div>
+          <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" click.trigger="zonalTSChartRequest()" t="submit"></a></div>
           <div class="col s12 m4 l2"><p></p></div>
         </div>
       </div>

@@ -2,8 +2,9 @@ import {AuthService} from 'aurelia-authentication';
 import {inject, NewInstance} from 'aurelia-dependency-injection';
 import {ValidationRules, ValidationController} from 'aurelia-validation';
 import {EventAggregator} from 'aurelia-event-aggregator';
+import {I18N} from 'aurelia-i18n';
 
-@inject(NewInstance.of(ValidationController), EventAggregator, AuthService)
+@inject(NewInstance.of(ValidationController), EventAggregator, AuthService, I18N)
 export class Registration {
   controller;
   message = '';
@@ -15,10 +16,12 @@ export class Registration {
   confirmPassword = '';
   passwordType = 'password';
 
-  constructor(controller, eventAggregator, authService) {
+  constructor(controller, eventAggregator, authService, i18n) {
     this.controller = controller;
     this.ea = eventAggregator;
     this.authService = authService;
+    this.i18n = i18n;
+    this.language = this.i18n.getLocale();
 
     ValidationRules.customRule(
       'matchesProperty',
@@ -29,27 +32,25 @@ export class Registration {
         || obj[otherPropertyName] === null
         || obj[otherPropertyName] === undefined
         || obj[otherPropertyName] === ''
-        || value === obj[otherPropertyName],
-      "? This dosen't look like the same password"
-    );
+        || value === obj[otherPropertyName], "confirmPasswordMatches");
 
     ValidationRules
       .ensure('firstName')
-        .required().withMessage('is required.')
+        .required().withMessage("firstNameRequred")
       .ensure('lastName')
-        .required().withMessage('is also required.')
+        .required().withMessage("lastNameRequired")
       .ensure('userName')
-        .required().withMessage('cannot be blank.')
+        .required().withMessage("usernameRequired")
       .ensure('email')
-        .required().withMessage('must be provided.')
-        .email().withMessage('you provided is not a valid address.')
+        .required().withMessage("emailRequired")
+        .email().withMessage("emailInvalid")
       .ensure(a => a.password)
-        .required().withMessage('was not provided.')
-        .minLength(8).withMessage('should be at least 8 characters long.')
+        .required().withMessage("passwordRequired")
+        .minLength(8).withMessage("paswordLengh")
       .ensure(a => a.confirmPassword)
-        .required().withMessage(' else you cannot register.')
+        .required().withMessage("confirmPasswordRequred")
         .satisfiesRule('matchesProperty', 'password')
-      .on(this)
+      .on(this);
     }
 
   register() {
@@ -64,18 +65,18 @@ export class Registration {
             password: this.password,
             confirmPassword: this.confirmPassword
           })
-          .then(response => {
-            if (response) {
+            .then(response => {
+              if (response) {
+                window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
+              }
+            })
+            .catch(err => {
+              this.ea.publish('user-data-update', {userName: null});
               window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
-            }
-          })
-          .catch(err => {
-            this.ea.publish('user-data-update', {userName: null});
-            window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
-          });
+            });
         }
-      })
-    }
+      });
+  }
 
   revealPassword() {
     if (this.passwordType === 'password') {
@@ -83,6 +84,6 @@ export class Registration {
     }
     else {
       this.passwordType = 'password'
-    };
-  };
-};
+    }
+  }
+}

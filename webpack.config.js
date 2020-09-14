@@ -23,7 +23,13 @@ const baseUrl = '/';
 const cssRules = [
   { loader: 'css-loader' },
 ];
-
+const coreBundles = {
+  bootstrap: [/* snip (to keep example short) */],
+  aurelia: [
+    /* snip (to keep example short) */
+    'aurelia-i18n' // add aurelia-i18n to the array
+  ]
+};
 module.exports = ({production, server, extractCss, coverage, analyze, karma} = {}) => ({
   resolve: {
     extensions: ['.js'],
@@ -59,9 +65,9 @@ module.exports = ({production, server, extractCss, coverage, analyze, karma} = {
         test: /\.css$/i,
         issuer: [{ not: [{ test: /\.html$/i }] }],
         use: extractCss ? [{
-            loader: MiniCssExtractPlugin.loader
-          },
-          'css-loader'
+          loader: MiniCssExtractPlugin.loader
+        },
+        'css-loader'
         ] : ['style-loader', ...cssRules]
       },
       {
@@ -110,7 +116,9 @@ module.exports = ({production, server, extractCss, coverage, analyze, karma} = {
       allChunks: true
     })),
     ...when(production || server, new CopyWebpackPlugin([
-      { from: 'static', to: outDir }])),
+      { from: 'static', to: outDir },
+      //{ from: 'src/locales/', to: 'locales/' }
+    ])),
     ...when(analyze, new BundleAnalyzerPlugin())
   ]
 });

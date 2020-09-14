@@ -8,7 +8,7 @@
     <div class="row align-center">
       <div class="col s12 m4 l2"><p></p></div>
       <div class="col s12 m12 l12">
-        <h2 class="brown-text">Login</h2>
+        <h2 class="brown-text" t="login"></h2>
       </div>
       <div class="col s12 m4 l2"><p></p></div>
     </div>
@@ -17,7 +17,7 @@
       <div class="col s12 m4 l8">
         <div validation-errors.bind="userNameErrors">
           <input id="userName" name="userName" class="align-center brown-text" type="text" value.bind = "userName & validateOnChangeOrBlur"/>
-          <h5 class="brown-text">Username <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of userNameErrors">${errorInfo.error.message}</span></h5>
+          <h5 class="brown-text" t="[prepend]username"><span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of userNameErrors" t.bind="errorInfo.error.message"></span></h5>
           </div>
       </div>
       <div class="col s12 m4 l2"><p></p></div>
@@ -27,7 +27,7 @@
       <div class="col s12 m4 l8">
         <div validation-errors.bind="passwordErrors">
           <input id="password" name="password" class="align-center brown-text"type.bind="passwordType" value.bind = "password & validateOnChangeOrBlur"/>
-          <h5 class="brown-text">Password <span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of passwordErrors">${errorInfo.error.message}</span></h5>
+          <h5 class="brown-text" t="[prepend]password"><span class="orange-text text-darken-2" if.bind="controller.errors" repeat.for="errorInfo of passwordErrors" t.bind="errorInfo.error.message"></span></h5>
         </div>
       </div>
       <span><i class="grow material-icons" click.trigger="revealPassword()">remove_red_eye</i></span>    
@@ -38,23 +38,23 @@
     <notification></notification>
     <div class="row align-center">
       <div class="col s12 m4 l2"><p></p></div>
-      <div class="col s12 m4 l8"> <button class="grow btn light-green darken-4 waves-effect waves-light" type="submit" name="login">Submit</button></div>
+      <div class="col s12 m4 l8"> <button class="grow btn light-green darken-4 waves-effect waves-light" type="submit" name="login" t="submit"></button></div>
       <div class="col s12 m4 l2"><p></p></div>
     </div>
   </form>
   <div class="row align-center">
     <div class="col s12 m4 l2"><p></p></div>
-    <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" name="registration" route-href="route: registration;">I don't have an account!</a></div>
+    <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" name="registration" route-href="route: registration;" t="register"></a></div>
     <div class="col s12 m4 l2"><p></p></div>
   </div>
   <div class="row align-center">
     <div class="col s12 m4 l2"><p></p></div>
-    <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" name="passreset" route-href="route: requestresetpassword;">I forgot my password</a></div>
+    <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" name="passreset" route-href="route: requestresetpassword;" t="forgot-password"></a></div>
     <div class="col s12 m4 l2"><p></p></div>
   </div>
   <div class="row align-center">
     <div class="col s12 m4 l2"><p></p></div>
-    <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" name="facebook" href="https://www.facebook.com/LocalMapper" target="_blank">Follow us on Facebook</a></div>
+    <div class="col s12 m4 l8"> <a class="grow btn light-green darken-4 waves-effect waves-light" name="facebook" href="https://www.facebook.com/LocalMapper" target="_blank" t="fb"></a></div>
     <div class="col s12 m4 l2"><p></p></div>
   </div>
 </template>

@@ -11,9 +11,9 @@ export class Confirmemail {
     this.subscribe();
   }
 
-  subscribe(){
+  subscribe() {
     this.ea.subscribe('user-management-notification', (data) => {
-      this.userManagementNotification = data.message;
+      this.userManagementNotification = data;
       this.okButton = data.backButton;
     });
   }

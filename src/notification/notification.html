@@ -1,7 +1,7 @@
 <template>
   <div class="row align-center ${showAlert ? 'active' : ''} au-animate"  if.bind="showNotification">
     <div class="col l11 m111 s11 yellow darken-2 transparent-title card-panel hoverable valign-wrapper">
-      <h2 class="col s11">${notificationText}</h2>
+      <h2 class="col s11" t.bind="notificationText"></h2>
       <span><i class="col l1 m1 s1 grow material-icons green-text text-darken-4 center-align" click.trigger="closeNotification()">close</i></span>
     </div>
   </div>
