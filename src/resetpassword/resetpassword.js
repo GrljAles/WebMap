@@ -19,6 +19,7 @@ export class Resetpassword {
     this.router = router;
     this.controller = controller;
     this.providers = [];
+    this.userNotification = false;
 
     this.subscribe();
 
@@ -36,15 +37,19 @@ export class Resetpassword {
 
     ValidationRules
       .ensure(a => a.newPassword)
-        .required().withMessage("passwordRequired")
-        .minLength(8).withMessage("paswordLengh")
+      .required().withMessage("passwordRequired")
+      .minLength(8).withMessage("paswordLengh")
       .ensure(a => a.confirmPassword)
-        .required().withMessage("confirmPasswordRequred")
-        .satisfiesRule('matchesProperty', 'newPassword')
+      .required().withMessage("confirmNewPasswordRequred")
+      .satisfiesRule('matchesProperty', 'newPassword')
       .on(this);
-    }
+  }
 
-  subscribe() {}
+  subscribe() {
+    this.ea.subscribe('close-user-notification', notificationStatus => {
+      this.userNotification = notificationStatus;
+    });
+  }
 
   resetPassword() {
     this.urlArray = window.location.href.split('/')
@@ -68,8 +73,12 @@ export class Resetpassword {
           })
             .then(response => response.json())
             .then(data => {
-              window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
-              this.router.navigateToRoute(data.redirect)
+              this.userNotification = true;
+              this.ea.publish('open-user-notification', data);
+            })
+            .catch(error => {
+              this.userNotification = true;
+              this.ea.publish('open-user-notification', error);
             });
         }
       });

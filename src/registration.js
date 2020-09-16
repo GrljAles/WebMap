@@ -2,9 +2,8 @@ import {AuthService} from 'aurelia-authentication';
 import {inject, NewInstance} from 'aurelia-dependency-injection';
 import {ValidationRules, ValidationController} from 'aurelia-validation';
 import {EventAggregator} from 'aurelia-event-aggregator';
-import {I18N} from 'aurelia-i18n';
 
-@inject(NewInstance.of(ValidationController), EventAggregator, AuthService, I18N)
+@inject(NewInstance.of(ValidationController), EventAggregator, AuthService)
 export class Registration {
   controller;
   message = '';
@@ -16,12 +15,13 @@ export class Registration {
   confirmPassword = '';
   passwordType = 'password';
 
-  constructor(controller, eventAggregator, authService, i18n) {
+  constructor(controller, eventAggregator, authService) {
     this.controller = controller;
     this.ea = eventAggregator;
     this.authService = authService;
-    this.i18n = i18n;
-    this.language = this.i18n.getLocale();
+    this.userNotification = false;
+
+    this.subscribe();
 
     ValidationRules.customRule(
       'matchesProperty',
@@ -53,6 +53,12 @@ export class Registration {
       .on(this);
     }
 
+  subscribe() {
+    this.ea.subscribe('close-user-notification', notificationStatus => {
+      this.userNotification = notificationStatus;
+    });
+  }
+
   register() {
     this.controller.validate()
       .then(result  => {
@@ -65,15 +71,15 @@ export class Registration {
             password: this.password,
             confirmPassword: this.confirmPassword
           })
-            .then(response => {
-              if (response) {
-                window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
-              }
-            })
-            .catch(err => {
-              this.ea.publish('user-data-update', {userName: null});
-              window.setTimeout(() => this.ea.publish('user-management-notification', response), 500);
-            });
+          .then(data => {
+            console.log(data)
+            this.userNotification = true;
+            this.ea.publish('open-user-notification', data);
+          })
+          .catch(error => {
+            this.userNotification = true;
+            this.ea.publish('open-user-notification', error);
+          });
         }
       });
   }

@@ -27,7 +27,7 @@ export class App {
   subscribe() {
     this.ea.subscribe('user-data-update', (data) => {
       this.userNameDisplay = data.userName;
-      this.userEmailDisplay = data.email
+      this.userEmailDisplay = data.email;
     });
     this.ea.subscribe('authentication-change', authenticated => {
       this.authenticated = authenticated;

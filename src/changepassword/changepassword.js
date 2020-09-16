@@ -2,15 +2,12 @@ import {AuthService} from 'aurelia-authentication';
 import {inject, NewInstance} from 'aurelia-dependency-injection';
 import {computedFrom} from 'aurelia-framework';
 import {ValidationRules, ValidationController} from 'aurelia-validation';
-import {HttpClient, json} from 'aurelia-fetch-client';
+import {HttpClient} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from 'aurelia-router';
 import * as locations from "../resources/locations/locations.json";
-import {I18N} from 'aurelia-i18n';
 
-let httpClient = new HttpClient();
-@inject(NewInstance.of(ValidationController), EventAggregator, AuthService, Router, I18N)
-
+@inject(NewInstance.of(ValidationController), EventAggregator, AuthService, Router, HttpClient)
 export class Resetpassword {
   controller = null;
   oldPassword = null;
@@ -19,13 +16,13 @@ export class Resetpassword {
   passwordType = 'password';
 
 
-  constructor(controller, eventAggregator, authService, router,i18n) {
+  constructor(controller, eventAggregator, authService, router, httpClient) {
     this.controller = controller;
     this.ea = eventAggregator;
     this.authService = authService;
     this.router = router;
-    this.i18n = i18n;
-    this.language = this.i18n.getLocale();
+    this.userNotification = false;
+    this.httpClient = httpClient;
     this.subscribe();
 
     ValidationRules.customRule(
@@ -40,18 +37,22 @@ export class Resetpassword {
         || value === obj[otherPropertyName], "confirmPasswordMatches");
 
     ValidationRules
-    .ensure(a => a.oldPassword)
+      .ensure(a => a.oldPassword)
       .required().withMessage("passwordRequired")
-    .ensure(a => a.newPassword)
+      .ensure(a => a.newPassword)
       .required().withMessage("passwordRequired")
       .minLength(8).withMessage("paswordLengh")
-    .ensure(a => a.newPasswordConfirm)
+      .ensure(a => a.newPasswordConfirm)
       .required().withMessage("confirmPasswordRequred")
       .satisfiesRule('matchesProperty', 'newPassword')
-    .on(this)
-  };
+      .on(this);
+  }
 
-  subscribe() {}
+  subscribe() {
+    this.ea.subscribe('close-user-notification', notificationStatus => {
+      this.userNotification = notificationStatus;
+    });
+  }
 
   @computedFrom('authService.authenticated')
   get authenticated() {
@@ -65,29 +66,33 @@ export class Resetpassword {
         newPassword: this.newPassword
       };
       this.controller.validate()
-      .then(result  => {
+        .then(result  => {
           if (result.valid) {
-            httpClient.fetch('http://' + locations.backend + '/backendapi/updatepassword', {
-            method: 'POST',
-            body: JSON.stringify(this.passwordUpdate),
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'Fetch',
-              'Authorization': 'Bearer ' + this.authService.getAccessToken()
-            },
-            mode: 'cors'
-          })
-          .then(response => response.json())
-          .then(data => {
-            window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
-            this.router.navigateToRoute(data.redirect)
-          })
-        }
-      })
+            this.httpClient.fetch('http://' + locations.backend + '/backendapi/updatepassword', {
+              method: 'POST',
+              body: JSON.stringify(this.passwordUpdate),
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'Fetch',
+                'Authorization': 'Bearer ' + this.authService.getAccessToken()
+              },
+              mode: 'cors'
+            })
+              .then(response => response.json())
+              .then(data => {
+                this.userNotification = true;
+                this.ea.publish('open-user-notification', data);
+              })
+              .catch(error => {
+                this.userNotification = true;
+                this.ea.publish('open-user-notification', error);
+              });
+          }
+        });
     }
     else {
-      this.router.navigateToRoute('login')
+      this.router.navigateToRoute('login');
     }
   }
 
@@ -97,6 +102,6 @@ export class Resetpassword {
     }
     else {
       this.passwordType = 'password'
-    };
-  };
+    }
+  }
 }

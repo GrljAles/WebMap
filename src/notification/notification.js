@@ -15,6 +15,7 @@ export class Notification {
   }
 
   closeNotification() {
+    this.notificationText = null;
     this.showNotification = false;
   }
 }

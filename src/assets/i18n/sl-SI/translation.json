@@ -80,6 +80,7 @@
   "passwordRequired": " ni bilo vpisano",
   "paswordLengh": " mora vsebovati vsaj osem znakov",
   "confirmPasswordRequred": " , če ne se ne morate vpisati",
+  "confirmNewPasswordRequred": "tudi rabimo",
   "confirmPasswordMatches": " ne zgleda enako kot prvo",
   "zonalTSChart": "Vaša zahteva za časovno vrsto poligona se obdeluje. To lahko traja nekaj časa, prosimo počakajte na rezultate.",
   "TSChart": "Vaša zahteva za časovne vrste izbranih točk se obdeluje. Navadno smo pri tem opravilu kar hitri. Prosimo počakajte na rezultate.",
@@ -88,5 +89,18 @@
   "genericBackend": "Med obdelavo vaše zahteve je prišlo do napake. O tem smo nekoga obvestili. Poskusite ponovno kasneje.",
   "featureLimitPerRequest": "Dosegli ste omejite števila objektov za to orodje. Z dodajenjem boste lahko nadaljevali po potrditvi trenutne izbire.",
   "polygonAreaTooLarge": "Površina poligona je prevelika. Narišite manjši poligon.",
-  "featureLimitPerRequestZonalTS": "Dosegli ste omejite števila objektov za to orodje. Izbrišite trenutni poligon z 'X' v spodnji tabeli, narišite nov poligon in potrdite izbiro."
+  "featureLimitPerRequestZonalTS": "Dosegli ste omejite števila objektov za to orodje. Izbrišite trenutni poligon z 'X' v spodnji tabeli, narišite nov poligon in potrdite izbiro.",
+  "error-message-missing-data": "Poslali ste premalo podatkov, da bi vas lahko vpisali.",
+  "error-message-500": "Med obdelavo vaše zahteve je prišlo do napake. O tem smo nekoga obvestili in že dela na tem. Poskusite ponovno kasneje.",
+  "error-message-user-exists": "To uporabniško ime je že oddano. Prosimo poskusite kaj bolj iznajdljivega.",
+  "error-message-email-exists": "Ta naslov je že v uporabi.",
+  "error-message-pass-mismatch": "Gesli, ki ste ju vnesli se ne ujemata.",
+  "confirmation-mail-sent": "Na vaš e-naslov smo vam poslali sporočilo. Prosimo preverite nabilralnik in sledite navodilom v sporočilu.",
+  "no-such-email": "Ta naslov ne obstaja.",
+  "email-not-confirmed": "Ta naslov še ni bil potrjen.",
+  "user-not-exists": "Tega uporabniškega imena ne poznamo.",
+  "pass-reset-success": "Uspešno smo posodobili vaše geslo.",
+  "hmmm": "Kaj pa vi počnete tukaj?!",
+  "invalid-credentials": "Zgleda, da se vneseni podatki ne ujemajo.",
+  "user-not-confirmed": "To uporabniško ime še ni potrjeno. Preverite svoj poštni nabiralnik. "
 }

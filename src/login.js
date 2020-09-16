@@ -19,6 +19,9 @@ export class Login {
     this.password = 'Jebote12';
     this.passwordType = 'password';
 
+    this.userNotification = false;
+    this.subscribe();
+
     ValidationRules
       .ensure('userName')
       .required().withMessage("usernameRequired")
@@ -33,6 +36,12 @@ export class Login {
     return this.authService.authenticated;
   }
 
+  subscribe() {
+    this.ea.subscribe('close-user-notification', notificationStatus => {
+      this.userNotification = notificationStatus;
+    });
+  }
+
   login() {
     this.controller.validate()
       .then(result  => {
@@ -40,19 +49,18 @@ export class Login {
           return this.authService.login({
             userName: this.userName,
             password: this.password
-          })
-            .then(response => {
-              this.ea.publish('user-data-update', {
-                userName: response.userName,
-                email: response.email
-              });
-            })
-            .catch(err => {
-              this.ea.publish('user-data-update', {userName: null});
-              window.setTimeout(() => this.ea.publish('user-management-notification', err.responseObject), 500);
-              this.router.navigateToRoute(err.responseObject.redirect);
-            });
+          });
         }
+      })
+      .then(data => {
+        this.ea.publish('user-data-update', {
+          userName: data.userName,
+          email: data.email
+        });
+      })
+      .catch(error => {
+        this.userNotification = true;
+        this.ea.publish('open-user-notification', error.responseObject);
       });
   }
 

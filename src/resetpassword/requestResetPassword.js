@@ -14,14 +14,22 @@ export class RequestResetPassword {
     this.controller = controller;
     this.router = router;
     this.ea = eventAggregator;
-    this.message = null;
     this.email = null;
+    this.userNotification = false;
+
+    this.subscribe();
 
     ValidationRules
       .ensure('email')
       .required().withMessage("emailRequired")
       .email().withMessage("emailInvalid")
       .on(this);
+  }
+
+  subscribe() {
+    this.ea.subscribe('close-user-notification', notificationStatus => {
+      this.userNotification = notificationStatus;
+    });
   }
 
   requestResetPassword() {
@@ -43,10 +51,13 @@ export class RequestResetPassword {
           })
             .then(response => response.json())
             .then(data => {
-              window.setTimeout(() => this.ea.publish('user-management-notification', data), 500);
-              this.router.navigateToRoute(data.redirect);
-            }
-            );
+              this.userNotification = true;
+              this.ea.publish('open-user-notification', data);
+            })
+            .catch(error => {
+              this.userNotification = true;
+              this.ea.publish('open-user-notification', error);
+            });
         }
       });
   }

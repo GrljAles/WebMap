@@ -13,7 +13,7 @@ export class Confirmemail {
 
   subscribe() {
     this.ea.subscribe('user-management-notification', (data) => {
-      this.userManagementNotification = data;
+      this.userManagementNotification = data.message;
       this.okButton = data.backButton;
     });
   }
