@@ -66,6 +66,9 @@ nav {
   padding: 0rem;
   margin: 0rem;
 }
+.main-row {
+  margin-bottom: auto;
+}
 .layer-list {
   border: none;
   height:90vh;
@@ -76,6 +79,8 @@ nav {
 .confirm-email-text {
   padding-left: 0.75rem;
   margin-top: 0.75rem;
+  font-family: "Bahnschrift";
+
 }
 i.icon-black {
   color: black;
