@@ -65,7 +65,7 @@ export function configure(aurelia) {
         },
         attributes: aliases,
         language: 'si',
-        fallbackLng: 'si',
+        fallbackLng: 'en',
         debug: false
       });
     });
