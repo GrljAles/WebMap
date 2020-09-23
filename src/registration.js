@@ -2,8 +2,9 @@ import {AuthService} from 'aurelia-authentication';
 import {inject, NewInstance} from 'aurelia-dependency-injection';
 import {ValidationRules, ValidationController} from 'aurelia-validation';
 import {EventAggregator} from 'aurelia-event-aggregator';
+import {I18N} from 'aurelia-i18n';
 
-@inject(NewInstance.of(ValidationController), EventAggregator, AuthService)
+@inject(NewInstance.of(ValidationController), EventAggregator, AuthService, I18N)
 export class Registration {
   controller;
   message = '';
@@ -15,12 +16,18 @@ export class Registration {
   confirmPassword = '';
   passwordType = 'password';
 
-  constructor(controller, eventAggregator, authService) {
+  constructor(controller, eventAggregator, authService, i18n) {
     this.controller = controller;
     this.ea = eventAggregator;
     this.authService = authService;
+    this.i18n = i18n;
     this.userNotification = false;
-
+    if (this.i18n.getLocale() === 'SI' || this.i18n.getLocale() === 'sl-SI' || this.i18n.getLocale() === 'si') {
+      this.language = 'SI';
+    }
+    else {
+      this.language = 'EN';
+    }
     this.subscribe();
 
     ValidationRules.customRule(
@@ -62,6 +69,7 @@ export class Registration {
   register() {
     this.controller.validate()
       .then(result  => {
+        console.log(this.language)
         if (result.valid) {
           return this.authService.signup({
             firstName: this.firstName,
@@ -69,27 +77,27 @@ export class Registration {
             userName: this.userName,
             email: this.email,
             password: this.password,
-            confirmPassword: this.confirmPassword
+            confirmPassword: this.confirmPassword,
+            language: this.language
           })
-          .then(data => {
-            console.log(data)
-            this.userNotification = true;
-            this.ea.publish('open-user-notification', data);
-          })
-          .catch(error => {
-            this.userNotification = true;
-            this.ea.publish('open-user-notification', error);
-          });
+            .then(data => {
+              this.userNotification = true;
+              this.ea.publish('open-user-notification', data);
+            })
+            .catch(error => {
+              this.userNotification = true;
+              this.ea.publish('open-user-notification', error);
+            });
         }
       });
   }
 
   revealPassword() {
     if (this.passwordType === 'password') {
-      this.passwordType = 'text'
+      this.passwordType = 'text';
     }
     else {
-      this.passwordType = 'password'
+      this.passwordType = 'password';
     }
   }
 }

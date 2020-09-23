@@ -4,18 +4,26 @@ import {HttpClient} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from 'aurelia-router';
 import * as locations from "../resources/locations/locations.json";
+import {I18N} from 'aurelia-i18n';
 
-@inject(NewInstance.of(ValidationController), EventAggregator, Router, HttpClient)
+@inject(NewInstance.of(ValidationController), EventAggregator, Router, HttpClient, I18N)
 export class RequestResetPassword {
   controller = null;
 
-  constructor(controller, eventAggregator, router, httpClient) {
+  constructor(controller, eventAggregator, router, httpClient, i18n) {
     this.httpClient = httpClient;
     this.controller = controller;
     this.router = router;
     this.ea = eventAggregator;
     this.email = null;
     this.userNotification = false;
+    this.i18n = i18n;
+    if (this.i18n.getLocale() === 'SI' || this.i18n.getLocale() === 'sl-SI' || this.i18n.getLocale() === 'si') {
+      this.language = 'SI';
+    }
+    else {
+      this.language = 'EN';
+    }
 
     this.subscribe();
 
@@ -34,7 +42,8 @@ export class RequestResetPassword {
 
   requestResetPassword() {
     this.userEmail = {
-      email: this.email
+      email: this.email,
+      language: this.language
     };
     this.controller.validate()
       .then(result  => {

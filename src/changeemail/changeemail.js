@@ -5,17 +5,25 @@ import {HttpClient} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from 'aurelia-router';
 import * as locations from "../resources/locations/locations.json";
+import {I18N} from 'aurelia-i18n';
 
-@inject(AuthService, ValidationControllerFactory, Router, EventAggregator, HttpClient)
+@inject(AuthService, ValidationControllerFactory, Router, EventAggregator, HttpClient, I18N)
 export class ChangeEmail {
   controller = null;
 
-  constructor(authService, controllerFactory, router, eventAggregator, httpClient) {
+  constructor(authService, controllerFactory, router, eventAggregator, httpClient, i18n) {
     this.ea = eventAggregator;
     this.router = router;
     this.controller = controllerFactory.createForCurrentScope();
     this.authService = authService;
     this.httpClient = httpClient;
+    this.i18n = i18n;
+    if (this.i18n.getLocale() === 'SI' || this.i18n.getLocale() === 'sl-SI' || this.i18n.getLocale() === 'si') {
+      this.language = 'SI';
+    }
+    else {
+      this.language = 'EN';
+    }
 
     this.providers = [];
     this.newEmail = null;
@@ -44,7 +52,8 @@ export class ChangeEmail {
   updateEmail() {
     if (this.authService.authenticated) {
       this.emailUpdate = {
-        newEmail: this.newEmail
+        newEmail: this.newEmail,
+        language: this.language
       };
       this.controller.validate()
         .then(result  => {
