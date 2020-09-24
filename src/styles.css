@@ -1,3 +1,55 @@
+* {
+  font-family: Bahnschrift;
+ }
+.cookie-policy-margin > * {
+  margin-left: 5vh;
+  margin-right: 5vh;
+}
+
+
+/* <script>window.addEventListener("load", function(){window.wpcc.init({"border":"thin","corners":"small","colors":{"popup":{"background":"#5c4812","text":"#ffffff","border":"#fde296"},"button":{"background":"#fde296","text":"#000000"}},"position":"top","content":{"message":"We are using cookies!!! ","link":"What cookies?!","button":"I see","href":"http://localhost:8080/#/cookiepolicy"}})});</script> */
+
+.cookie-consent {
+  background:  #ef9a9a; 
+  color:#ffff8d;
+  overflow: auto;
+  padding-bottom: 1vh;
+  padding-right: 1vh;
+}
+.cookie-consent button {
+  margin-top: 1%;
+  width: 10%;
+  float: right;
+  background: #fde296 !important;
+  border: none;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  border-bottom-left-radius: 2px;  padding: 0.5vh;
+  font-family: Bahnschrift;
+  transition-property: all;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
+    transition-delay: 0s;
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    vertical-align: middle;
+    z-index: 1;
+
+}
+
+.cookie-consent button:hover {
+  transform: scale(1.1);
+}
+.cookie-consent p {
+  padding-left: 5vh;
+  color: #795548;
+  float: left;
+}
+
 body, html {
   height: 100vh;
 }

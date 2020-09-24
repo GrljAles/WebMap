@@ -68,6 +68,11 @@ export function configure(aurelia) {
         fallbackLng: 'en',
         debug: false
       });
+    })
+    .plugin(PLATFORM.moduleName('aurelia-plugins-cookie-consent'), config => {
+      config.options({
+        cookie: { domain: '.site.com', path: '/' }, // your typical cookie settings like domain, expires, path and secure
+      });
     });
 
   if (environment.testing) {

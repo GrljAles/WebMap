@@ -167,6 +167,13 @@ export class App {
         title: 'Update Password',
         name: 'changepassword',
         auth: true
+      },
+      {
+        route: 'cookiepolicy',
+        moduleId: PLATFORM.moduleName('./cookiepolicy/cookiepolicy'),
+        title: 'Cookie policy',
+        name: 'cookiepolicy',
+        auth: false
       }
     ]);
     this.router = router;
