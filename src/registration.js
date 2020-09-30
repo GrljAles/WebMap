@@ -14,6 +14,7 @@ export class Registration {
   email = '';
   password = '';
   confirmPassword = '';
+  termsChecked = false;
   passwordType = 'password';
 
   constructor(controller, eventAggregator, authService, i18n) {
@@ -57,6 +58,8 @@ export class Registration {
       .ensure(a => a.confirmPassword)
         .required().withMessage("confirmPasswordRequred")
         .satisfiesRule('matchesProperty', 'password')
+      .ensure('termsChecked')
+        .equals(true).withMessage("confirmTermsCheckbox")
       .on(this);
     }
 
@@ -78,6 +81,7 @@ export class Registration {
             email: this.email,
             password: this.password,
             confirmPassword: this.confirmPassword,
+            termsChecked: this.termsChecked,
             language: this.language
           })
             .then(data => {
