@@ -7,6 +7,7 @@ import * as locations from './resources/locations/locations.json';
 import {AuthService} from 'aurelia-authentication';
 import {HttpClient} from 'aurelia-fetch-client';
 import {I18N} from 'aurelia-i18n';
+import {Cookies} from 'aurelia-plugins-cookies';
 
 @inject(AuthService, EventAggregator, HttpClient, I18N)
 export class App {
@@ -35,6 +36,14 @@ export class App {
   }
   attached()  {
     this.authenticated = this.authService.authenticated;
+    this.consentCookie = Cookies.get('consentCookie');
+  }
+
+  cookieConsentGiven() {
+    Cookies.put('consentCookie', 'true', [
+      {expires: 'Fri, 09 Sep 2021 00:00:01 GMT'}
+    ]);
+    this.cookieConsent = Cookies.get('consentCookie');
   }
   // use authService.logout to delete stored tokens
   // if you are using JWTs, authService.logout() will be called automatically,
@@ -167,6 +176,34 @@ export class App {
         title: 'Update Password',
         name: 'changepassword',
         auth: true
+      },
+      {
+        route: 'cookiepolicy',
+        moduleId: PLATFORM.moduleName('./cookiepolicy/cookiepolicy'),
+        title: 'Cookie policy',
+        name: 'cookiepolicy',
+        auth: false
+      },
+      {
+        route: 'disclaimer',
+        moduleId: PLATFORM.moduleName('./disclaimer/disclaimer'),
+        title: 'Disclaimer',
+        name: 'disclaimer',
+        auth: false
+      },
+      {
+        route: 'privacypolicy',
+        moduleId: PLATFORM.moduleName('./privacypolicy/privacypolicy'),
+        title: 'Privacy policy',
+        name: 'privacypolicy',
+        auth: false
+      },
+      {
+        route: 'termsandconditions',
+        moduleId: PLATFORM.moduleName('./termsandconditions/termsandconditions'),
+        title: 'Terms and conditions',
+        name: 'termsandconditions',
+        auth: false
       }
     ]);
     this.router = router;

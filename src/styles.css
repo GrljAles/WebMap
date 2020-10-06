@@ -1,3 +1,29 @@
+* {
+  font-family: Bahnschrift;
+ }
+.cookie-policy-margin > * {
+  margin-left: 5vh;
+  margin-right: 5vh;
+}
+
+
+/* <script>window.addEventListener("load", function(){window.wpcc.init({"border":"thin","corners":"small","colors":{"popup":{"background":"#5c4812","text":"#ffffff","border":"#fde296"},"button":{"background":"#fde296","text":"#000000"}},"position":"top","content":{"message":"We are using cookies!!! ","link":"What cookies?!","button":"I see","href":"http://localhost:8080/#/cookiepolicy"}})});</script> */
+
+.cookie-consent {
+  background:  #ef9a9a;
+  padding-left: 1%;
+}
+
+.cookie-consent-button {
+  text-align: center;
+  background: #ffff8d;
+  cursor: pointer;
+}
+
+.cookie-consent-button:hover {
+  transform: scale(1.1);
+}
+
 body, html {
   height: 100vh;
 }

@@ -48,5 +48,20 @@
         </div>
       </ul>
     </md-sidenav>
+    <div class="cookie-consent" if.bind="!cookieConsent">
+      <div class="row">
+        <div class="col s12 m12 l12">
+          <h6 class="brown-text" t="cookie-consent-text"></h6>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s10 m10 l10">
+          <a route-href="cookiepolicy" t="cookie-consent-link"></a>
+        </div>
+        <div class="col s2 m2 l2 cookie-consent-button" click.trigger="cookieConsentGiven(true)">
+          <h6 class="brown-text confirm-cookies" t="cookie-consent-button"></h6>
+        </div>
+      </div>
+    </div>
   <router-view></router-view>
 </template>

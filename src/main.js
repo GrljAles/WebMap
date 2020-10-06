@@ -46,7 +46,6 @@ export function configure(aurelia) {
 
   // Anyone wanting to use HTMLImports to load views, will need to install the following plugin.
   // aurelia.use.plugin(PLATFORM.moduleName('aurelia-html-import-template-loader'));
-    .developmentLogging(environment.debug ? 'debug' : 'warn')
     .plugin(PLATFORM.moduleName('aurelia-i18n'), instance => {
       // register backend plugin
       instance.i18next
@@ -68,8 +67,8 @@ export function configure(aurelia) {
         fallbackLng: 'en',
         debug: false
       });
-    });
-
+    })
+    .developmentLogging(environment.debug ? 'debug' : 'warn')
   if (environment.testing) {
     aurelia.use.plugin(PLATFORM.moduleName('aurelia-testing'));
   }
