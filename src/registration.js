@@ -23,7 +23,7 @@ export class Registration {
     this.authService = authService;
     this.i18n = i18n;
     this.userNotification = false;
-    if (this.i18n.getLocale() === 'SI' || this.i18n.getLocale() === 'sl-SI' || this.i18n.getLocale() === 'si') {
+    if (this.i18n.getLocale() === 'SI' || this.i18n.getLocale() === 'sl-SI' || this.i18n.getLocale() === 'si' || this.i18n.getLocale() === 'sl') {
       this.language = 'SI';
     }
     else {
@@ -70,9 +70,9 @@ export class Registration {
   }
 
   register() {
+    console.log(this.language)
     this.controller.validate()
       .then(result  => {
-        console.log(this.language)
         if (result.valid) {
           return this.authService.signup({
             firstName: this.firstName,

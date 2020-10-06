@@ -110,5 +110,6 @@
   "confirmTermsCheckbox": " If you do not check this box we can not register you as our user nor allow you to use our application.",
   "cookie-consent-text": "This site is using cookies to enhance your user experience. Only technical cookies are used to detect and save application settings as well as help us identify you.WITHOUT YOUR CONSENT YOU CAN NOT LOGIN",
   "cookie-consent-link": "You can read more about it here.",
-  "cookie-consent-button": "I accept cookies!"
+  "cookie-consent-button": "I accept cookies!",
+  "policy-not-confirmed": "You have to confirm that you agree with our policies."
 }

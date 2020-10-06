@@ -105,10 +105,11 @@
   "user-not-confirmed": "To uporabniško ime še ni potrjeno. Preverite svoj poštni nabiralnik. ",
   "disclaimer-link": "Preden potrdite svoj vpis vas prosimo, da preberete našo izjavno o omejitvi odgovornosti,",
   "privacy-policy-link": "politiko ravnanja z osebnimi podatki",
-  "terms-policy-link": "ter pogoje uporabe te speltne strani.",
+  "terms-policy-link": "ter pogoje uporabe te spletne strani.",
   "terms-checkbox": "Z obkljukanjem tega okvirja potrjujete, da ste prebrali, razumeli in se strinjate z vsem navedenim na zgornjih povezavah.",
   "confirmTermsCheckbox": " Če se z navedenim ne strinjate vam ne moremo omogočiti vpisa in uporabe naše strani.",
   "cookie-consent-text": "Ta stran za izboljšanje vaše uporabniške izkušnje uporablja piškotke. Uporabljamo samo tehnične piškotke, s katerimi zaznamo in shranimo vaše nastavitve aplikacije ter piškotke za identifikacijo uporabnika. BREZ VAŠEGA SOGLASJA SE NE MORETE PRIJAVITI!",
   "cookie-consent-link": "Več o piškotkin na naši strani lahko preberete tukaj.",
-  "cookie-consent-button": "Strinajm se z uporabo piškotkov!"
+  "cookie-consent-button": "Strinajm se z uporabo piškotkov!",
+  "policy-not-confirmed": "Najprej morate potrditi, da se strinjate s pogoji uporabe strani."
 }
