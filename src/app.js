@@ -2,7 +2,7 @@ import {PLATFORM} from 'aurelia-pal';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {inject} from 'aurelia-dependency-injection';
 import {AuthenticateStep} from 'aurelia-authentication';
-import {sideNav} from "./sideNav/sideNav";
+import {sideNav} from './sideNav/sideNav';
 import * as locations from './resources/locations/locations.json';
 import {AuthService} from 'aurelia-authentication';
 import {HttpClient} from 'aurelia-fetch-client';
@@ -78,22 +78,22 @@ export class App {
 
 
   refresh() {
-    this.authService.updateToken()
+    this.authService.updateToken();
   }
   changeEmailNavigate() {
-    this.router.navigate('changeemail')
+    this.router.navigate('changeemail');
   }
   changePasswordNavigate() {
-    this.router.navigate('changepassword')
+    this.router.navigate('changepassword');
   }
   refreshToken() {
-    this.authService.updateToken()
+    this.authService.updateToken();
   }
 
   changeLanguage(language) {
-    this.i18n.setLocale(language)
+    this.i18n.setLocale(language);
   }
-  
+
   configureRouter(config, router) {
     config.title = 'Sattilia';
 
@@ -101,19 +101,19 @@ export class App {
     config.map([
       {
         route: ['', 'login'],
-        moduleId: PLATFORM.moduleName('login'),
+        moduleId: PLATFORM.moduleName('./login'),
         title: 'Login',
         name: 'login',
       },
       {
         route: 'registration',
-        moduleId: PLATFORM.moduleName('registration'),
+        moduleId: PLATFORM.moduleName('./registration'),
         title: 'Registration',
         name: 'registration',
       },
       {
         route: 'basemap',
-        moduleId: PLATFORM.moduleName('basemap'),
+        moduleId: PLATFORM.moduleName('./basemap'),
         title: 'BaseMap',
         name: 'basemap',
         auth: true
