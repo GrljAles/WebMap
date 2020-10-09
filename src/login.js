@@ -4,6 +4,7 @@ import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
 import {Router} from 'aurelia-router';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import * as locations from "./resources/locations/locations.json";
+import {Cookies} from 'aurelia-plugins-cookies';
 
 @inject(AuthService, ValidationControllerFactory, Router, EventAggregator)
 export class Login {
@@ -43,25 +44,27 @@ export class Login {
   }
 
   login() {
-    this.controller.validate()
-      .then(result  => {
-        if (result.valid) {
-          return this.authService.login({
-            userName: this.userName,
-            password: this.password
+    if (Cookies.get('consentCookie')) {
+      this.controller.validate()
+        .then(result  => {
+          if (result.valid) {
+            return this.authService.login({
+              userName: this.userName,
+              password: this.password
+            });
+          }
+        })
+        .then(data => {
+          this.ea.publish('user-data-update', {
+            userName: data.userName,
+            email: data.email
           });
-        }
-      })
-      .then(data => {
-        this.ea.publish('user-data-update', {
-          userName: data.userName,
-          email: data.email
+        })
+        .catch(error => {
+          this.userNotification = true;
+          this.ea.publish('open-user-notification', error.responseObject);
         });
-      })
-      .catch(error => {
-        this.userNotification = true;
-        this.ea.publish('open-user-notification', error.responseObject);
-      });
+    }
   }
 
   revealPassword() {

@@ -1,10 +1,12 @@
 import {inject} from 'aurelia-framework';
 import {EventAggregator} from 'aurelia-event-aggregator';
+import {Router} from 'aurelia-router';
 
-@inject(EventAggregator)
+@inject(EventAggregator, Router)
 export class UserNotification {
-  constructor(eventAggregator) {
+  constructor(eventAggregator, router) {
     this.ea = eventAggregator;
+    this.router = router;
 
     this.subscribe();
   }
@@ -20,7 +22,10 @@ export class UserNotification {
   }
 
   closeNotification() {
-    this.userMessage = null;
     this.ea.publish('close-user-notification', false);
+    if (this.userMessage === 'confirmation-mail-sent') {
+      this.router.navigateToRoute('login');
+    }
+    this.userMessage = null;
   }
 }
