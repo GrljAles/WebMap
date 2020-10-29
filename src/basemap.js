@@ -28,7 +28,11 @@ import {Draw} from 'ol/interaction';
 import {getArea, getLength} from 'ol/sphere';
 import {observable} from 'aurelia-framework';
 import {ChartEl} from './productTools/tsChart/chart-el.js';
-import { closestOnCircle } from 'ol/coordinate';
+/* import {closestOnCircle} from 'ol/coordinate';
+import * as grass from ' ./resources/icons/grass.svg';
+import * as leaf from ' ./resources/icons/leaf.svg';
+import * as leafDrop from ' ./resources/icons/leaf_drop.svg';
+import * as waves from ' ./resources/icons/waves.svg'; */
 
 @inject(EventAggregator, HttpClient, AuthService, ChartEl)
 @observable('activeLayer')
@@ -96,6 +100,10 @@ export class BaseMap {
 
   setOpacity1(value) {
     this.layers[ii].opacity = value;
+  }
+
+  getUrl(name) {
+    return require(`./resources/icons/${name}.svg`);
   }
 
   fetchProductData() {
