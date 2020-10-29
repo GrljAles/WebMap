@@ -70,7 +70,6 @@ export class Registration {
   }
 
   register() {
-    console.log(this.language)
     this.controller.validate()
       .then(result  => {
         if (result.valid) {

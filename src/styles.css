@@ -24,6 +24,10 @@
   transform: scale(1.1);
 }
 
+.row-no-margin {
+  margin-bottom: 0%;
+}
+
 body, html {
   height: 100vh;
 }

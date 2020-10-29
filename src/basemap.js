@@ -28,6 +28,7 @@ import {Draw} from 'ol/interaction';
 import {getArea, getLength} from 'ol/sphere';
 import {observable} from 'aurelia-framework';
 import {ChartEl} from './productTools/tsChart/chart-el.js';
+import { closestOnCircle } from 'ol/coordinate';
 
 @inject(EventAggregator, HttpClient, AuthService, ChartEl)
 @observable('activeLayer')
@@ -82,6 +83,8 @@ export class BaseMap {
       }
     };
     this.subscribe();
+    this.fetchProductData();
+
   }
   // Observables observe variable (in method name before 'Chnaged' part) and fire function on change.
   activeLayerChanged(newValue, oldValue) {
@@ -93,6 +96,46 @@ export class BaseMap {
 
   setOpacity1(value) {
     this.layers[ii].opacity = value;
+  }
+
+  fetchProductData() {
+    this.httpClient.fetch('http://' + locations.backend + '/backendapi/getproductdates', {
+      method: 'GET',
+      headers: {
+        'X-Requested-With': 'Fetch',
+        'Authorization': 'Bearer ' + this.authService.getAccessToken()
+      },
+      mode: 'cors'
+    })
+      .then(response => {
+        return response.text();
+      })
+      .then(data => {
+        this.productData = JSON.parse(data);
+        for (let prID in this.productData.cargo) {
+          let productName = this.productData.cargo[prID].productName;
+          let availableDates = this.productData.cargo[prID].availableDates;
+          for (let layID in this.layers) {
+            if (this.layers[layID].name === productName) {
+              // Updates the layers object.
+              this.layers[layID].availableDates = availableDates;
+              // Updates the noui layers range.
+              this.dateSliders[layID].noUiSlider.updateOptions({
+                range: {
+                  'min': [(this.layers[layID].availableDates.length - 1) * -1],
+                  'max': [0]
+                }
+              });
+            }
+          }
+        }
+      })
+      .catch(error => {
+        this.ea.publish('open-tool-notification', {
+          errorWindow: true,
+          errorMessage: 'genericBackend'
+        });
+      });
   }
 
   subscribe() {
@@ -134,6 +177,7 @@ export class BaseMap {
   }
 
   attached() {
+    
     let _this = this;
     this.opacitySliders = document.getElementsByClassName('opacity-slider');
     for (let ii = 0; ii < this.opacitySliders.length; ii++) {
@@ -165,7 +209,6 @@ export class BaseMap {
         },
         connect: 'upper'
       });
-
       this.dateSliders[ii].noUiSlider.on('update', function(values, handle) {
         let value = parseInt(values[handle]);
         _this.layers[_this.activeLayer].selectedDateIndex = value;
@@ -497,17 +540,12 @@ export class BaseMap {
         });
       })
       .catch(error => {
-        this.setIdentifyLayerProperties('zonalStatsPolygons', {
-          product: 'error',
-          date: '/',
-          min: '/',
-          max: '/',
-          mean: '/',
-          std: '/',
-          range: '/'
-        });
         this.ea.publish('close-tool-preloader', {
           preloaderWindow: false
+        });
+        this.ea.publish('open-tool-notification', {
+          errorWindow: true,
+          errorMessage: 'genericBackend'
         });
       });
   }
