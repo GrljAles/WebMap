@@ -2,6 +2,7 @@
   "0": {
     "id": 0,
     "name": "EVI",
+    "icon": "leaf",
     "active": 0,
     "selectedDateIndex": 0,
     "availableDates": ["20190625", "20190630"],
@@ -31,6 +32,7 @@
   "1": {
     "id": 1,
     "name": "NDMI",
+    "icon": "leaf_drop",
     "active": 0,
     "selectedDateIndex": 0,
     "availableDates": ["20190625", "20190630"],
@@ -60,6 +62,7 @@
   "2": {
     "id": 2,
     "name": "NDWI",
+    "icon": "waves",
     "active": 0,
     "selectedDateIndex": 0,
     "availableDates": ["20190625", "20190630"],
@@ -89,6 +92,7 @@
   "3": {
     "id": 3,
     "name": "NDVI",
+    "icon": "grass",
     "active": 0,
     "selectedDateIndex": 0,
     "availableDates": ["20190625", "20190630"],

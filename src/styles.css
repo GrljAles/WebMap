@@ -6,9 +6,6 @@
   margin-right: 5vh;
 }
 
-
-/* <script>window.addEventListener("load", function(){window.wpcc.init({"border":"thin","corners":"small","colors":{"popup":{"background":"#5c4812","text":"#ffffff","border":"#fde296"},"button":{"background":"#fde296","text":"#000000"}},"position":"top","content":{"message":"We are using cookies!!! ","link":"What cookies?!","button":"I see","href":"http://localhost:8080/#/cookiepolicy"}})});</script> */
-
 .cookie-consent {
   background:  #ef9a9a;
   padding-left: 1%;
@@ -243,4 +240,34 @@ i.icon-white {
 .tool-notification-confirm-button {
   margin-top:1%;
   left: 45%;
+}
+
+.product-icon {
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+
+.product-info {
+  position: absolute;
+  right: 1rem;
+  cursor: pointer;
+}
+
+.product-info-box{         
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.product-info-stack-top{
+  z-index: 9;
+  margin: 5%; /* for demo purpose  */
+}
+
+.product-info-content {
+  background-color: #f2eadf;
+  width: 50%;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding: 1rem;
 }
