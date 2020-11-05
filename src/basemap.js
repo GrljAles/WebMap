@@ -28,11 +28,6 @@ import {Draw} from 'ol/interaction';
 import {getArea, getLength} from 'ol/sphere';
 import {observable} from 'aurelia-framework';
 import {ChartEl} from './productTools/tsChart/chart-el.js';
-/* import {closestOnCircle} from 'ol/coordinate';
-import * as grass from ' ./resources/icons/grass.svg';
-import * as leaf from ' ./resources/icons/leaf.svg';
-import * as leafDrop from ' ./resources/icons/leaf_drop.svg';
-import * as waves from ' ./resources/icons/waves.svg'; */
 
 @inject(EventAggregator, HttpClient, AuthService, ChartEl)
 @observable('activeLayer')
@@ -53,6 +48,7 @@ export class BaseMap {
     this.tsChartWindow = false;
     this.toolNotification = false;
     this.toolPreloader = false;
+    this.layerDescription = false;
 
     this.buttonCheck = {
       refresh: {
@@ -185,7 +181,6 @@ export class BaseMap {
   }
 
   attached() {
-    
     let _this = this;
     this.opacitySliders = document.getElementsByClassName('opacity-slider');
     for (let ii = 0; ii < this.opacitySliders.length; ii++) {
@@ -473,6 +468,14 @@ export class BaseMap {
     });
   }
 
+  toggleLayerDescription(layer) {
+    if (this.layerDescription === true) {
+      this.layerDescription = false;
+    }
+    else {
+      this.layerDescription = true;
+    }
+  }
   formatArea(area) {
     let output;
     if (area > 10000) {

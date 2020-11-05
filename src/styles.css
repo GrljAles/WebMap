@@ -250,5 +250,24 @@ i.icon-white {
 .product-info {
   position: absolute;
   right: 1rem;
+  cursor: pointer;
 }
 
+.product-info-box{         
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.product-info-stack-top{
+  z-index: 9;
+  margin: 5%; /* for demo purpose  */
+}
+
+.product-info-content {
+  background-color: #f2eadf;
+  width: 50%;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding: 1rem;
+}

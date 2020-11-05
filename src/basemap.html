@@ -3,18 +3,20 @@
   <div>
     <div class="row main-row">
       <ul class="light-green darken-1 collection with-header col l3 m3 s3 layer-list scrollbar-hidden">
-        <li class="collection-header light-green darken-3 white-text"><h4 t="layers">Layers</h4></li>
+        <li class="collection-header light-green darken-3 white-text"><h4 t="layers"></h4></li>
           <div class="collapsible-open-close-events">
             <ul md-collapsible md-on-open-start.delegate="collapsibleOpen($event.detail.el.childNodes[1].id)" md-on-close-start.delegate="collapsibleClose($event.detail.el.childNodes[1].id)">
               <li repeat.for="layer of layers | objectKeys">
                 <div class="collapsible-header light-green darken-${layer.id+2}" id=${layer.id}>
                   <img class="product-icon" src.bind="getUrl(layer.icon)">
                   <h5 class="white-text">${layer.name}</h5>
-                  <div class="valign-wrapper">
-                    <i class="material-icons icon-white product-info">fact_check</i>
-                  </div>
                 </div>
                 <div id="collapsible-body${layer.id}" class="collapsible-body">
+                  <div class="row">
+                    <div class="valign-wrapper" click.trigger="toggleLayerDescription(layer)">
+                      <i md-tooltip="position: bottom; text: Toggle layer description;"class.bind="layerDescription ? 'material-icons product-info icon-grey' : 'material-icons product-info icon-white'">fact_check</i>
+                    </div>
+                  </div>
                   <div class="row">
                     <div t="[text]op-slider" ></div>
                     <div class="col s12 opacity-slider" id="opacity-slider${layer.id}"></div>
@@ -55,6 +57,8 @@
         </li>
       </ul>
       <div id="basemap" class="map col l9 m9 s9">
+        <require from="layerDescription/layerDescription"></require>
+        <layerDescription show.bind="layerDescription" class="product-info-box product-info-stack-top"></layerDescription>
       </div>
       <require from="productTools/tsChart/chart-el"></require>
       <chart-el show.bind="tsChartWindow" class="chart-height"></chart-el>
