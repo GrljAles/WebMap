@@ -44,6 +44,7 @@
   "ts-slider": "Slide to change starting and ending dates",
   "ts-points": "Use the map to select time series locations. You can select maximum 10 locations per request.",
   "ts-polygons": "Use the map to draw time series polygon. Only one polygon per request is supported so you have to delete the previous one before submitting a new request. Polygon should not be larger than 1.000.000 m",
+  "tool-parameters-and-results": "Tool parameteres and its results are displayed at the bottom of the page.",
   "results-table-identifyPoints-title": "RESULTS TABLE",
   "results-table-identifyPoints-Id": "Id",
   "results-table-identifyPoints-Product": "Index",
