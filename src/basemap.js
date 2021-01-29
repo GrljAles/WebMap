@@ -260,8 +260,8 @@ export class BaseMap {
       source: new TileWMS({
         url: 'http://' + locations.backend + locations.mapserver,
         params: {
-          'map': locations.maps + 'NDVI.map',
-          'LAYERS': 'products',
+          'map': locations.maps + 'sentinel_index.map',
+          'LAYERS': 'EVI',
           'date': '20190715',
           'TILED': true
         },
@@ -737,7 +737,8 @@ export class BaseMap {
     let displayedDate = this.layers[idx].availableDates[(this.layers[idx].availableDates.length - 1) + dateIndex];
     this.layers[idx].displayedDate = moment(displayedDate, 'YYYYMMDD').format('DD.MM.YYYY');
     this.changeLayerDate(idx, [{
-      'date': displayedDate
+      'date': displayedDate,
+      'LAYERS': this.layers[idx].name
     }]);
     this.calculateClassBreaks(idx, this.layers[idx].displaySettings.min, this.layers[idx].displaySettings.max);
   }
@@ -774,7 +775,8 @@ export class BaseMap {
     this.httpClient.fetch('http://' + locations.backend + '/backendapi/changelayerrange', {
       method: 'POST',
       body: JSON.stringify({
-        'layerRange': layerRange
+        'layerRange': layerRange,
+        'layer': this.layers[idx].name
       }),
       headers: {
         'Accept': 'application/json',
