@@ -86,7 +86,7 @@ export class ZonalTsChart {
         "polygons": this.polyTable,
         "product": this.layers[this.activeLayer].name
       };
-      this.httpClient.fetch('http://' + locations.backend + '/backendapi/tschartpolygons', {
+      this.httpClient.fetch('https://' + locations.backend + '/backendapi/tschartpolygons', {
         method: 'POST',
         body: JSON.stringify(this.tsChartParams),
         headers: {

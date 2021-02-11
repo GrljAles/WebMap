@@ -25,15 +25,15 @@ export function configure(aurelia) {
     .plugin(PLATFORM.moduleName('aurelia-validation'))
     .plugin(PLATFORM.moduleName('aurelia-api'), config => {
       // Register hosts
-      config.registerEndpoint('backendapi', 'http://' + locations.backend + '/backendapi');
-      config.registerEndpoint('basemap', 'http://' + locations.backend + '/basemap');
-      config.registerEndpoint('login', 'http://' + locations.backend + '/backendapi/login');
-      config.registerEndpoint('registration', 'http://' + locations.backend + '/backendapi/registration');
-      config.registerEndpoint('confirmemailnotification', 'http://' + locations.backend + '/emailOk');
-      config.registerEndpoint('notificationredirect', 'http://' + locations.backend + '/notificationredirect');
-      config.registerEndpoint('refreshtoken', 'http://' + locations.backend + '/backendapi/token/refresh');
-      config.registerEndpoint('changeemail', 'http://' + locations.backend + '/changeemail');
-      config.registerEndpoint('changepassword', 'http://' + locations.backend + '/changepassword');
+      config.registerEndpoint('backendapi', locations.backend + '/backendapi');
+      config.registerEndpoint('basemap', locations.backend + '/basemap');
+      config.registerEndpoint('login', locations.backend + '/backendapi/login');
+      config.registerEndpoint('registration', locations.backend + '/backendapi/registration');
+      config.registerEndpoint('confirmemailnotification', locations.backend + '/emailOk');
+      config.registerEndpoint('notificationredirect', locations.backend + '/notificationredirect');
+      config.registerEndpoint('refreshtoken', locations.backend + '/backendapi/token/refresh');
+      config.registerEndpoint('changeemail', locations.backend + '/changeemail');
+      config.registerEndpoint('changepassword', locations.backend + '/changepassword');
     })
     /* configure aurelia-authentication */
     .plugin(PLATFORM.moduleName('aurelia-authentication'), config => {

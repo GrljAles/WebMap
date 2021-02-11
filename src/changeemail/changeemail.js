@@ -4,7 +4,7 @@ import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
 import {HttpClient} from 'aurelia-fetch-client';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {Router} from 'aurelia-router';
-import * as locations from "../resources/locations/locations.json";
+import * as locations from '../resources/locations/locations.json';
 import {I18N} from 'aurelia-i18n';
 
 @inject(AuthService, ValidationControllerFactory, Router, EventAggregator, HttpClient, I18N)
@@ -58,7 +58,7 @@ export class ChangeEmail {
       this.controller.validate()
         .then(result  => {
           if (result.valid) {
-            this.httpClient.fetch('http://' + locations.backend + '/backendapi/updateemail', {
+            this.httpClient.fetch(locations.backend + '/backendapi/updateemail', {
               method: 'POST',
               body: JSON.stringify(this.emailUpdate),
               headers: {

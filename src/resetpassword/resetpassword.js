@@ -61,7 +61,7 @@ export class Resetpassword {
     this.controller.validate()
       .then(result  => {
         if (result.valid) {
-          this.httpClient.fetch('http://' + locations.backend + '/backendapi/resetpassword/' + this.resetToken, {
+          this.httpClient.fetch(locations.backend + '/backendapi/resetpassword/' + this.resetToken, {
             method: 'POST',
             body: JSON.stringify(this.resetPassword),
             headers: {

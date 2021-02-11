@@ -103,7 +103,7 @@ export class BaseMap {
   }
 
   fetchProductData() {
-    this.httpClient.fetch('http://' + locations.backend + '/backendapi/getproductdates', {
+    this.httpClient.fetch(locations.backend + '/backendapi/getproductdates', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'Fetch',
@@ -258,7 +258,7 @@ export class BaseMap {
       title: this.layers[0].name,
       id: this.layers[0].id,
       source: new TileWMS({
-        url: 'http://' + locations.backend + locations.mapserver,
+        url: locations.backend + locations.mapserver,
         params: {
           'map': locations.maps + 'sentinel_index.map',
           'LAYERS': 'EVI',
@@ -528,7 +528,7 @@ export class BaseMap {
       preloaderWindow: true,
       toolPreloaderMessage: 'zonalStatistics'
     });
-    this.httpClient.fetch('http://' + locations.backend + '/backendapi/zonalstatistics', {
+    this.httpClient.fetch(locations.backend + '/backendapi/zonalstatistics', {
       method: 'POST',
       body: JSON.stringify(zonalStatsParams),
       headers: {
@@ -574,7 +574,7 @@ export class BaseMap {
       xAxisUnit: null
     };
     this.ea.publish('ts-chart-window-changed', true);
-    this.httpClient.fetch('http://' + locations.backend + '/backendapi/profilechart', {
+    this.httpClient.fetch(locations.backend + '/backendapi/profilechart', {
       method: 'POST',
       body: JSON.stringify(profileLineData),
       headers: {
@@ -772,7 +772,7 @@ export class BaseMap {
       'classBreaks': classBreaks,
       'classColours': classColours
     };
-    this.httpClient.fetch('http://' + locations.backend + '/backendapi/changelayerrange', {
+    this.httpClient.fetch(locations.backend + '/backendapi/changelayerrange', {
       method: 'POST',
       body: JSON.stringify({
         'layerRange': layerRange,

@@ -57,7 +57,7 @@ export class App {
       jti: this.authService.getAccessToken()
     };
 
-    this.httpClient.fetch('http://' + locations.backend + '/backendapi/logout/refresh', {
+    this.httpClient.fetch(locations.backend + '/backendapi/logout/refresh', {
       method: 'POST',
       body: JSON.stringify(refreshToken),
       headers: {
@@ -65,12 +65,11 @@ export class App {
         'Content-Type': 'application/json',
         'X-Requested-With': 'Fetch',
         'Authorization': 'Bearer ' + this.authService.getRefreshToken()
-        //'Access-Control-Allow-Origin': 'http://localhost:8080'
       },
       mode: 'cors'
     });
 
-    this.httpClient.fetch('http://' + locations.backend + '/backendapi/logout/access', {
+    this.httpClient.fetch(locations.backend + '/backendapi/logout/access', {
       method: 'POST',
       body: JSON.stringify(accessToken),
       headers: {
@@ -78,7 +77,6 @@ export class App {
         'Content-Type': 'application/json',
         'X-Requested-With': 'Fetch',
         'Authorization': 'Bearer ' + this.authService.getAccessToken()
-        //'Access-Control-Allow-Origin': 'http://localhost:8080'
       },
       mode: 'cors'
     })

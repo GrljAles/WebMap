@@ -16,8 +16,8 @@ export class Login {
     this.authService = authService;    
     this.providers = [];
 
-    this.userName = 'alesinar';
-    this.password = 'Jebote12';
+    this.userName = '';
+    this.password = '';
     this.passwordType = 'password';
 
     this.userNotification = false;
@@ -77,7 +77,7 @@ export class Login {
 
   requestResetPassword() {
     let resetPasswordFor = {userName: this.userName}
-    httpClient.fetch('http://' + locations.backend + '/backend/resetpassword', {
+    httpClient.fetch(locations.backend + '/backend/resetpassword', {
       method: 'POST',
       body: JSON.stringify(resetPasswordFor),
       headers: {
