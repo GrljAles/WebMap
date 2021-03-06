@@ -90,7 +90,7 @@ export class TsChart {
         "points": this.pointsTable,
         "product": this.layers[this.activeLayer].name
       };
-      this.httpClient.fetch('https://' + locations.backend + '/backendapi/tschartpoints', {
+      this.httpClient.fetch(locations.backend + '/backendapi/tschartpoints', {
         method: 'POST',
         body: JSON.stringify(this.tsChartParams),
         headers: {

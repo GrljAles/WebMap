@@ -7,14 +7,14 @@
       <h5 class='table-controll-title white-text' t.bind="'results-table-' + activeTable + '-title'"></h5>
       <span>
         <a id='yesDelete' show.bind="resultsTables[activeTable].delete" md-button="floating: true;"
-          md-tooltip="position: bottom; text: Yes, delete please;" md-waves="color: light;" class="tr-green"
+          md-tooltip="html: true; position: bottom; text.bind: tooltipsTranslations.confirmDeleteTable;" md-waves="color: light;" class="tr-green"
           click.trigger="yesDeleteTable(activeTable)"><i class="material-icons icon-grey">check</i></a>
-        <a id='save' md-button="floating: true;" md-tooltip="position: bottom; text: Save the results locally;"
+        <a id='save' md-button="floating: true;" md-tooltip="html: true; position: bottom; text.bind: tooltipsTranslations.downloadTable;"
           md-waves="color: light;" class="tr-green" click.trigger="requestGeojsonFromBasemap(activeTable)"
           download="activeTable.geojson" href="${uriContent}"><i
             class="material-icons icon-grey">file_download</i></a>
         <a id='deleteIndentifyTable' md-button="floating: true;"
-          md-tooltip="position: bottom; text: Delete the results table?;" md-waves="color: light;" class="tr-green"
+        md-tooltip="html: true; position: bottom; text.bind: tooltipsTranslations.deleteTable;" md-waves="color: light;" class="tr-green"
           click.trigger="confirmDeleteTable(activeTable)"><i
             class="material-icons icon-grey">${resultsTables[activeTable].delete ? 'close' : 'delete'}</i></a>
       </span>

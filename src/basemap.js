@@ -28,13 +28,15 @@ import {Draw} from 'ol/interaction';
 import {getArea, getLength} from 'ol/sphere';
 import {observable} from 'aurelia-framework';
 import {ChartEl} from './productTools/tsChart/chart-el.js';
+import {I18N} from 'aurelia-i18n';
 
-@inject(EventAggregator, HttpClient, AuthService, ChartEl)
+@inject(EventAggregator, HttpClient, AuthService, ChartEl, I18N)
 @observable('activeLayer')
 @observable('buttonCheck')
 
 export class BaseMap {  
-  constructor(eventAggregator, httpClient, authService, chartEl) {
+  constructor(eventAggregator, httpClient, authService, chartEl, i18n) {
+    this.i18n = i18n;
     this.ea = eventAggregator;
     this.httpClient = httpClient;
     this.authService = authService;
@@ -49,37 +51,44 @@ export class BaseMap {
     this.toolNotification = false;
     this.toolPreloader = false;
     this.layerDescription = false;
+    this.layerDescriptionTooltip = '<p>' + this.i18n.tr('layer-description-tooltip') + '</p>';
 
     this.buttonCheck = {
       refresh: {
         state: true,
         drawGeom: null,
-        relatedLayer: null
+        relatedLayer: null,
+        tooltip: '<p>' + this.i18n.tr('refresh-tooltip') + '</p>'
       },
       identify: {
         state: false,
         drawGeom: 'Point',
-        relatedLayer: 'identifyPoints'
+        relatedLayer: 'identifyPoints',
+        tooltip: '<p>' + this.i18n.tr('identify-tooltip') + '</p>'
       },
       zonalStat: {
         state: false,
         drawGeom: 'Polygon',
-        relatedLayer: 'zonalStatsPolygons'
-      },
+        relatedLayer: 'zonalStatsPolygons',
+        tooltip: '<p>' + this.i18n.tr('zonal-stat-tooltip') + '</p>'
+      }, 
       tsChart: {
         state: false,
         drawGeom: 'Point',
-        relatedLayer: 'tsPoints'
+        relatedLayer: 'tsPoints',
+        tooltip: '<p>' + this.i18n.tr('ts-chart-tooltip') + '</p>'
       },
       zonalTSChart: {
         state: false,
         drawGeom: 'Polygon',
-        relatedLayer: 'zonalTSPolygons'
+        relatedLayer: 'zonalTSPolygons',
+        tooltip: '<p>' + this.i18n.tr('zonal-ts-chart-tooltip') + '</p>'
       },
       profile: {
         state: false,
         drawGeom: 'LineString',
-        relatedLayer: 'profileLines'
+        relatedLayer: 'profileLines',
+        tooltip: '<p>' + this.i18n.tr('profile-tooltip') + '</p>'
       }
     };
     this.subscribe();

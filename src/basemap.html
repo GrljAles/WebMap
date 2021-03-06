@@ -14,7 +14,7 @@
                 <div id="collapsible-body${layer.id}" class="collapsible-body">
                   <div class="row">
                     <div class="valign-wrapper" click.trigger="toggleLayerDescription(layer)">
-                      <i md-tooltip="position: bottom; text: Toggle layer description;"class.bind="layerDescription ? 'material-icons product-info icon-grey' : 'material-icons product-info icon-white'">fact_check</i>
+                      <i md-tooltip="html: true; position: bottom; text.bind: layerDescriptionTooltip;" class.bind="layerDescription ? 'material-icons product-info icon-grey' : 'material-icons product-info icon-white'">fact_check</i>
                     </div>
                   </div>
                   <div class="row">
@@ -31,22 +31,22 @@
                   </div>
                   <div id="legend-holder${layer.id}"></div>
                   <div>
-                    <a id='refresh' md-button="floating: true;" md-tooltip="position: bottom; text: Reset range settings;" md-waves="color: light;" class="tr-green tool-button-border" click.trigger="resetRangeSettings(layer.id)">
+                    <a id='refresh' md-button="floating: true;" md-tooltip="html: true; position: bottom; text.bind: buttonCheck.refresh.tooltip;" md-waves="color: light;" class="tr-green tool-button-border" click.trigger="resetRangeSettings(layer.id)">
                       <i class="material-icons icon-white">cached</i>
                     </a>
-                    <a id='identify' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get value at clicked locations;" md-waves="color: light;" click.trigger="toggleTool('identify')" class.bind="buttonCheck.identify.state ? 'lime' : 'tr-green'">
+                    <a id='identify' md-button="floating: true;" md-tooltip="html: true; position: bottom; text.bind: buttonCheck.identify.tooltip;" md-waves="color: light;" click.trigger="toggleTool('identify')" class.bind="buttonCheck.identify.state ? 'lime' : 'tr-green'">
                       <i class.bind="buttonCheck.identify.state ? 'material-icons icon-grey' : 'material-icons icon-white'">details</i>
                     </a>
-                    <a id='zonalStat' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get zonal statistics for drawn polygon;" md-waves="color: light;" class.bind="buttonCheck.zonalStat.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('zonalStat')">
+                    <a id='zonalStat' md-button="floating: true;" md-tooltip="html: true; position: bottom; text.bind: buttonCheck.zonalStat.tooltip;" md-waves="color: light;" class.bind="buttonCheck.zonalStat.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('zonalStat')">
                       <i class.bind="buttonCheck.zonalStat.state ? 'material-icons icon-grey' : 'material-icons icon-white'">dashboard</i>
                     </a>
-                    <a id='tsChart' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get time series chart at clicked locations;" md-waves="color: light;" class.bind="buttonCheck.tsChart.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('tsChart')">
+                    <a id='tsChart' md-button="floating: true;" md-tooltip="html: true; position: bottom; text.bind: buttonCheck.tsChart.tooltip;" md-waves="color: light;" class.bind="buttonCheck.tsChart.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('tsChart')">
                       <i class.bind="buttonCheck.tsChart.state ? 'material-icons icon-grey' : 'material-icons icon-white'">timeline</i>
                     </a>
-                    <a id='zonalTSChart' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get time series chart for drawn polygon;" md-waves="color: light;" class.bind="buttonCheck.zonalTSChart.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('zonalTSChart')">
+                    <a id='zonalTSChart' md-button="floating: true;" md-tooltip="html: true; position: bottom; text.bind: buttonCheck.zonalTSChart.tooltip;" md-waves="color: light;" class.bind="buttonCheck.zonalTSChart.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('zonalTSChart')">
                       <i class.bind="buttonCheck.zonalTSChart.state ? 'material-icons icon-grey' : 'material-icons icon-white'">multiline_chart</i>
                     </a>
-                    <a id='profile' md-button="floating: true;" md-tooltip="position: bottom; text: Toggle get profile chart at drawn line;" md-waves="color: light;" class.bind="buttonCheck.profile.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('profile')">
+                    <a id='profile' md-button="floating: true;" md-tooltip="html: true; position: bottom; text.bind: buttonCheck.profile.tooltip;" md-waves="color: light;" class.bind="buttonCheck.profile.state ? 'lime' : 'tr-green'" click.trigger="toggleTool('profile')">
                       <i class.bind="buttonCheck.profile.state ? 'material-icons icon-grey' : 'material-icons icon-white'">terrain</i>
                     </a>
                     <p t="tool-parameters-and-results"></p>

@@ -3,17 +3,25 @@ import {EventAggregator} from 'aurelia-event-aggregator';
 import {HttpClient, json} from 'aurelia-fetch-client';
 import {AuthService} from 'aurelia-authentication';
 import * as dataData from '../../resources/dataData/dataData.json';
+import {I18N} from 'aurelia-i18n';
 
 let instance = null;
 
-@inject(EventAggregator, HttpClient, AuthService)
+@inject(EventAggregator, HttpClient, AuthService, I18N)
 export class IdentiFy {
-  constructor(eventAggregator, httpClient, authService) {
+  constructor(eventAggregator, httpClient, authService, i18n) {
+    this.i18n = i18n;
     this.ea = eventAggregator;
     this.httpClient = httpClient;
     this.authService = authService;
     this.activeTable = null;
     this.layers = dataData.default;
+    this.tooltipsTranslations = {
+      downloadTable: 'download-results-geojson',
+      deleteTable: 'delete-results-table',
+      confirmDeleteTable: 'confirm-delete'
+    };
+    
     this.resultsTables = {
       identifyPoints: {
         delete: false,

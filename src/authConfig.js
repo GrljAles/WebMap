@@ -92,7 +92,7 @@ export default {
   // For OAuth only: Tell the API whether or not to include token cookies in the response (for session based APIs)
   //withCredentials: true;
   // Controls how the popup is shown for different devices (Options: 'browser' or 'mobile')
-  //platform: 'browser';
+  platform: 'browser',
   // Determines the `window` property name upon which aurelia-authentication data is stored (Default: `window.localStorage`)
   storage: 'localStorage',
   // The key used for storing the authentication response locally
@@ -113,9 +113,9 @@ export default {
   globalValueConverters: ['authFilterValueConverter'],
 
   // Default headers for login and token-update endpoint
-   defaultHeadersForTokenRequests: {
+  defaultHeadersForTokenRequests: {
     'Accept': 'application/json',
-    'Content-Type': 'application/json',
-   // 'Authorization': 'Bearer'
+    'Content-Type': 'application/json'
+  // 'Authorization': 'Bearer'
   }
 };
