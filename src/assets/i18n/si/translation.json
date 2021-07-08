@@ -87,6 +87,7 @@
   "TSChart": "Vaša zahteva za časovne vrste izbranih točk se obdeluje. Navadno smo pri tem opravilu kar hitri. Prosimo počakajte na rezultate.",
   "zonalStatistics": "Samo trenutek, statistike se izračunavajo.",
   "loadingWMS": "Prosimo počakajte, da se izbrani podatkovni sloj naloži.",
+  "tileLoadingError": "Nekateri tilei se mogoče niso pravilno naložili.",
   "profileLine": "Pridobivamo vrednosti ob črti. To nam bo vzelo samo nekaj trenutkov.",
   "genericBackend": "Med obdelavo vaše zahteve je prišlo do napake. O tem smo nekoga obvestili. Poskusite ponovno kasneje.",
   "featureLimitPerRequest": "Dosegli ste omejite števila objektov za to orodje. Z dodajenjem boste lahko nadaljevali po potrditvi trenutne izbire.",

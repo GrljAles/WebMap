@@ -1,5 +1,6 @@
 import {MdCollapsible} from 'aurelia-materialize-bridge';
 import {inject} from 'aurelia-framework';
+import {Router} from 'aurelia-router';
 import {Map, View} from 'ol';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
@@ -30,12 +31,13 @@ import {observable} from 'aurelia-framework';
 import {ChartEl} from './productTools/tsChart/chart-el.js';
 import {I18N} from 'aurelia-i18n';
 
-@inject(EventAggregator, HttpClient, AuthService, ChartEl, I18N)
+@inject(EventAggregator, HttpClient, AuthService, ChartEl, I18N, Router)
 @observable('activeLayer')
 @observable('buttonCheck')
 
 export class BaseMap {  
-  constructor(eventAggregator, httpClient, authService, chartEl, i18n) {
+  constructor(eventAggregator, httpClient, authService, chartEl, i18n, router) {
+    this.router = router;
     this.i18n = i18n;
     this.ea = eventAggregator;
     this.httpClient = httpClient;
@@ -157,6 +159,7 @@ export class BaseMap {
     });
     this.ea.subscribe('authentication-change', authenticated => {
       this.authenticated = authenticated;
+      this.logoutNavigation(this.authenticated)
     });
 
     this.ea.subscribe('delete-tool-features', (data) => {
@@ -270,12 +273,15 @@ export class BaseMap {
         params: {
           'map': locations.maps + 'sentinel_index.map',
           'LAYERS': 'EVI',
-          'date': this.layers[0].availableDates[this.layers[0].availableDates.length - 1],
-          'TILED': true
+          'date': this.layers[0].availableDates[this.layers[0].availableDates.length - 1]
         },
-        projection: 'EPSG:3857'
+        projection: 'EPSG:3857',
+        imageSmoothing: false,
+        serverType: 'mapserver',
+        crossOrigin: 'anonymous'
       }),
-      opacity: this.layers[this.activeLayer].opacity
+      opacity: this.layers[this.activeLayer].opacity,
+      visible: false
     });
 
     this.toolLayerStyle = new Style({
@@ -483,17 +489,18 @@ export class BaseMap {
       });
     });
 
-    this.indexWMSSource.on('tileloadend', function() {
+    this.basemap.on('rendercomplete', function() {
       _this.ea.publish('close-tool-preloader', {
         preloaderWindow: false
       });
     });
 
-    this.indexWMSSource.on('tileloaderror', function() {
-      _this.ea.publish('close-tool-preloader', {
-        preloaderWindow: false
-      });
-    });
+  }
+
+  logoutNavigation(auth) {
+    if (auth === false) {
+      this.router.navigateToRoute('login');
+    }
   }
 
   toggleLayerDescription(layer) {
@@ -754,6 +761,7 @@ export class BaseMap {
   }
 
   collapsibleOpen(idx) {
+    this.indexWMS.setVisible(false);
     idx = parseInt(idx);
     this.layers[idx].active = 1;
     this.changeDisplayedDate(idx, this.layers[idx].selectedDateIndex);
@@ -776,7 +784,6 @@ export class BaseMap {
       'date': displayedDate,
       'LAYERS': this.layers[idx].name
     }]);
-    this.calculateClassBreaks(idx, this.layers[idx].displaySettings.min, this.layers[idx].displaySettings.max);
   }
 
   changeOpacity(id, opacityValue) {
@@ -791,15 +798,11 @@ export class BaseMap {
 
   changeLayerParams(idx, paramsArray) {
     if (this.basemap) {
-      for (let ii of this.basemap.getLayers().getArray()) {
-        if (ii.getProperties().title === 'indexWMS') {
-          let newSource = ii.getSource();
-          for (let jj in paramsArray) {
-            newSource.updateParams(paramsArray[jj]);
-          }
-          newSource.refresh();
-        }
+      let newSource = this.indexWMS.getSource();
+      for (let jj in paramsArray) {
+        newSource.updateParams(paramsArray[jj]);
       }
+      newSource.refresh();
     }
   }
 

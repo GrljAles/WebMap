@@ -16,8 +16,8 @@ export class Login {
     this.authService = authService;    
     this.providers = [];
 
-    this.userName = '';
-    this.password = '';
+    this.userName = 'Hans';
+    this.password = 'Fakofbolan12';
     this.passwordType = 'password';
 
     this.userNotification = false;
