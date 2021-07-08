@@ -71,7 +71,7 @@ export class BaseMap {
         drawGeom: 'Polygon',
         relatedLayer: 'zonalStatsPolygons',
         tooltip: '<p>' + this.i18n.tr('zonal-stat-tooltip') + '</p>'
-      }, 
+      },
       tsChart: {
         state: false,
         drawGeom: 'Point',
@@ -93,14 +93,13 @@ export class BaseMap {
     };
     this.subscribe();
     this.fetchProductData();
-
   }
   // Observables observe variable (in method name before 'Chnaged' part) and fire function on change.
   activeLayerChanged(newValue, oldValue) {
-    this.ea.publish('activeLayerChanged', newValue)
+    this.ea.publish('activeLayerChanged', newValue);
   }
   buttonCheckChanged(newValue, oldValue) {
-    this.ea.publish('buttonCheckChanged', newValue)
+    this.ea.publish('buttonCheckChanged', newValue);
   }
 
   setOpacity1(value) {
@@ -221,7 +220,7 @@ export class BaseMap {
         },
         connect: 'upper'
       });
-      this.dateSliders[ii].noUiSlider.on('update', function(values, handle) {
+      this.dateSliders[ii].noUiSlider.on('change', function(values, handle) {
         let value = parseInt(values[handle]);
         _this.layers[_this.activeLayer].selectedDateIndex = value;
         _this.changeDisplayedDate(_this.activeLayer, value);
@@ -263,20 +262,20 @@ export class BaseMap {
       })
     });
 
-    this.NDVI = new TileLayer({
-      title: this.layers[0].name,
-      id: this.layers[0].id,
+    this.indexWMS = new TileLayer({
+      title: 'indexWMS',
+      id: 0,
       source: new TileWMS({
         url: locations.backend + locations.mapserver,
         params: {
           'map': locations.maps + 'sentinel_index.map',
           'LAYERS': 'EVI',
-          'date': '20190715',
+          'date': this.layers[0].availableDates[this.layers[0].availableDates.length - 1],
           'TILED': true
         },
         projection: 'EPSG:3857'
       }),
-      opacity: this.layers[0].opacity
+      opacity: this.layers[this.activeLayer].opacity
     });
 
     this.toolLayerStyle = new Style({
@@ -338,7 +337,7 @@ export class BaseMap {
       target: 'basemap',
       layers: [
         this.osmTopo,
-        this.NDVI,
+        this.indexWMS,
         this.identifyPoints,
         this.zonalStatsPolys,
         this.tsChartPoints,
@@ -424,7 +423,7 @@ export class BaseMap {
       if (_this.buttonCheck.identify.state) {
         let viewRes = /** @type {number} */ (_this.basemap.getView().getResolution());
         for (let layer of _this.basemap.getLayers().getArray()) {
-          if (layer.get('title') === _this.layers[_this.activeLayer].name) {
+          if (layer.get('title') === 'indexWMS') {
             let pixelValueUrl = layer.getSource().getGetFeatureInfoUrl(evt.coordinate, viewRes, 'EPSG:3857', {
               'INFO_FORMAT': 'application/json'
             });
@@ -443,7 +442,7 @@ export class BaseMap {
               .then(data => {
                 let aaa = JSON.parse(data);
                 _this.setIdentifyLayerProperties('identifyPoints', {
-                  product: layer.get('title'),
+                  product: _this.layers[_this.activeLayer].name,
                   date: _this.layers[_this.activeLayer].displayedDate,
                   value: aaa.Value
                 });
@@ -474,6 +473,26 @@ export class BaseMap {
         profileLineData.p1 = evt.feature.getGeometry().getCoordinates()[1];
         _this.profileChartRequest(profileLineData);
       }
+    });
+
+    this.indexWMSSource = this.indexWMS.getSource();
+    this.indexWMSSource.on('tileloadstart', function() {
+      _this.ea.publish('open-tool-preloader', {
+        preloaderWindow: true,
+        toolPreloaderMessage: 'loadingWMS'
+      });
+    });
+
+    this.indexWMSSource.on('tileloadend', function() {
+      _this.ea.publish('close-tool-preloader', {
+        preloaderWindow: false
+      });
+    });
+
+    this.indexWMSSource.on('tileloaderror', function() {
+      _this.ea.publish('close-tool-preloader', {
+        preloaderWindow: false
+      });
     });
   }
 
@@ -720,32 +739,40 @@ export class BaseMap {
     }
   }
 
+  anyLayerActiveCheck() {
+    let activeArray = [];
+    for (let ii in this.layers) {
+      activeArray.push(this.layers[ii].active);
+    }
+    if (activeArray.includes(1)) {
+      var isActive = true;
+    }
+    if (!activeArray.includes(1)) {
+      var isActive = false;
+    }
+    return isActive
+  }
+
   collapsibleOpen(idx) {
     idx = parseInt(idx);
     this.layers[idx].active = 1;
     this.changeDisplayedDate(idx, this.layers[idx].selectedDateIndex);
-    for (let ii of this.basemap.getLayers().getArray()) {
-      if (ii.getProperties().id === idx) {
-        ii.setVisible(true);
-      }
-    }
+    this.indexWMS.setVisible(true);
   }
 
   collapsibleClose(idx) {
     idx = parseInt(idx);
     this.layers[idx].active = 0;
-    for (let ii of this.basemap.getLayers().getArray()) {
-      if (ii.getProperties().id === idx) {
-        ii.setVisible(false);
-      }
-    }
+    if (this.anyLayerActiveCheck() === false) {
+      this.indexWMS.setVisible(false);
+    } else {}
   }
 
   changeDisplayedDate(idx, dateIndex) {
     this.activeLayer = this.layers[idx].id;
     let displayedDate = this.layers[idx].availableDates[(this.layers[idx].availableDates.length - 1) + dateIndex];
     this.layers[idx].displayedDate = moment(displayedDate, 'YYYYMMDD').format('DD.MM.YYYY');
-    this.changeLayerDate(idx, [{
+    this.changeLayerParams(idx, [{
       'date': displayedDate,
       'LAYERS': this.layers[idx].name
     }]);
@@ -762,13 +789,13 @@ export class BaseMap {
     }
   }
 
-  changeLayerDate(idx, layerDate) {
+  changeLayerParams(idx, paramsArray) {
     if (this.basemap) {
       for (let ii of this.basemap.getLayers().getArray()) {
-        if (ii.getProperties().id === idx) {
+        if (ii.getProperties().title === 'indexWMS') {
           let newSource = ii.getSource();
-          for (let jj in layerDate) {
-            newSource.updateParams(layerDate[jj]);
+          for (let jj in paramsArray) {
+            newSource.updateParams(paramsArray[jj]);
           }
           newSource.refresh();
         }
@@ -797,7 +824,7 @@ export class BaseMap {
     })
       .then(response => response.json())
       .then(data => {
-        this.changeLayerDate(idx, [{
+        this.changeLayerParams(idx, [{
           'map': data.modifiedMapFile
         }, {
           'TIMESTAMP': new Date().getTime()

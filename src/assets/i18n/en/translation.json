@@ -86,6 +86,7 @@
   "zonalTSChart": "Your request for zonal time series chart is being processed. This might take a while. Please stand by for the results.",
   "TSChart": "Your request for time series chart is being processed. We are usually quite fast with this. Please stand by for the results.",
   "zonalStatistics": "Just a moment, statistics are being calculated.",
+  "loadingWMS": "Please stand by while the requested layer is loaded.",
   "profileLine": "Extracting values along profile. It will be delivered in a few moments.",
   "genericBackend": "Something went wrong while processing your request and someone was notified about it! Please try again later.",
   "featureLimitPerRequest": "You reached the feature limit for this tool. Submit your request and continue adding features.",

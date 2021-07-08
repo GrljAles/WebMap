@@ -1,4 +1,4 @@
-import { MdSidenav } from "aurelia-materialize-bridge";
+import { MdSidenav } from 'aurelia-materialize-bridge';
 import {EventAggregator} from 'aurelia-event-aggregator';
 import {inject} from 'aurelia-framework';
 
@@ -6,13 +6,13 @@ import {inject} from 'aurelia-framework';
 export class sideNav {
   constructor(mdsidenav, eventaggregator) {
     this.sideNav = mdsidenav;
-    this.ea = eventaggregator
+    this.ea = eventaggregator;
     this.subscribe();
   }
 
   subscribe() {
     this.ea.subscribe('open-sidenav', (data) => {
-      this.openSideNav(data)
+      this.openSideNav(data);
     });
   }
   openSideNav(data) {

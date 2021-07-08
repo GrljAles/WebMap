@@ -18,7 +18,7 @@ Thumbs.db
 # Ref: https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
 # Ref: https://github.com/github/gitignore/blob/master/Global/VisualStudioCode.gitignore
 .idea
-.vscode/*
+.vscode
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -30,7 +30,7 @@ node_modules
 
 # Compiled files
 /scripts
-dist
+/dist
 /src/environment.js
 /src/environment.ts
 

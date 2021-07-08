@@ -17,9 +17,9 @@ export class IdentiFy {
     this.activeTable = null;
     this.layers = dataData.default;
     this.tooltipsTranslations = {
-      downloadTable: 'download-results-geojson',
-      deleteTable: 'delete-results-table',
-      confirmDeleteTable: 'confirm-delete'
+      downloadTable: '<p>' + this.i18n.tr('download-results-geojson') + '</p>',
+      deleteTable: '<p>' + this.i18n.tr('delete-results-table') + '</p>',
+      confirmDeleteTable: '<p>' + this.i18n.tr('confirm-delete') + '</p>'
     };
     
     this.resultsTables = {

@@ -3,7 +3,7 @@ import {inject, computedFrom} from 'aurelia-framework';
 import {ValidationControllerFactory, ValidationRules} from 'aurelia-validation';
 import {Router} from 'aurelia-router';
 import {EventAggregator} from 'aurelia-event-aggregator';
-import * as locations from "./resources/locations/locations.json";
+import * as locations from './resources/locations/locations.json';
 import {Cookies} from 'aurelia-plugins-cookies';
 
 @inject(AuthService, ValidationControllerFactory, Router, EventAggregator)
@@ -25,9 +25,9 @@ export class Login {
 
     ValidationRules
       .ensure('userName')
-      .required().withMessage("usernameRequired")
+      .required().withMessage('usernameRequired')
       .ensure('password')
-      .required().withMessage("passwordRequired")
+      .required().withMessage('passwordRequired')
       .on(this);
   }
   // make a getter to get the authentication status.

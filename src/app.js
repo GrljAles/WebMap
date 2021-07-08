@@ -17,6 +17,7 @@ export class App {
     this.ea = eventAggregator;
     this.sideNav = sideNav;
     this.i18n = i18n;
+    this.consentCookie = null;
 
     if (window.localStorage.getItem("aurelia_authentication")) {
       this.userNameDisplay = JSON.parse(window.localStorage.getItem("aurelia_authentication")).userName;
@@ -36,13 +37,18 @@ export class App {
   }
   attached()  {
     this.authenticated = this.authService.authenticated;
-    this.consentCookie = Cookies.get('consentCookie');
+    //this.consentCookie = Cookies.get('consentCookie');
   }
 
   cookieConsentGiven() {
     Cookies.put('consentCookie', 'true', [
-      {expires: 'Fri, 09 Sep 2021 00:00:01 GMT'}
+      {
+        expires: 'Fri, 09 Sep 2021 00:00:01 GMT',
+        SameSite: 'Lax',
+        secure: true
+      }
     ]);
+
     this.cookieConsent = Cookies.get('consentCookie');
   }
   // use authService.logout to delete stored tokens
@@ -110,13 +116,13 @@ export class App {
         route: ['', 'login'],
         moduleId: PLATFORM.moduleName('./login'),
         title: 'Login',
-        name: 'login',
+        name: 'login'
       },
       {
         route: 'registration',
         moduleId: PLATFORM.moduleName('./registration'),
         title: 'Registration',
-        name: 'registration',
+        name: 'registration'
       },
       {
         route: 'basemap',
