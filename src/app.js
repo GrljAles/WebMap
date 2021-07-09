@@ -85,13 +85,14 @@ export class App {
         'Authorization': 'Bearer ' + this.authService.getAccessToken()
       },
       mode: 'cors'
-    })
+    });
+
     return this.authService.logout();
   }
 
 
   refresh() {
-    this.authService.updateToken();
+    return this.authService.updateToken();
   }
   changeEmailNavigate() {
     this.router.navigate('changeemail');

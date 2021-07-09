@@ -17,7 +17,7 @@ export default {
   // If loginOnSignup == false: The SPA url to which the user is redirected after a successful signup (else loginRedirect is used)
   signupRedirect: false,
   // reload page when token expires. 0 = don't reload (default), 1 = do reload page
-  expiredReload: 1,
+  expiredReload: 0,
   // reload page when storage changed aka login/logout in other tabs/windows. 0 = don't reload (default), 1 = do reload page
   storageChangedReload: 1,
 
@@ -107,7 +107,7 @@ export default {
   getAccessTokenFromResponse: 'access_token',
   // optional function to extract the refresh token from the response. Takes the server response as parameter and returns a token
   // eg: getRefreshTokenFromResponse = serverResponse => serverResponse.data[0].refresh_token;
-  getRefreshTokenFromResponse: 'refresh_token',
+  //getRefreshTokenFromResponse: 'refresh_token',
 
   // List of value-converters to make global
   globalValueConverters: ['authFilterValueConverter'],
@@ -115,7 +115,14 @@ export default {
   // Default headers for login and token-update endpoint
   defaultHeadersForTokenRequests: {
     'Accept': 'application/json',
-    'Content-Type': 'application/json'
-  // 'Authorization': 'Bearer'
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + refToken()
   }
 };
+function refToken() {
+  if (window.localStorage.getItem('aurelia_authentication')) {
+    return JSON.parse(window.localStorage.getItem('aurelia_authentication')).refresh_token;
+  } else {
+    return '';
+  }
+}
