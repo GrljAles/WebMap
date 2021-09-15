@@ -92,6 +92,7 @@
   "genericBackend": "Something went wrong while processing your request and someone was notified about it! Please try again later.",
   "featureLimitPerRequest": "You reached the feature limit for this tool. Submit your request and continue adding features.",
   "polygonAreaTooLarge": "Area of this polygon is too large. Please draw a smaller polygon.",
+  "profileLineLengthTooLong": "This profile line is too long for us to process. Please draw a shorter line.",
   "featureLimitPerRequestZonalTS": "You reached the feature limit for this tool. Delete the current polygon using the 'x' in the table below, draw a new polygon and submit the request.",
   "error-message-missing-data": "Insufficient data to signin.",
   "error-message-500": "We encountered an error while processing your request. Our team is already working on the issue. Please try again later",

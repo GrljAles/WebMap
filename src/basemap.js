@@ -468,16 +468,27 @@ export class BaseMap {
     this.profileLinesDrawSource.on('addfeature', function(evt) {
       if (_this.buttonCheck.profile.state) {
         let lastLineLength = getLength(evt.feature.getGeometry());
-        let profileLineData = {
-          product: _this.layers[_this.activeLayer].name,
-          dates: _this.dateToYYYYMMDD(_this.layers[_this.activeLayer].displayedDate),
-          length: _this.formatLength(lastLineLength)
-        };
-        _this.setIdentifyLayerProperties('profileLines', profileLineData);
-        profileLineData.resolution = _this.layers[_this.activeLayer].dataProperties.resolution;
-        profileLineData.p0 = evt.feature.getGeometry().getCoordinates()[0];
-        profileLineData.p1 = evt.feature.getGeometry().getCoordinates()[1];
-        _this.profileChartRequest(profileLineData);
+        if (lastLineLength < 5000) {
+          let profileLineData = {
+            product: _this.layers[_this.activeLayer].name,
+            dates: _this.dateToYYYYMMDD(_this.layers[_this.activeLayer].displayedDate),
+            length: _this.formatLength(lastLineLength)
+          };
+          _this.setIdentifyLayerProperties('profileLines', profileLineData);
+          profileLineData.resolution = _this.layers[_this.activeLayer].dataProperties.resolution;
+          profileLineData.p0 = evt.feature.getGeometry().getCoordinates()[0];
+          profileLineData.p1 = evt.feature.getGeometry().getCoordinates()[1];
+          _this.profileChartRequest(profileLineData);
+        }
+        else {
+          _this.profileLinesDrawSource.removeFeature(evt.feature);
+          if (!_this.toolNotification) {
+            _this.ea.publish('open-tool-notification', {
+              errorWindow: true,
+              errorMessage: 'profileLineLengthTooLong'
+            });
+          }
+        }
       }
     });
 
