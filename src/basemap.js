@@ -30,12 +30,13 @@ import {getArea, getLength} from 'ol/sphere';
 import {observable} from 'aurelia-framework';
 import {ChartEl} from './productTools/tsChart/chart-el.js';
 import {I18N} from 'aurelia-i18n';
+import TileState from 'ol/TileState';
 
 @inject(EventAggregator, HttpClient, AuthService, ChartEl, I18N, Router)
 @observable('activeLayer')
 @observable('buttonCheck')
 
-export class BaseMap {  
+export class BaseMap {
   constructor(eventAggregator, httpClient, authService, chartEl, i18n, router) {
     this.router = router;
     this.i18n = i18n;
@@ -93,9 +94,10 @@ export class BaseMap {
         tooltip: '<p>' + this.i18n.tr('profile-tooltip') + '</p>'
       }
     };
-    this.subscribe();
     this.fetchProductData();
+    this.subscribe();
   }
+
   // Observables observe variable (in method name before 'Chnaged' part) and fire function on change.
   activeLayerChanged(newValue, oldValue) {
     this.ea.publish('activeLayerChanged', newValue);
@@ -153,13 +155,13 @@ export class BaseMap {
   }
 
   subscribe() {
-    this.ea.subscribe('user-data-update', (data) => {
-      this.userNameDisplay = data.userName;
-      this.userEmailDsplay = data.email;
+    this.ea.subscribe('user-data-update', data => {
+      this.updateUserData(data);
     });
+
     this.ea.subscribe('authentication-change', authenticated => {
       this.authenticated = authenticated;
-      this.logoutNavigation(this.authenticated)
+      this.logoutNavigation(this.authenticated);
     });
 
     this.ea.subscribe('delete-tool-features', (data) => {
@@ -171,6 +173,7 @@ export class BaseMap {
     this.ea.subscribe('get-ts-table', whichLayer => {
       this.tsPointFeatureCount = 0;
     });
+   
     this.ea.subscribe('ts-chart-window-changed', data => {
       this.tsChartWindow = data;
     });
@@ -271,7 +274,7 @@ export class BaseMap {
       source: new TileWMS({
         url: locations.backend + locations.mapserver,
         params: {
-          'map': locations.maps + 'sentinel_index.map',
+          'map': locations.maps + this.userFString + 'mapFiles/sentinel_index.map',
           'LAYERS': 'EVI',
           'date': this.layers[0].availableDates[this.layers[0].availableDates.length - 1]
         },
@@ -368,7 +371,7 @@ export class BaseMap {
         _this.zonalStatistcsRequest(zonalStatsParams);
       }
     });
-    
+
     this.tsChartPointsDrawSource.on('addfeature', function(evt) {
       if (_this.buttonCheck.tsChart.state) {
         if (_this.tsChartPointsDrawSource.getFeatures().length < 11) {
@@ -505,7 +508,15 @@ export class BaseMap {
         preloaderWindow: false
       });
     });
+  }
 
+  updateUserData(userData) {
+    this.userNameDisplay = userData.userName;
+    this.emailDisplay = userData.email;
+    this.userFString = userData.userFString;
+    console.log(this.userNameDisplay);
+    console.log(this.emailDisplay);
+    console.log(this.userFString);
   }
 
   logoutNavigation(auth) {
@@ -822,11 +833,13 @@ export class BaseMap {
       'classBreaks': classBreaks,
       'classColours': classColours
     };
+    console.log(this.userFString);
     this.httpClient.fetch(locations.backend + '/backendapi/changelayerrange', {
       method: 'POST',
       body: JSON.stringify({
         'layerRange': layerRange,
-        'layer': this.layers[idx].name
+        'layer': this.layers[idx].name,
+        'userFString': this.userFString
       }),
       headers: {
         'Accept': 'application/json',

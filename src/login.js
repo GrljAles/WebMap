@@ -55,10 +55,13 @@ export class Login {
           }
         })
         .then(data => {
-          this.ea.publish('user-data-update', {
-            userName: data.userName,
-            email: data.email
-          });
+          setTimeout(() => {
+            this.ea.publish('user-data-update', {
+              userName: data.userName,
+              email: data.email,
+              userFString: data.userFString
+            });
+          }, 500);
         })
         .catch(error => {
           this.userNotification = true;
