@@ -1,4 +1,6 @@
-"# WebMap" 
+# WebMap
+
+## Description
 
 Web spatial data viewer that supporats display of local and WMS data through OpenLayers. Boosts full user management support for user registration, login, logout, confirming email address after registration, retrieving forgotten password as well as changing password and email address. Supports also different analysis of displayed spatial data, such as pixel value query, time series chart extraction for several locations and polygons (!!!), zonal statistics calculaton as well as value profile extraction. For this functionallity it must be connected to API that processes these requests and has access to underlaying datasets.
 
